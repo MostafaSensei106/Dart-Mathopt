@@ -10,6 +10,7 @@ crate-type = ["cdylib", "staticlib"]
 anyhow = "1.0.104"
 clarabel = "0.11.1"
 flutter_rust_bridge = "=2.13.0"
+good_lp = "1.15.3"
 highs = "2.4.0"
 log = "0.4.34"
 microlp = "0.6.0"
