@@ -1,3 +1,6 @@
+import 'variable.dart';
+import 'constraint.dart';
+
 abstract class Expression {
   Map<Variable, double> get terms;
   double get constant;
