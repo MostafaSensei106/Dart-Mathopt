@@ -1,6 +1,6 @@
 /// The main console example for `dart_mathopt`.
 ///
-/// Tours all six showcase problems (the same ones in the Flutter app):
+/// Tours all eight showcase problems (the same ones in the Flutter app):
 /// prints each story, solves it natively, prints the result.
 ///
 /// Run from the package root OR from `example/`:
@@ -11,15 +11,14 @@
 /// ```
 library;
 
-import 'dart:io';
-
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:dart_mathopt_example/problems/catalog.dart';
 import 'package:dart_mathopt_example/problems/demo_problem.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+
+import 'tool/native_init.dart';
 
 Future<void> main() async {
-  await _initNativeLib();
+  await initNativeLib();
 
   final problems = buildCatalog();
   print('dart_mathopt console tour: ${problems.length} everyday problems.\n');
@@ -52,46 +51,4 @@ Future<void> _runProblem(int number, DemoProblem problem) async {
     'solved in ${result.statistics.solveTimeMs} ms '
     '(${result.statistics.iterations} iterations)\n',
   );
-}
-
-/// Initializes the Rust engines for this script.
-///
-/// Tries the default loader first (works from the package root). If that
-/// fails — e.g. the working directory is `example/` — it resolves the
-/// freshly built native library relative to this script and retries.
-///
-/// Build the library once before running:
-///
-/// ```sh
-/// cargo build --release --manifest-path rust/Cargo.toml
-/// ```
-Future<void> _initNativeLib() async {
-  try {
-    await RustLib.init();
-    return;
-  } catch (_) {
-    // Fall through to script-relative resolution below.
-  }
-
-  // This script lives in `<root>/example/`; the workspace root is one
-  // level up from there.
-  final scriptDir = File(Platform.script.toFilePath()).parent;
-  final workspaceRoot = scriptDir.parent;
-  final libName = switch (true) {
-    _ when Platform.isLinux => 'libdart_mathopt.so',
-    _ when Platform.isMacOS => 'libdart_mathopt.dylib',
-    _ when Platform.isWindows => 'dart_mathopt.dll',
-    _ => throw UnsupportedError('Unsupported OS: ${Platform.operatingSystem}'),
-  };
-  final sep = Platform.pathSeparator;
-  final libPath =
-      '${workspaceRoot.path}${sep}rust${sep}target${sep}release$sep$libName';
-
-  if (!File(libPath).existsSync()) {
-    throw StateError(
-      'Native library not found at $libPath.\n'
-      'Build it first: cargo build --release --manifest-path rust/Cargo.toml',
-    );
-  }
-  await RustLib.init(externalLibrary: ExternalLibrary.open(libPath));
 }
