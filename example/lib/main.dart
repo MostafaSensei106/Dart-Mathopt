@@ -1,21 +1,30 @@
-import 'package:flutter/material.dart';
 import 'package:dart_mathopt/dart_mathopt.dart';
+import 'package:flutter/material.dart';
 
+import 'screens/problem_list_screen.dart';
+
+/// Showcase app: 6 everyday optimization problems, each with its story,
+/// difficulty, modeling notes, and a live native solve.
+///
+/// See also the CLI tutorials in `bin/` (levels 1–4) for copy-paste code.
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await RustLib.init();
-  runApp(const MyApp());
+  runApp(const MathOptShowcaseApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MathOptShowcaseApp extends StatelessWidget {
+  const MathOptShowcaseApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('flutter_rust_bridge quickstart')),
-        body: Center(child: Text('Action: Call Rust `greet("Tom")`\nResult: ')),
+      title: 'dart_mathopt showcase',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        useMaterial3: true,
       ),
+      home: const ProblemListScreen(),
     );
   }
 }

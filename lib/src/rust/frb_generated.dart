@@ -3,14 +3,17 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
-import 'api/solvers/solver.dart';
+import 'api/solver_api.dart';
 
 import 'dart:async';
 import 'dart:convert';
 
+import 'errors.dart';
 import 'frb_generated.dart';
 import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
+import 'models/dto_request.dart';
+import 'models/dto_response.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
@@ -67,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => -291292710;
+  int get rustContentHash => -555205531;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -79,14 +82,9 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_ProblemPayload;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_ProblemPayload;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_ProblemPayloadPtr;
+  Future<FrbSolveResponse> crateApiSolverApiExecuteSolve({
+    required FrbSolveRequest request,
+  });
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -97,42 +95,40 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required super.portManager,
   });
 
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_ProblemPayload => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProblemPayload;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_ProblemPayload => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProblemPayload;
-
-  @protected
-  ProblemPayload
-  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProblemPayload(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return ProblemPayloadImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  @override
+  Future<FrbSolveResponse> crateApiSolverApiExecuteSolve({
+    required FrbSolveRequest request,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_frb_solve_request(request, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 1,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_frb_solve_response,
+          decodeErrorData: sse_decode_frb_solver_error,
+        ),
+        constMeta: kCrateApiSolverApiExecuteSolveConstMeta,
+        argValues: [request],
+        apiImpl: this,
+      ),
+    );
   }
 
-  @protected
-  ProblemPayload
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProblemPayload(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return ProblemPayloadImpl.frbInternalDcoDecode(raw as List<dynamic>);
-  }
+  TaskConstMeta get kCrateApiSolverApiExecuteSolveConstMeta =>
+      const TaskConstMeta(debugName: "execute_solve", argNames: ["request"]);
 
   @protected
   String dco_decode_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as String;
-  }
-
-  @protected
-  OptimizationSolver dco_decode_TraitDef_OptimizationSolver(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    throw UnimplementedError();
   }
 
   @protected
@@ -142,15 +138,208 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  double dco_decode_box_autoadd_f_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as double;
+  }
+
+  @protected
+  FrbSolveRequest dco_decode_box_autoadd_frb_solve_request(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_frb_solve_request(raw);
+  }
+
+  @protected
+  int dco_decode_box_autoadd_u_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
+  }
+
+  @protected
   double dco_decode_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
   }
 
   @protected
+  FrbConstraintDto dco_decode_frb_constraint_dto(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return FrbConstraintDto(
+      name: dco_decode_opt_String(arr[0]),
+      terms: dco_decode_list_frb_term_dto(arr[1]),
+      sense: dco_decode_frb_constraint_sense(arr[2]),
+      rhs: dco_decode_f_64(arr[3]),
+    );
+  }
+
+  @protected
+  FrbConstraintSense dco_decode_frb_constraint_sense(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return FrbConstraintSense.values[raw as int];
+  }
+
+  @protected
+  FrbObjectiveDto dco_decode_frb_objective_dto(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return FrbObjectiveDto(
+      sense: dco_decode_frb_optimization_sense(arr[0]),
+      terms: dco_decode_list_frb_term_dto(arr[1]),
+      constant: dco_decode_f_64(arr[2]),
+    );
+  }
+
+  @protected
+  FrbOptimizationSense dco_decode_frb_optimization_sense(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return FrbOptimizationSense.values[raw as int];
+  }
+
+  @protected
+  FrbSolveOptionsDto dco_decode_frb_solve_options_dto(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return FrbSolveOptionsDto(
+      timeLimitSec: dco_decode_opt_box_autoadd_f_64(arr[0]),
+      enableLogging: dco_decode_bool(arr[1]),
+      threadCount: dco_decode_opt_box_autoadd_u_32(arr[2]),
+      solver: dco_decode_String(arr[3]),
+    );
+  }
+
+  @protected
+  FrbSolveRequest dco_decode_frb_solve_request(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return FrbSolveRequest(
+      name: dco_decode_String(arr[0]),
+      variables: dco_decode_list_frb_variable_dto(arr[1]),
+      constraints: dco_decode_list_frb_constraint_dto(arr[2]),
+      objective: dco_decode_frb_objective_dto(arr[3]),
+      options: dco_decode_frb_solve_options_dto(arr[4]),
+    );
+  }
+
+  @protected
+  FrbSolveResponse dco_decode_frb_solve_response(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return FrbSolveResponse(
+      status: dco_decode_frb_solve_status(arr[0]),
+      objectiveValue: dco_decode_opt_box_autoadd_f_64(arr[1]),
+      variableValues: dco_decode_list_prim_f_64_strict(arr[2]),
+      dualValues: dco_decode_opt_list_prim_f_64_strict(arr[3]),
+      statistics: dco_decode_frb_solve_statistics(arr[4]),
+    );
+  }
+
+  @protected
+  FrbSolveStatistics dco_decode_frb_solve_statistics(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return FrbSolveStatistics(
+      solveTimeMs: dco_decode_i_64(arr[0]),
+      iterations: dco_decode_i_64(arr[1]),
+    );
+  }
+
+  @protected
+  FrbSolveStatus dco_decode_frb_solve_status(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return FrbSolveStatus.values[raw as int];
+  }
+
+  @protected
+  FrbSolverError dco_decode_frb_solver_error(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return FrbSolverError_CapabilityError(dco_decode_String(raw[1]));
+      case 1:
+        return FrbSolverError_EngineFailure(dco_decode_String(raw[1]));
+      case 2:
+        return FrbSolverError_InvalidInput(dco_decode_String(raw[1]));
+      case 3:
+        return FrbSolverError_TimeLimitExceeded(dco_decode_f_64(raw[1]));
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  @protected
+  FrbTermDto dco_decode_frb_term_dto(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return FrbTermDto(
+      variableId: dco_decode_u_32(arr[0]),
+      coefficient: dco_decode_f_64(arr[1]),
+    );
+  }
+
+  @protected
+  FrbVariableDto dco_decode_frb_variable_dto(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return FrbVariableDto(
+      id: dco_decode_u_32(arr[0]),
+      name: dco_decode_String(arr[1]),
+      varType: dco_decode_frb_variable_type(arr[2]),
+      lowerBound: dco_decode_opt_box_autoadd_f_64(arr[3]),
+      upperBound: dco_decode_opt_box_autoadd_f_64(arr[4]),
+    );
+  }
+
+  @protected
+  FrbVariableType dco_decode_frb_variable_type(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return FrbVariableType.values[raw as int];
+  }
+
+  @protected
   int dco_decode_i_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
+  }
+
+  @protected
+  PlatformInt64 dco_decode_i_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dcoDecodeI64(raw);
+  }
+
+  @protected
+  List<FrbConstraintDto> dco_decode_list_frb_constraint_dto(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_frb_constraint_dto).toList();
+  }
+
+  @protected
+  List<FrbTermDto> dco_decode_list_frb_term_dto(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_frb_term_dto).toList();
+  }
+
+  @protected
+  List<FrbVariableDto> dco_decode_list_frb_variable_dto(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_frb_variable_dto).toList();
   }
 
   @protected
@@ -166,59 +355,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  SolverSolution dco_decode_solver_solution(dynamic raw) {
+  String? dco_decode_opt_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-    return SolverSolution(
-      statusCode: dco_decode_i_32(arr[0]),
-      objectiveValue: dco_decode_f_64(arr[1]),
-      variableValues: dco_decode_list_prim_f_64_strict(arr[2]),
-      dualValues: dco_decode_list_prim_f_64_strict(arr[3]),
-    );
+    return raw == null ? null : dco_decode_String(raw);
+  }
+
+  @protected
+  double? dco_decode_opt_box_autoadd_f_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_f_64(raw);
+  }
+
+  @protected
+  int? dco_decode_opt_box_autoadd_u_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_u_32(raw);
+  }
+
+  @protected
+  Float64List? dco_decode_opt_list_prim_f_64_strict(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_list_prim_f_64_strict(raw);
+  }
+
+  @protected
+  int dco_decode_u_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
   }
 
   @protected
   int dco_decode_u_8(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
-  }
-
-  @protected
-  void dco_decode_unit(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return;
-  }
-
-  @protected
-  BigInt dco_decode_usize(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return dcoDecodeU64(raw);
-  }
-
-  @protected
-  ProblemPayload
-  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProblemPayload(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return ProblemPayloadImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  ProblemPayload
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProblemPayload(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return ProblemPayloadImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
   }
 
   @protected
@@ -235,15 +404,253 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  double sse_decode_box_autoadd_f_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_f_64(deserializer));
+  }
+
+  @protected
+  FrbSolveRequest sse_decode_box_autoadd_frb_solve_request(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_frb_solve_request(deserializer));
+  }
+
+  @protected
+  int sse_decode_box_autoadd_u_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_u_32(deserializer));
+  }
+
+  @protected
   double sse_decode_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getFloat64();
   }
 
   @protected
+  FrbConstraintDto sse_decode_frb_constraint_dto(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_name = sse_decode_opt_String(deserializer);
+    var var_terms = sse_decode_list_frb_term_dto(deserializer);
+    var var_sense = sse_decode_frb_constraint_sense(deserializer);
+    var var_rhs = sse_decode_f_64(deserializer);
+    return FrbConstraintDto(
+      name: var_name,
+      terms: var_terms,
+      sense: var_sense,
+      rhs: var_rhs,
+    );
+  }
+
+  @protected
+  FrbConstraintSense sse_decode_frb_constraint_sense(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return FrbConstraintSense.values[inner];
+  }
+
+  @protected
+  FrbObjectiveDto sse_decode_frb_objective_dto(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_sense = sse_decode_frb_optimization_sense(deserializer);
+    var var_terms = sse_decode_list_frb_term_dto(deserializer);
+    var var_constant = sse_decode_f_64(deserializer);
+    return FrbObjectiveDto(
+      sense: var_sense,
+      terms: var_terms,
+      constant: var_constant,
+    );
+  }
+
+  @protected
+  FrbOptimizationSense sse_decode_frb_optimization_sense(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return FrbOptimizationSense.values[inner];
+  }
+
+  @protected
+  FrbSolveOptionsDto sse_decode_frb_solve_options_dto(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_timeLimitSec = sse_decode_opt_box_autoadd_f_64(deserializer);
+    var var_enableLogging = sse_decode_bool(deserializer);
+    var var_threadCount = sse_decode_opt_box_autoadd_u_32(deserializer);
+    var var_solver = sse_decode_String(deserializer);
+    return FrbSolveOptionsDto(
+      timeLimitSec: var_timeLimitSec,
+      enableLogging: var_enableLogging,
+      threadCount: var_threadCount,
+      solver: var_solver,
+    );
+  }
+
+  @protected
+  FrbSolveRequest sse_decode_frb_solve_request(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_name = sse_decode_String(deserializer);
+    var var_variables = sse_decode_list_frb_variable_dto(deserializer);
+    var var_constraints = sse_decode_list_frb_constraint_dto(deserializer);
+    var var_objective = sse_decode_frb_objective_dto(deserializer);
+    var var_options = sse_decode_frb_solve_options_dto(deserializer);
+    return FrbSolveRequest(
+      name: var_name,
+      variables: var_variables,
+      constraints: var_constraints,
+      objective: var_objective,
+      options: var_options,
+    );
+  }
+
+  @protected
+  FrbSolveResponse sse_decode_frb_solve_response(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_status = sse_decode_frb_solve_status(deserializer);
+    var var_objectiveValue = sse_decode_opt_box_autoadd_f_64(deserializer);
+    var var_variableValues = sse_decode_list_prim_f_64_strict(deserializer);
+    var var_dualValues = sse_decode_opt_list_prim_f_64_strict(deserializer);
+    var var_statistics = sse_decode_frb_solve_statistics(deserializer);
+    return FrbSolveResponse(
+      status: var_status,
+      objectiveValue: var_objectiveValue,
+      variableValues: var_variableValues,
+      dualValues: var_dualValues,
+      statistics: var_statistics,
+    );
+  }
+
+  @protected
+  FrbSolveStatistics sse_decode_frb_solve_statistics(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_solveTimeMs = sse_decode_i_64(deserializer);
+    var var_iterations = sse_decode_i_64(deserializer);
+    return FrbSolveStatistics(
+      solveTimeMs: var_solveTimeMs,
+      iterations: var_iterations,
+    );
+  }
+
+  @protected
+  FrbSolveStatus sse_decode_frb_solve_status(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return FrbSolveStatus.values[inner];
+  }
+
+  @protected
+  FrbSolverError sse_decode_frb_solver_error(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        var var_field0 = sse_decode_String(deserializer);
+        return FrbSolverError_CapabilityError(var_field0);
+      case 1:
+        var var_field0 = sse_decode_String(deserializer);
+        return FrbSolverError_EngineFailure(var_field0);
+      case 2:
+        var var_field0 = sse_decode_String(deserializer);
+        return FrbSolverError_InvalidInput(var_field0);
+      case 3:
+        var var_field0 = sse_decode_f_64(deserializer);
+        return FrbSolverError_TimeLimitExceeded(var_field0);
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
+  FrbTermDto sse_decode_frb_term_dto(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_variableId = sse_decode_u_32(deserializer);
+    var var_coefficient = sse_decode_f_64(deserializer);
+    return FrbTermDto(variableId: var_variableId, coefficient: var_coefficient);
+  }
+
+  @protected
+  FrbVariableDto sse_decode_frb_variable_dto(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_id = sse_decode_u_32(deserializer);
+    var var_name = sse_decode_String(deserializer);
+    var var_varType = sse_decode_frb_variable_type(deserializer);
+    var var_lowerBound = sse_decode_opt_box_autoadd_f_64(deserializer);
+    var var_upperBound = sse_decode_opt_box_autoadd_f_64(deserializer);
+    return FrbVariableDto(
+      id: var_id,
+      name: var_name,
+      varType: var_varType,
+      lowerBound: var_lowerBound,
+      upperBound: var_upperBound,
+    );
+  }
+
+  @protected
+  FrbVariableType sse_decode_frb_variable_type(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return FrbVariableType.values[inner];
+  }
+
+  @protected
   int sse_decode_i_32(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getInt32();
+  }
+
+  @protected
+  PlatformInt64 sse_decode_i_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getPlatformInt64();
+  }
+
+  @protected
+  List<FrbConstraintDto> sse_decode_list_frb_constraint_dto(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <FrbConstraintDto>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_frb_constraint_dto(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<FrbTermDto> sse_decode_list_frb_term_dto(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <FrbTermDto>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_frb_term_dto(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<FrbVariableDto> sse_decode_list_frb_variable_dto(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <FrbVariableDto>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_frb_variable_dto(deserializer));
+    }
+    return ans_;
   }
 
   @protected
@@ -261,61 +668,61 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  SolverSolution sse_decode_solver_solution(SseDeserializer deserializer) {
+  String? sse_decode_opt_String(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_statusCode = sse_decode_i_32(deserializer);
-    var var_objectiveValue = sse_decode_f_64(deserializer);
-    var var_variableValues = sse_decode_list_prim_f_64_strict(deserializer);
-    var var_dualValues = sse_decode_list_prim_f_64_strict(deserializer);
-    return SolverSolution(
-      statusCode: var_statusCode,
-      objectiveValue: var_objectiveValue,
-      variableValues: var_variableValues,
-      dualValues: var_dualValues,
-    );
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_String(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_f_64(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  int? sse_decode_opt_box_autoadd_u_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_u_32(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  Float64List? sse_decode_opt_list_prim_f_64_strict(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_list_prim_f_64_strict(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  int sse_decode_u_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getUint32();
   }
 
   @protected
   int sse_decode_u_8(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8();
-  }
-
-  @protected
-  void sse_decode_unit(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-  }
-
-  @protected
-  BigInt sse_decode_usize(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getBigUint64();
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProblemPayload(
-    ProblemPayload self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as ProblemPayloadImpl).frbInternalSseEncode(move: false),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProblemPayload(
-    ProblemPayload self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as ProblemPayloadImpl).frbInternalSseEncode(move: null),
-      serializer,
-    );
   }
 
   @protected
@@ -331,15 +738,227 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_f_64(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_frb_solve_request(
+    FrbSolveRequest self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_frb_solve_request(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self, serializer);
+  }
+
+  @protected
   void sse_encode_f_64(double self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putFloat64(self);
   }
 
   @protected
+  void sse_encode_frb_constraint_dto(
+    FrbConstraintDto self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_String(self.name, serializer);
+    sse_encode_list_frb_term_dto(self.terms, serializer);
+    sse_encode_frb_constraint_sense(self.sense, serializer);
+    sse_encode_f_64(self.rhs, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_constraint_sense(
+    FrbConstraintSense self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_objective_dto(
+    FrbObjectiveDto self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_frb_optimization_sense(self.sense, serializer);
+    sse_encode_list_frb_term_dto(self.terms, serializer);
+    sse_encode_f_64(self.constant, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_optimization_sense(
+    FrbOptimizationSense self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_solve_options_dto(
+    FrbSolveOptionsDto self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_box_autoadd_f_64(self.timeLimitSec, serializer);
+    sse_encode_bool(self.enableLogging, serializer);
+    sse_encode_opt_box_autoadd_u_32(self.threadCount, serializer);
+    sse_encode_String(self.solver, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_solve_request(
+    FrbSolveRequest self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.name, serializer);
+    sse_encode_list_frb_variable_dto(self.variables, serializer);
+    sse_encode_list_frb_constraint_dto(self.constraints, serializer);
+    sse_encode_frb_objective_dto(self.objective, serializer);
+    sse_encode_frb_solve_options_dto(self.options, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_solve_response(
+    FrbSolveResponse self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_frb_solve_status(self.status, serializer);
+    sse_encode_opt_box_autoadd_f_64(self.objectiveValue, serializer);
+    sse_encode_list_prim_f_64_strict(self.variableValues, serializer);
+    sse_encode_opt_list_prim_f_64_strict(self.dualValues, serializer);
+    sse_encode_frb_solve_statistics(self.statistics, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_solve_statistics(
+    FrbSolveStatistics self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self.solveTimeMs, serializer);
+    sse_encode_i_64(self.iterations, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_solve_status(
+    FrbSolveStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_solver_error(
+    FrbSolverError self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case FrbSolverError_CapabilityError(field0: final field0):
+        sse_encode_i_32(0, serializer);
+        sse_encode_String(field0, serializer);
+      case FrbSolverError_EngineFailure(field0: final field0):
+        sse_encode_i_32(1, serializer);
+        sse_encode_String(field0, serializer);
+      case FrbSolverError_InvalidInput(field0: final field0):
+        sse_encode_i_32(2, serializer);
+        sse_encode_String(field0, serializer);
+      case FrbSolverError_TimeLimitExceeded(field0: final field0):
+        sse_encode_i_32(3, serializer);
+        sse_encode_f_64(field0, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_frb_term_dto(FrbTermDto self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.variableId, serializer);
+    sse_encode_f_64(self.coefficient, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_variable_dto(
+    FrbVariableDto self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.id, serializer);
+    sse_encode_String(self.name, serializer);
+    sse_encode_frb_variable_type(self.varType, serializer);
+    sse_encode_opt_box_autoadd_f_64(self.lowerBound, serializer);
+    sse_encode_opt_box_autoadd_f_64(self.upperBound, serializer);
+  }
+
+  @protected
+  void sse_encode_frb_variable_type(
+    FrbVariableType self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
   void sse_encode_i_32(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putInt32(self);
+  }
+
+  @protected
+  void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putPlatformInt64(self);
+  }
+
+  @protected
+  void sse_encode_list_frb_constraint_dto(
+    List<FrbConstraintDto> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_frb_constraint_dto(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_frb_term_dto(
+    List<FrbTermDto> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_frb_term_dto(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_frb_variable_dto(
+    List<FrbVariableDto> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_frb_variable_dto(item, serializer);
+    }
   }
 
   @protected
@@ -363,15 +982,52 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_solver_solution(
-    SolverSolution self,
+  void sse_encode_opt_String(String? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_String(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_f_64(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_u_32(int? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_u_32(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_list_prim_f_64_strict(
+    Float64List? self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_i_32(self.statusCode, serializer);
-    sse_encode_f_64(self.objectiveValue, serializer);
-    sse_encode_list_prim_f_64_strict(self.variableValues, serializer);
-    sse_encode_list_prim_f_64_strict(self.dualValues, serializer);
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_list_prim_f_64_strict(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_u_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putUint32(self);
   }
 
   @protected
@@ -379,35 +1035,4 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint8(self);
   }
-
-  @protected
-  void sse_encode_unit(void self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-  }
-
-  @protected
-  void sse_encode_usize(BigInt self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putBigUint64(self);
-  }
-}
-
-@sealed
-class ProblemPayloadImpl extends RustOpaque implements ProblemPayload {
-  // Not to be used by end users
-  ProblemPayloadImpl.frbInternalDcoDecode(List<dynamic> wire)
-    : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  ProblemPayloadImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
-    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount:
-        RustLib.instance.api.rust_arc_increment_strong_count_ProblemPayload,
-    rustArcDecrementStrongCount:
-        RustLib.instance.api.rust_arc_decrement_strong_count_ProblemPayload,
-    rustArcDecrementStrongCountPtr:
-        RustLib.instance.api.rust_arc_decrement_strong_count_ProblemPayloadPtr,
-  );
 }

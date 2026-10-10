@@ -1,92 +1,81 @@
 # dart_mathopt
 
-A new Flutter FFI plugin project.
+Mathematical optimization for Dart & Flutter: **LP/MILP via HiGHS**,
+**LP/QP/SOCP via Clarabel**, bridged through Rust
+([flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge)).
+Solvers run on FRB's thread pool — never on the UI isolate.
 
-## Getting Started
+## Quick start
 
-This project is a starting point for a Flutter
-[FFI plugin](https://flutter.dev/to/ffi-package),
-a specialized package that includes native code directly invoked with Dart FFI.
+```dart
+import 'package:dart_mathopt/dart_mathopt.dart';
 
-## Project structure
+Future<void> main() async {
+  await RustLib.init(); // once, before the first solve()
 
-This template uses the following structure:
+  final model = MathOptModel(name: 'demo');
+  final x = model.continuous('x', lower: 0);
+  final y = model.continuous('y', lower: 0);
+  model.add((x + y) <= 4);          // constraint via operator overloads
+  model.maximize(x + y * 2);        // objective
 
-* `src`: Contains the native source code, and a CmakeFile.txt file for building
-  that source code into a dynamic library.
-
-* `lib`: Contains the Dart code that defines the API of the plugin, and which
-  calls into the native code using `dart:ffi`.
-
-* platform folders (`android`, `ios`, `windows`, etc.): Contains the build files
-  for building and bundling the native code library with the platform application.
-
-## Building and bundling native code
-
-The `pubspec.yaml` specifies FFI plugins as follows:
-
-```yaml
-  plugin:
-    platforms:
-      some_platform:
-        ffiPlugin: true
+  final result = await model.solve();
+  print(result.status);             // SolveStatus.optimal
+  print(result.objectiveValue);     // 8.0
+  print(result.valueOf(y));         // 4.0
+}
 ```
 
-This configuration invokes the native build for the various target platforms
-and bundles the binaries in Flutter applications using these FFI plugins.
+Binary/integer variables, engine selection, and time limits:
 
-This can be combined with dartPluginClass, such as when FFI is used for the
-implementation of one platform in a federated plugin:
-
-```yaml
-  plugin:
-    implements: some_other_plugin
-    platforms:
-      some_platform:
-        dartPluginClass: SomeClass
-        ffiPlugin: true
+```dart
+final b = model.binary('b');
+final result = await model.solve(
+  options: const SolveOptions(
+    solver: SolverPreference.clarabel, // auto (default) | highs | clarabel
+    timeLimitSec: 30,
+  ),
+);
 ```
 
-A plugin can have both FFI and method channels:
+## Project structure (strict, see `agents.md`)
 
-```yaml
-  plugin:
-    platforms:
-      some_platform:
-        pluginClass: SomeName
-        ffiPlugin: true
+```text
+lib/
+├── dart_mathopt.dart          # Barrel: public API only (+ RustLib.init)
+└── src/
+    ├── core/                  # types, exceptions, logger (no dependencies)
+    ├── modules/
+    │   ├── modeling/          # AST, Variable, Constraint, compiler, model
+    │   └── solving/           # options, results, registry, solver interface
+    └── rust/                  # FRB generated — DO NOT EDIT
+rust/src/
+├── api/solver_api.rs          # Sole FFI entry: execute_solve()
+├── engine/                    # SolverEngine trait, router, highs/, clarabel/
+├── models/                    # FRB DTOs (request/response)
+└── errors.rs                  # Typed errors (no panics on engine paths)
 ```
 
-The native build systems that are invoked by FFI (and method channel) plugins are:
+Key design rules:
 
-* For Android: Gradle, which invokes the Android NDK for native builds.
-  * See the documentation in android/build.gradle.
-* For iOS and MacOS: Xcode, via CocoaPods.
-  * See the documentation in ios/dart_mathopt.podspec.
-  * See the documentation in macos/dart_mathopt.podspec.
-* For Linux and Windows: CMake.
-  * See the documentation in linux/CMakeLists.txt.
-  * See the documentation in windows/CMakeLists.txt.
+- Expressions are an **immutable AST** (`ExpressionNode`), compiled to sparse
+  `(variableId → coefficient)` terms by `LinearExpressionCompiler`.
+  Non-linear multiplication throws `ModelValidationException`.
+- Variable IDs are **dense and zero-based** so native code uses array
+  indexing instead of hash maps.
+- Constraint constants are folded to the RHS before crossing the bridge.
+- Engine code uses `try_*` APIs only — `unwrap`/`expect`/`panic!` are banned
+  on solve paths (see `agents.md` §11).
 
-## Binding to native code
+## Development
 
-To use the native code, bindings in Dart are needed.
-To avoid writing these by hand, they are generated from the header file
-(`src/dart_mathopt.h`) by `package:ffigen`.
-Regenerate the bindings by running `dart run ffigen --config ffigen.yaml`.
+```bash
+flutter pub get
+flutter_rust_bridge_codegen generate   # after changing rust/src/api or DTOs
+dart run build_runner build --delete-conflicting-outputs  # freezed (FRB errors)
+dart analyze lib test
+flutter test                           # includes HiGHS/Clarabel end-to-end
+```
 
-## Invoking native code
-
-Very short-running native functions can be directly invoked from any isolate.
-For example, see `sum` in `lib/dart_mathopt.dart`.
-
-Longer-running functions should be invoked on a helper isolate to avoid
-dropping frames in Flutter applications.
-For example, see `sumAsync` in `lib/dart_mathopt.dart`.
-
-## Flutter help
-
-For help getting started with Flutter, view our
-[online documentation](https://docs.flutter.dev), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
+Native binaries for Android/iOS/macOS/Windows/Linux are built by
+`.github/workflows/build_rust_binaries.yml`.
