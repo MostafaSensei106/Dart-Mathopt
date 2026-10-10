@@ -77,5 +77,23 @@ dart analyze lib test
 flutter test                           # includes HiGHS/Clarabel end-to-end
 ```
 
+### Android builds (NDK)
+
+HiGHS compiles its C++ core via CMake, which must locate the NDK itself —
+export it before `flutter run` / `flutter build`:
+
+```bash
+export ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/<version>   # e.g. 28.2.13676358
+# (ANDROID_NDK_HOME / ANDROID_NDK are also accepted)
+```
+
+Without it, CMake fails with
+`Android: Neither the NDK or a standalone toolchain was found.`
+You also need the Rust targets once:
+
+```bash
+rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
+```
+
 Native binaries for Android/iOS/macOS/Windows/Linux are built by
 `.github/workflows/build_rust_binaries.yml`.

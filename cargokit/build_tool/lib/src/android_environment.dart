@@ -163,6 +163,14 @@ class AndroidEnvironment {
       '_CARGOKIT_NDK_LINK_TARGET': targetArg,
       '_CARGOKIT_NDK_LINK_CLANG': ccValue,
       'CARGOKIT_TOOL_TEMP_DIR': toolTempDir,
+      // Native C/C++ build scripts (e.g. highs-sys via the `cmake` crate)
+      // locate the NDK through these — NOT through CC/CXX. Without them,
+      // CMake fails with "Neither the NDK or a standalone toolchain was
+      // found" even though the toolchain itself is fully configured above.
+      // (dart_mathopt: required for HiGHS on Android.)
+      'ANDROID_NDK_ROOT': ndkPath,
+      'ANDROID_NDK_HOME': ndkPath,
+      'ANDROID_NDK': ndkPath,
     };
   }
 
