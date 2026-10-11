@@ -254,12 +254,16 @@ One model, three backends. `SolverPreference.auto` selects HiGHS when it is part
 |---|---|---|---|
 | 1 | Factory Production | How many units of A/B maximize profit? | LP • HiGHS |
 | 2 | Budget Diet | Cheapest meals hitting calorie + protein goals | LP • HiGHS |
-| 3 | Task Assignment | Match 5 workers to 5 shifts cheapest | Binary MILP • HiGHS |
-| 4 | Backpack Packing | Pick gadgets for max value within 3 kg | Binary MILP • HiGHS |
-| 5 | Investment Mix | Best \$10k portfolio under a risk cap | LP • Clarabel |
-| 6 | Delivery Network | Ship 3 factories → 4 warehouses cheapest (+ shadow prices) | LP • HiGHS |
-| 7 | Warehouse Opening | Which depots pay off, and who serves whom? | Fixed-charge MILP • HiGHS |
-| 8 | Staff Scheduling | Cover every shift with the fewest workers | Integer MILP • HiGHS |
+| 3 | Farm Planning | Best crop mix for 100 acres, pure Rust | LP • MicroLP |
+| 4 | Task Assignment | Match 5 workers to 5 shifts cheapest | Binary MILP • HiGHS |
+| 5 | Backpack Packing | Pick gadgets for max value within 3 kg | Binary MILP • HiGHS |
+| 6 | Investment Mix | Best \$10k portfolio under a risk cap | LP • Clarabel |
+| 7 | Juice Blending | Cheapest 100 L blend hitting flavor targets | LP • Clarabel |
+| 8 | Delivery Network | Ship 3 factories → 4 warehouses cheapest (+ shadow prices) | LP • HiGHS |
+| 9 | Project Funding | Fund at most one project per team, best return | Binary MILP • HiGHS |
+| 10 | Warehouse Opening | Which depots pay off, and who serves whom? | Fixed-charge MILP • HiGHS |
+| 11 | Lecture Timetabling | One slot per course, rooms fit two | Binary MILP • HiGHS |
+| 12 | Staff Scheduling | Cover every shift with the fewest workers | Integer MILP • HiGHS |
 
 ```bash
 dart run example/example.dart   # console tour (from root)

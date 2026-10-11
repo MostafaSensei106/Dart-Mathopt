@@ -14,12 +14,11 @@ library;
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:dart_mathopt_example/problems/catalog.dart';
 import 'package:dart_mathopt_example/problems/demo_problem.dart';
-
-import 'tool/native_init.dart';
+import 'package:flutter/material.dart';
 
 Future<void> main() async {
-  await initNativeLib();
-
+  WidgetsFlutterBinding.ensureInitialized();
+  await DartMathOpt.init();
   final problems = buildCatalog();
   print('dart_mathopt console tour: ${problems.length} everyday problems.\n');
 

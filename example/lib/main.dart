@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'screens/problem_list_screen.dart';
 
-/// Showcase app: 6 everyday optimization problems, each with its story,
+/// Showcase app: 12 everyday optimization problems, each with its story,
 /// difficulty, modeling notes, and a live native solve.
 ///
 /// See also the CLI tutorials in `bin/` (levels 1–4) for copy-paste code.
