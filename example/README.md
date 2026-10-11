@@ -2,17 +2,21 @@
 
 Three ways to learn, same solvers underneath.
 
-## A. Console tour — one main example (`example.dart`)
+## A. Console examples (`example.dart`)
 
-Runs all twelve showcase problems back to back: story, live native solve,
-result, timing. Start here for copy-paste code.
+Two runnable parts: **usage patterns** (minimal LP, indexed transport,
+logical helpers, one model on three engines, honest statuses, cache)
+and the **catalog tour** of all twelve showcase problems (story, live
+native solve, result, timing). Start here for copy-paste code.
 
 ```sh
 # one-time native build (from the package root)
 cargo build --release --manifest-path rust/Cargo.toml
 
-dart run example/example.dart   # from root
-dart run example.dart           # from example/
+dart run example/example.dart            # from root: everything
+dart run example/example.dart tour       # catalog tour only
+dart run example/example.dart patterns   # usage patterns only
+dart run example.dart                    # from example/
 ```
 
 ## B. Showcase app — 12 everyday problems (`lib/`)

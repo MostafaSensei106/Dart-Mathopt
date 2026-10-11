@@ -6,7 +6,6 @@ import 'screens/problem_list_screen.dart';
 /// Showcase app: 12 everyday optimization problems, each with its story,
 /// difficulty, modeling notes, and a live native solve.
 ///
-/// See also the CLI tutorials in `bin/` (levels 1–4) for copy-paste code.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DartMathOpt.init();
@@ -19,9 +18,9 @@ class MathOptShowcaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'dart_mathopt showcase',
+      title: 'Dart-Mathopt',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
         useMaterial3: true,
       ),
       home: const ProblemListScreen(),

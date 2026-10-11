@@ -164,6 +164,40 @@ print(r.objectiveValue); // 1900.0 (HiGHS solves the integers)
 print(r.dualValues);     // null: integer models have no duals
 ```
 
+### 4. One model, three engines
+
+```dart
+Future<double?> solveOn(SolverPreference engine) async {
+  final model = MathOptModel(name: 'Engines');
+  final a = model.continuous('A', lower: 0);
+  final b = model.continuous('B', lower: 0);
+  model.maximize(a * 30 + b * 50);
+  model.add((a * 2 + b * 1) <= 20);
+  model.add((a * 1 + b * 3) <= 15);
+  final r = await model.solve(options: SolveOptions(solver: engine));
+  return r.isOptimal ? r.objectiveValue : null;
+}
+
+print(await solveOn(SolverPreference.highs));    // 370.0
+print(await solveOn(SolverPreference.clarabel)); // ~370.0 (interior-point tolerance)
+print(await solveOn(SolverPreference.microlp));  // 370.0
+```
+
+### 5. Non-optimal results are statuses, not exceptions
+
+```dart
+final model = MathOptModel(name: 'Capped');
+final x = model.continuous('x', lower: 0);
+model.add(x <= 1);
+model.add(x >= 2); // contradictory: no feasible point
+model.minimize(x.asExpr);
+
+final r = await model.solve();
+print(r.status);       // SolveStatus.infeasible
+print(r.hasSolution);  // false: nothing usable came back
+print(r.objectiveValue); // null
+```
+
 ---
 
 ## 🔬 Advanced Usage
@@ -270,7 +304,7 @@ dart run example/example.dart   # console tour (from root)
 cd example && flutter run -d linux lib/main.dart  # app
 ```
 
-> A widget smoke test (`example/test/showcase_smoke_test.dart`) builds all eight problem screens without requiring the native bridge.
+> A widget smoke test (`example/test/showcase_smoke_test.dart`) builds all twelve problem screens without requiring the native bridge.
 
 ---
 
@@ -340,7 +374,7 @@ flutter_rust_bridge_codegen build-web --rust-root rust --cargo-build-args="--no-
 
 ```bash
 cargo build --release --manifest-path rust/Cargo.toml  # once (desktop)
-flutter test                 # 117 tests, all suites
+flutter test                 # 119 tests, all suites
 flutter test test/performance  # scaling, latency, responsiveness
 cargo test --manifest-path rust/Cargo.toml  # Rust units (also --no-default-features)
 cd example && flutter test test/showcase_smoke_test.dart
