@@ -24,7 +24,10 @@ import 'variable.dart';
 ///
 /// No complex math lives here — the compiler and the Rust engines own that.
 class MathOptModel {
+  /// Creates an empty model with a diagnostic [name].
   MathOptModel({this.name = 'MathOpt_Model'});
+
+  /// Model name used in diagnostics and native requests.
   final String name;
 
   /// Variables stored strictly in ID order for array-based native lookups.
@@ -88,11 +91,12 @@ class MathOptModel {
     VariableType type, {
     double? lower,
     double? upper,
-  }) => VarArray.internal(
-    name,
-    dimensions,
-    _indexedVars(name, dimensions, type, lower, upper),
-  );
+  }) =>
+      VarArray.internal(
+        name,
+        dimensions,
+        _indexedVars(name, dimensions, type, lower, upper),
+      );
 
   /// Creates a 2-D grid of continuous variables with `grid[i][j]`,
   /// `grid.row(i)`, and `grid.column(j)` views.
@@ -102,10 +106,15 @@ class MathOptModel {
     required int cols,
     double? lower,
     double? upper,
-  }) => VarGrid.internal(name, [
-    rows,
-    cols,
-  ], _indexedVars(name, [rows, cols], VariableType.continuous, lower, upper));
+  }) =>
+      VarGrid.internal(
+          name,
+          [
+            rows,
+            cols,
+          ],
+          _indexedVars(
+              name, [rows, cols], VariableType.continuous, lower, upper));
 
   /// Creates a 2-D grid of integer variables (see [continuousGrid]).
   VarGrid integerGrid(
@@ -114,10 +123,14 @@ class MathOptModel {
     required int cols,
     double? lower,
     double? upper,
-  }) => VarGrid.internal(name, [
-    rows,
-    cols,
-  ], _indexedVars(name, [rows, cols], VariableType.integer, lower, upper));
+  }) =>
+      VarGrid.internal(
+          name,
+          [
+            rows,
+            cols,
+          ],
+          _indexedVars(name, [rows, cols], VariableType.integer, lower, upper));
 
   /// Creates a 2-D grid of binary variables (see [continuousGrid]).
   VarGrid binaryGrid(
@@ -126,10 +139,14 @@ class MathOptModel {
     required int cols,
     double? lower,
     double? upper,
-  }) => VarGrid.internal(name, [
-    rows,
-    cols,
-  ], _indexedVars(name, [rows, cols], VariableType.binary, lower, upper));
+  }) =>
+      VarGrid.internal(
+          name,
+          [
+            rows,
+            cols,
+          ],
+          _indexedVars(name, [rows, cols], VariableType.binary, lower, upper));
 
   List<Variable> _indexedVars(
     String name,
@@ -147,10 +164,10 @@ class MathOptModel {
       );
     }
     Variable maker(String n) => switch (type) {
-      VariableType.continuous => continuous(n, lower: lower, upper: upper),
-      VariableType.integer => integer(n, lower: lower, upper: upper),
-      VariableType.binary => binary(n, lower: lower, upper: upper),
-    };
+          VariableType.continuous => continuous(n, lower: lower, upper: upper),
+          VariableType.integer => integer(n, lower: lower, upper: upper),
+          VariableType.binary => binary(n, lower: lower, upper: upper),
+        };
     final vars = <Variable>[];
     final indices = List.filled(dimensions.length, 0);
     void walk(int dim) {
@@ -311,13 +328,11 @@ class MathOptModel {
   /// traversal, and without yields that would freeze the UI isolate for
   /// ~20 frames. Each `await` costs microseconds against that budget.
   Future<
-    ({
-      List<dto.FrbVariableDto> variables,
-      List<dto.FrbConstraintDto> constraints,
-      dto.FrbObjectiveDto objective,
-    })
-  >
-  _compileOrReuse(ExpressionNode objectiveNode) async {
+      ({
+        List<dto.FrbVariableDto> variables,
+        List<dto.FrbConstraintDto> constraints,
+        dto.FrbObjectiveDto objective,
+      })> _compileOrReuse(ExpressionNode objectiveNode) async {
     final vars = _cachedVariables;
     final cons = _cachedConstraints;
     final obj = _cachedObjective;
@@ -337,13 +352,11 @@ class MathOptModel {
   }
 
   Future<
-    ({
-      List<dto.FrbVariableDto> variables,
-      List<dto.FrbConstraintDto> constraints,
-      dto.FrbObjectiveDto objective,
-    })
-  >
-  _compileFresh(ExpressionNode objectiveNode) async {
+      ({
+        List<dto.FrbVariableDto> variables,
+        List<dto.FrbConstraintDto> constraints,
+        dto.FrbObjectiveDto objective,
+      })> _compileFresh(ExpressionNode objectiveNode) async {
     final objCompiler = LinearExpressionCompiler()..compile(objectiveNode);
     _checkFiniteTerms(
       objCompiler.sortedTerms,
@@ -468,10 +481,10 @@ class MathOptModel {
   }
 
   static dto.FrbVariableType _mapVariableType(VariableType t) => switch (t) {
-    VariableType.continuous => dto.FrbVariableType.continuous,
-    VariableType.integer => dto.FrbVariableType.integer,
-    VariableType.binary => dto.FrbVariableType.binary,
-  };
+        VariableType.continuous => dto.FrbVariableType.continuous,
+        VariableType.integer => dto.FrbVariableType.integer,
+        VariableType.binary => dto.FrbVariableType.binary,
+      };
 
   static dto.FrbConstraintSense _mapConstraintSense(ConstraintSense s) =>
       switch (s) {

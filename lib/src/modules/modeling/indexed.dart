@@ -20,8 +20,8 @@ class VarArray extends Iterable<Variable> {
   /// [MathOptModel.indexed] and the grid factories.
   @internal
   VarArray.internal(this.name, List<int> dimensions, List<Variable> vars)
-    : dimensions = List.unmodifiable(dimensions),
-      _vars = List.unmodifiable(vars) {
+      : dimensions = List.unmodifiable(dimensions),
+        _vars = List.unmodifiable(vars) {
     if (dimensions.isEmpty) {
       throw ArgumentError('"$name": dimensions must not be empty.');
     }
@@ -40,7 +40,11 @@ class VarArray extends Iterable<Variable> {
       );
     }
   }
+
+  /// Stable collection name, used as the variable-name prefix.
   final String name;
+
+  /// Size per dimension.
   final List<int> dimensions;
   final List<Variable> _vars;
 
@@ -138,7 +142,7 @@ class VarGrid extends VarArray {
   /// Assembles a 2-D view. Internal: prefer the grid factories.
   @internal
   VarGrid.internal(String name, List<int> dimensions, List<Variable> vars)
-    : super.internal(name, dimensions, vars) {
+      : super.internal(name, dimensions, vars) {
     if (dimensions.length != 2) {
       throw ArgumentError(
         '"$name": a grid needs exactly 2 dimensions, got $dimensions.',
@@ -146,7 +150,10 @@ class VarGrid extends VarArray {
     }
   }
 
+  /// Row count.
   int get rows => dimensions[0];
+
+  /// Column count.
   int get cols => dimensions[1];
 
   /// Row `i` as an unmodifiable view.

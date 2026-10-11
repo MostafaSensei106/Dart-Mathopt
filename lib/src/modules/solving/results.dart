@@ -6,17 +6,29 @@ import '../modeling/variable.dart';
 
 /// High-level solve status surfaced to Dart callers.
 enum SolveStatus {
+  /// The engine proved optimality; values are usable.
   optimal,
+
+  /// No point satisfies all constraints; no usable primal exists.
   infeasible,
+
+  /// The objective improves without bound; no usable primal exists.
   unbounded,
+
+  /// The time limit hit first; an incumbent may exist (see `hasSolution`).
   timeLimitExceeded,
+
+  /// The engine failed numerically; values are unreliable.
   numericalError,
+
+  /// Termination state the bridge could not classify.
   unknown,
 }
 
 /// Timing/iteration statistics for a solve call.
 @immutable
 class SolveStatistics {
+  /// Creates statistics; every field is optional.
   const SolveStatistics({
     this.solveTimeMs = 0,
     this.solveTimeUs = 0,
@@ -30,6 +42,7 @@ class SolveStatistics {
   /// sub-millisecond solves that report `0` in [solveTimeMs].
   final int solveTimeUs;
 
+  /// Native solver iteration count (`0` when the engine hides it).
   final int iterations;
 
   @override
@@ -40,6 +53,7 @@ class SolveStatistics {
 /// The result of a successful `MathOptModel.solve()` call.
 @immutable
 class SolveResult {
+  /// Creates a solve result; see the field docs for per-status validity.
   const SolveResult({
     required this.status,
     required this.objectiveValue,
@@ -47,6 +61,8 @@ class SolveResult {
     required this.dualValues,
     required this.statistics,
   });
+
+  /// Termination status; consult it before trusting any other field.
   final SolveStatus status;
 
   /// Objective value reported by the engine (`null` if unavailable,
@@ -59,6 +75,7 @@ class SolveResult {
   /// Dual values per constraint (only for pure LP; `null` for MILP).
   final List<double>? dualValues;
 
+  /// Timing/iteration statistics for this solve.
   final SolveStatistics statistics;
 
   /// Solution value for [variable].
@@ -78,12 +95,12 @@ class SolveResult {
   /// (an incumbent); every other status means no usable solution, even
   /// if the engine returned numbers.
   bool get hasSolution => switch (status) {
-    SolveStatus.optimal => true,
-    SolveStatus.timeLimitExceeded => variableValues.values.every(
-      (v) => v.isFinite,
-    ),
-    _ => false,
-  };
+        SolveStatus.optimal => true,
+        SolveStatus.timeLimitExceeded => variableValues.values.every(
+            (v) => v.isFinite,
+          ),
+        _ => false,
+      };
 
   /// Returns the usable solution, or throws [SolverExecutionException]
   /// when none is available.
@@ -140,6 +157,7 @@ class SolveResult {
 /// the engine reported none (possible for some time-limit incumbents).
 @immutable
 class Solution {
+  /// Creates a usable-solution view; prefer [SolveResult.requireSolution].
   const Solution({
     required this.objectiveValue,
     required this.variableValues,
@@ -148,15 +166,29 @@ class Solution {
     required this.status,
     required this.isOptimal,
   });
+
+  /// Objective value, or `null` when the engine reported none.
   final double? objectiveValue;
+
+  /// Primal values by variable.
   final Map<Variable, double> variableValues;
+
+  /// Dual values, or `null` when unavailable (e.g. MILP).
   final List<double>? dualValues;
+
+  /// Timing/iteration statistics for the originating solve.
   final SolveStatistics statistics;
+
+  /// Termination status of the originating solve.
   final SolveStatus status;
+
+  /// Whether the engine proved optimality (else this is an incumbent).
   final bool isOptimal;
 
+  /// Value for [variable], or `double.nan` when absent.
   double valueOf(Variable variable) => variableValues[variable] ?? double.nan;
 
+  /// Value for [variable], or `null` when absent.
   double? tryValueOf(Variable variable) => variableValues[variable];
 
   @override

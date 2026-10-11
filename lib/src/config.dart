@@ -14,6 +14,7 @@ import 'modules/solving/options.dart';
 /// fields here — they are resolved Dart-side before crossing).
 @immutable
 class MathOptConfig {
+  /// Creates a global config; every field is optional.
   const MathOptConfig({
     this.defaultSolver = SolverPreference.auto,
     this.defaultTimeLimitSec,
@@ -25,9 +26,9 @@ class MathOptConfig {
 
   /// Big sparse LPs (factory/transport at scale): all cores, no logging.
   factory MathOptConfig.fastLp({int? threadCount}) => MathOptConfig(
-    defaultSolver: SolverPreference.highs,
-    defaultThreadCount: threadCount,
-  );
+        defaultSolver: SolverPreference.highs,
+        defaultThreadCount: threadCount,
+      );
 
   /// MILP shapes (assignment/knapsack/scheduling): generous time budget.
   factory MathOptConfig.accurateMilp({double timeLimitSec = 120}) =>
@@ -38,9 +39,9 @@ class MathOptConfig {
 
   /// Constrained devices / embedded: single thread, quiet.
   factory MathOptConfig.lowMemory() => const MathOptConfig(
-    defaultSolver: SolverPreference.highs,
-    defaultThreadCount: 1,
-  );
+        defaultSolver: SolverPreference.highs,
+        defaultThreadCount: 1,
+      );
 
   /// Debugging: native logs on, short limit so hangs surface fast.
   factory MathOptConfig.verbose({double timeLimitSec = 30}) =>
@@ -71,6 +72,7 @@ class MathOptConfig {
   /// General default: auto routing, engine-chosen threads.
   static const MathOptConfig balanced = MathOptConfig();
 
+  /// Derives a variant; function-wrapped nullables can clear a default.
   MathOptConfig copyWith({
     SolverPreference? defaultSolver,
     double? Function()? defaultTimeLimitSec,
@@ -97,9 +99,8 @@ class MathOptConfig {
   /// [call] wins, otherwise the global default applies.
   SolveOptions resolve(SolveOptions? call) {
     call ??= const SolveOptions();
-    final solver = call.solver == SolverPreference.auto
-        ? defaultSolver
-        : call.solver;
+    final solver =
+        call.solver == SolverPreference.auto ? defaultSolver : call.solver;
     return SolveOptions(
       timeLimitSec: call.timeLimitSec ?? defaultTimeLimitSec,
       enableLogging: call.enableLogging || enableLogging,

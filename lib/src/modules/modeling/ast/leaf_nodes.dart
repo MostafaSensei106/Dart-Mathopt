@@ -7,7 +7,10 @@ import 'visitor.dart';
 /// A leaf node referencing a decision variable.
 @immutable
 class VariableNode extends ExpressionNode {
+  /// Creates a variable leaf node.
   const VariableNode(this.variable);
+
+  /// The referenced decision variable.
   final Variable variable;
 
   @override
@@ -20,7 +23,10 @@ class VariableNode extends ExpressionNode {
 /// A leaf node holding a constant value.
 @immutable
 class ConstantNode extends ExpressionNode {
+  /// Creates a constant leaf node.
   const ConstantNode(this.value);
+
+  /// The constant value.
   final double value;
 
   @override

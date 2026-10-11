@@ -16,6 +16,7 @@ import 'visitor.dart';
 @immutable
 @sealed
 abstract class ExpressionNode extends Equatable {
+  /// Base constructor for immutable expression nodes.
   const ExpressionNode();
 
   /// Accepts a visitor to traverse the AST.
@@ -27,12 +28,16 @@ abstract class ExpressionNode extends Equatable {
   // `.asExpr`), or plain numbers. Scaling takes a trailing number
   // (`expr * 3`); anything else is a non-linear product and throws.
 
+  /// Sums two operands (expressions, variables, or numbers).
   ExpressionNode operator +(Object other) =>
       AddNode(this, coerceOperand(other));
 
+  /// Subtracts the operand (expressions, variables, or numbers).
   ExpressionNode operator -(Object other) =>
       AddNode(this, NegateNode(coerceOperand(other)));
 
+  /// Scales by a trailing number (`expr * 3`); anything else throws
+  /// [ModelValidationException] as a non-linear product.
   ExpressionNode operator *(Object other) {
     if (other is num) {
       return MultiplyNode(this, ConstantNode(other.toDouble()));
@@ -42,6 +47,7 @@ abstract class ExpressionNode extends Equatable {
     );
   }
 
+  /// Negates this expression.
   ExpressionNode operator -() => NegateNode(this);
 
   /// Adds a plain number to this expression.
@@ -54,9 +60,11 @@ abstract class ExpressionNode extends Equatable {
 
   // -- Constraint builders --
 
+  /// Builds a less-than-or-equal constraint against a plain number.
   Constraint operator <=(num rhs) =>
       Constraint(this, ConstraintSense.lessThanOrEqual, rhs.toDouble());
 
+  /// Builds a greater-than-or-equal constraint against a plain number.
   Constraint operator >=(num rhs) =>
       Constraint(this, ConstraintSense.greaterThanOrEqual, rhs.toDouble());
 
@@ -84,10 +92,10 @@ extension NumExpressionExtension on num {
 /// (as constants). Anything else throws [ModelValidationException].
 /// Used by the `+`/`-` overloads on [ExpressionNode] and `Variable`.
 ExpressionNode coerceOperand(Object other) => switch (other) {
-  final ExpressionNode e => e,
-  final Variable v => v.asExpr,
-  final num n => ConstantNode(n.toDouble()),
-  _ => throw ModelValidationException(
-    'Cannot use ${other.runtimeType} in an expression.',
-  ),
-};
+      final ExpressionNode e => e,
+      final Variable v => v.asExpr,
+      final num n => ConstantNode(n.toDouble()),
+      _ => throw ModelValidationException(
+          'Cannot use ${other.runtimeType} in an expression.',
+        ),
+    };

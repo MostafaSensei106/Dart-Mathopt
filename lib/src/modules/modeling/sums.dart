@@ -62,10 +62,12 @@ abstract final class Expr {
 
 /// `expressions.sum` — balanced fold, see [Expr.sum].
 extension ExpressionSumX on Iterable<ExpressionNode> {
+  /// Balanced sum of all elements (empty folds to constant `0`).
   ExpressionNode get sum => Expr.sum(this);
 }
 
 /// `variables.sum` — see [Expr.sumVars].
 extension VariableSumX on Iterable<Variable> {
+  /// Balanced sum of all variables.
   ExpressionNode get sum => Expr.sumVars(this);
 }

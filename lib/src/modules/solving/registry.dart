@@ -11,13 +11,20 @@ import 'solver_interface.dart';
 /// no changes to `MathOptModel` or the compiler are required.
 @immutable
 class SolverRegistration {
+  /// Registers routing metadata for the named backend.
   const SolverRegistration({
     required this.name,
     required this.capabilities,
     this.description = '',
   });
+
+  /// Routing key (`highs`, `clarabel`, `microlp`, ...).
   final String name;
+
+  /// Capability flags used for pre-FFI validation.
   final SolverCapabilities capabilities;
+
+  /// Human-readable backend description for diagnostics.
   final String description;
 }
 

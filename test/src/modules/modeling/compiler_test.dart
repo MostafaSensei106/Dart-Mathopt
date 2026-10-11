@@ -68,7 +68,7 @@ void main() {
       final y = model.continuous('y');
       expect(x.asExpr + y, x.asExpr + y);
       expect(x.asExpr + y, isNot(x.asExpr + x));
-      expect(ConstantNode(2.0), const ConstantNode(2.0));
+      expect(const ConstantNode(2.0), const ConstantNode(2.0));
       expect(-x.asExpr, -x.asExpr);
     });
   });
@@ -79,9 +79,8 @@ void main() {
       final x = model.continuous('x');
       final y = model.continuous('y');
       expect(
-        () =>
-            (LinearExpressionCompiler()
-              ..compile(MultiplyNode(x.asExpr, y.asExpr))),
+        () => (LinearExpressionCompiler()
+          ..compile(MultiplyNode(x.asExpr, y.asExpr))),
         throwsA(isA<ModelValidationException>()),
       );
     });

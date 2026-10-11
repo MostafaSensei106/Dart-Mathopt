@@ -10,10 +10,19 @@ import 'ast/node.dart';
 /// `Constraint(AddNode(...), ConstraintSense.lessThanOrEqual, 5.0)`.
 @immutable
 class Constraint extends Equatable {
+  /// Creates a constraint of the form `expression (sense) rhs`.
   const Constraint(this.expression, this.sense, this.rhs, {this.name});
+
+  /// Left-hand side expression.
   final ExpressionNode expression;
+
+  /// The relation operator.
   final ConstraintSense sense;
+
+  /// Right-hand side value (constants are folded here at compile time).
   final double rhs;
+
+  /// Optional human-readable label for diagnostics.
   final String? name;
 
   /// Returns a copy with an optional human-readable [name].
@@ -38,8 +47,13 @@ class Constraint extends Equatable {
 /// The optimization objective: an expression plus a sense.
 @immutable
 class Objective extends Equatable {
+  /// Creates an optimization objective.
   const Objective(this.expression, this.sense);
+
+  /// The objective expression.
   final ExpressionNode expression;
+
+  /// Minimize or maximize.
   final OptimizationSense sense;
 
   @override

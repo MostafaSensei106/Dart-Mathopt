@@ -18,7 +18,7 @@ void main() {
     });
 
     test('SolverTimeoutException reports its limit', () {
-      const e = SolverTimeoutException(Duration(seconds: 30));
+      final e = SolverTimeoutException(const Duration(seconds: 30));
       expect(e.timeLimit, const Duration(seconds: 30));
       expect(e.toString(), contains('0:00:30'));
     });

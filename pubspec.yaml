@@ -1,15 +1,21 @@
 name: dart_mathopt
 description: "Mathematical optimization for Dart & Flutter (LP/MILP/QP) powered by HiGHS and Clarabel via Rust FFI."
 version: 0.0.1
+
 repository: https://github.com/MostafaSensei106/Dart-Mathopt
+issue_tracker: https://github.com/MostafaSensei106/Dart-Mathopt/issues
+
+license: GPL-version 3.0
+
+funding:
+- https://github.com/sponsors/MostafaSensei106
+- https://buymeacoffee.com/7yz1lqkegy
+- https://ipn.eg/S/mostafasensei106/instapay/0dlUfz
 
 environment:
-  sdk: ^3.13.4
-  flutter: '>=3.3.0'
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   flutter_rust_bridge: ^2.13.0
   collection: ^1.19.1
   equatable: ^3.0.0
@@ -42,8 +48,3 @@ flutter:
         ffiPlugin: true
       windows:
         ffiPlugin: true
-  # NOTE: no `web:` plugin entry on purpose. Web works without a
-  # federated web plugin: build the WASM package and serve it from the
-  # *app's* `web/pkg/` directory (see README "Web builds"), because the
-  # FRB web loader fetches it from the `pkg/` server root. Flutter
-  # assets (`assets/packages/...`) would be served from the wrong path.

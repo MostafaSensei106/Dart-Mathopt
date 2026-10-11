@@ -13,13 +13,14 @@ void main() {
     required SolveStatus status,
     required Map<Variable, double> values,
     double? objective,
-  }) => SolveResult(
-    status: status,
-    objectiveValue: objective,
-    variableValues: values,
-    dualValues: null,
-    statistics: const SolveStatistics(),
-  );
+  }) =>
+      SolveResult(
+        status: status,
+        objectiveValue: objective,
+        variableValues: values,
+        dualValues: null,
+        statistics: const SolveStatistics(),
+      );
 
   group('hasSolution (unit)', () {
     test('optimal qualifies', () {
@@ -93,12 +94,12 @@ void main() {
       final model = MathOptModel(name: 'U');
       final x = model.continuous('x');
       SolveResult build() => SolveResult(
-        status: SolveStatus.optimal,
-        objectiveValue: 1.0,
-        variableValues: {x: 1.0},
-        dualValues: const [2.0],
-        statistics: const SolveStatistics(),
-      );
+            status: SolveStatus.optimal,
+            objectiveValue: 1.0,
+            variableValues: {x: 1.0},
+            dualValues: const [2.0],
+            statistics: const SolveStatistics(),
+          );
       expect(build(), build());
       expect(build().hashCode, build().hashCode);
       expect(build().toString(), contains('optimal'));

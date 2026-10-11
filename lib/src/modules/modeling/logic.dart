@@ -19,9 +19,11 @@ import 'variable.dart';
 Constraint exactlyOne(Iterable<Variable> vars, {String? name}) =>
     _choice(vars, ConstraintSense.equal, 1, 'exactlyOne', name);
 
+/// Builds a Σ vars ≤ 1 constraint (at most one binary variable is 1).
 Constraint atMostOne(Iterable<Variable> vars, {String? name}) =>
     _choice(vars, ConstraintSense.lessThanOrEqual, 1, 'atMostOne', name);
 
+/// Builds a Σ vars ≥ 1 constraint (at least one binary variable is 1).
 Constraint atLeastOne(Iterable<Variable> vars, {String? name}) =>
     _choice(vars, ConstraintSense.greaterThanOrEqual, 1, 'atLeastOne', name);
 

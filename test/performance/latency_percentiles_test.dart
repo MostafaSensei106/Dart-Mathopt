@@ -65,8 +65,7 @@ Future<void> expectLatencyDistribution({
   expect(
     wallP95,
     lessThan(p95Ceiling.inMilliseconds.toDouble()),
-    reason:
-        '$label wall p95 ${wallP95.toStringAsFixed(1)}ms '
+    reason: '$label wall p95 ${wallP95.toStringAsFixed(1)}ms '
         'exceeded $p95Ceiling',
   );
 }

@@ -20,6 +20,7 @@ enum SolverPreference {
 /// Immutable value object; use [copyWith] to derive variants.
 @immutable
 class SolveOptions {
+  /// Creates per-call solve options; every field is optional.
   const SolveOptions({
     this.timeLimitSec,
     this.enableLogging = false,
@@ -40,6 +41,7 @@ class SolveOptions {
   /// Which backend engine to use.
   final SolverPreference solver;
 
+  /// Derives a variant, keeping every field not explicitly overridden.
   SolveOptions copyWith({
     double? timeLimitSec,
     bool? enableLogging,
