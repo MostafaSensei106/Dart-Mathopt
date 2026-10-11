@@ -85,6 +85,7 @@ class _ProblemDetailScreenState extends State<ProblemDetailScreen> {
               const SizedBox(height: 12),
               Card(
                 color: Colors.green.shade50,
+                elevation: 0,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -144,6 +145,7 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -172,6 +174,7 @@ class _SectionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

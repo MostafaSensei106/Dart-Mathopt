@@ -12,10 +12,7 @@ class ProblemListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final problems = buildCatalog();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('dart_mathopt in real life'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Dart-Mathopt'), centerTitle: true),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: problems.length + 1,
@@ -47,7 +44,7 @@ class _ProblemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      elevation: 2,
+      elevation: 0,
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () => Navigator.of(context).push(
