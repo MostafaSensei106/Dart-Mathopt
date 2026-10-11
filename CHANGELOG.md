@@ -1,4 +1,4 @@
-## 0.0.1
+## 0.0.1-dev.1
 
 - Single entry point `DartMathOpt.init(config:)` with `MathOptConfig` presets.
 - Engine registries (Dart + Rust); MicroLP pure-Rust LP engine; `anyhow` context at the FFI boundary.

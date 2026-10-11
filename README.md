@@ -94,7 +94,7 @@ Or add it manually to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  dart_mathopt: ^0.0.1
+  dart_mathopt: ^0.0.1-dev.1
 ```
 
 Then fetch packages:
@@ -103,7 +103,7 @@ Then fetch packages:
 flutter pub get
 ```
 
-> **Note:** `0.0.1` is working toward its first pub.dev release. Until then, depend on the repository directly:
+> **Note:** `0.0.1-dev.1` is working toward its first pub.dev release. Until then, depend on the repository directly:
 > ```yaml
 > dependencies:
 >   dart_mathopt:
