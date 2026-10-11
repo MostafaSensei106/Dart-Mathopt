@@ -9,7 +9,7 @@ import 'screens/problem_list_screen.dart';
 /// See also the CLI tutorials in `bin/` (levels 1–4) for copy-paste code.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await RustLib.init();
+  await DartMathOpt.init();
   runApp(const MathOptShowcaseApp());
 }
 

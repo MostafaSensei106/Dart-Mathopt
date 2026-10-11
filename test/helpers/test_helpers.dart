@@ -12,7 +12,7 @@ bool _initialized = false;
 /// Loads the Rust engines. Must run before any `solve()`.
 Future<void> ensureNativeInit() async {
   if (_initialized) return;
-  await RustLib.init();
+  await DartMathOpt.init();
   _initialized = true;
 }
 

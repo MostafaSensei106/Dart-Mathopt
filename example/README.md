@@ -24,7 +24,7 @@ never blocks.
 
 ```sh
 cd example
-flutter run -d linux lib/main.dart   # or -d macos / windows / chrome
+flutter run -d linux lib/main.dart   # or -d macos / windows
 ```
 
 | # | Screen | Everyday story | Technique |
@@ -42,42 +42,20 @@ Both entry points share one interface (`DemoProblem` in `lib/problems/`:
 story + difficulty + notes + `createModel()` + `describeResult()`), so the
 app and the console tour can never drift apart.
 
-## C. Scaling benchmarks (`benchmark/`)
+## C. Scaling benchmarks (`test/performance/` in the package root)
 
-How fast are answers as models grow? The harness reports **user-perceived
-latency** (full Dart `await` round-trip) plus engine-only time and iterations:
+How fast are answers as models grow? The suite lives with the rest of the
+tests and reports **user-perceived latency** (full Dart `await`
+round-trip) plus engine-only time and iterations:
 
 ```sh
 cargo build --release --manifest-path rust/Cargo.toml
-dart run example/benchmark/scaling_benchmark.dart   # from root
-dart run benchmark/scaling_benchmark.dart           # from example/
+flutter test test/performance   # from root
 ```
 
-What the numbers tell you (measured on Ryzen AI 9 HX 370, Linux x64):
-- The engines are **fast**: 800-variable transport in 2 ms, 400-variable
-  factory LP in 9 ms, 100-item knapsack in 20 ms.
-- On big LPs, wall time ≫ engine time (factory 400v: 289 ms wall vs 9 ms
-  engine). The gap is Dart-side per-solve work: AST re-compilation + DTO
-  allocation + bridge crossing (~24k terms per solve here).
-- Optimization opportunity (not yet implemented): **cache the compiled
-  request** when the model hasn't changed between solves (parametric /
-  repeated solves), and let the compiler emit column-major arrays to cut
-  bridge serialization. MILP latency is structure-driven (assignment 64v ≈
-  25v), so no single scaling law applies there.
-
-<!--BENCH:START-->
-| case | vars/constraints | wall/op | engine | iters |
-|---|---|---|---|---|
-| transport 50v/15c | 50 / 15 | 1.0 ms | 0 ms | 22 |
-| transport 200v/30c | 200 / 30 | 3.0 ms | 0 ms | 41 |
-| transport 800v/60c | 800 / 60 | 20.2 ms | 2 ms | 89 |
-| factory 100v/20c | 100 / 20 | 13.3 ms | 2 ms | 24 |
-| factory 400v/60c | 400 / 60 | 288.7 ms | 9 ms | 75 |
-| knapsack 30v/1c | 30 / 1 | 4.1 ms | 3 ms | 0 |
-| knapsack 100v/1c | 100 / 1 | 21.7 ms | 20 ms | 101 |
-| assignment 25v/10c | 25 / 10 | 6.2 ms | 7 ms | 7 |
-| assignment 64v/16c | 64 / 16 | 5.8 ms | 4 ms | 10 |
-<!--BENCH:END-->
+The engines are fast on the seeded shapes there (transport/factory LP,
+knapsack/assignment MILP); each case logs the wall/engine split and
+enforces a generous wall-clock ceiling as a regression tripwire.
 
 ## Which example do I need?
 
@@ -92,7 +70,7 @@ What the numbers tell you (measured on Ryzen AI 9 HX 370, Linux x64):
 | Schedule shifts / tasks | Staff Scheduling |
 | Open warehouses / design networks | Warehouse Opening, Delivery Network |
 | Prove the UI won't freeze | Any app screen (tap Solve) |
-| Measure latency at scale | `benchmark/` |
+| Measure latency at scale | `flutter test test/performance` (from root) |
 
 ## Expected outputs (sanity checks)
 

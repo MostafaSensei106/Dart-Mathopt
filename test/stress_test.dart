@@ -25,8 +25,10 @@ void main() {
         nProducts,
         (_) => List.generate(nResources, (_) => rng.nextDouble() * 5),
       );
-      final demandCap =
-          List.generate(nProducts, (_) => 5 + rng.nextDouble() * 15);
+      final demandCap = List.generate(
+        nProducts,
+        (_) => 5 + rng.nextDouble() * 15,
+      );
       // Capacities at 60% of total appetite → binding but feasible.
       final capacity = List.generate(nResources, (j) {
         var total = 0.0;
@@ -59,8 +61,10 @@ void main() {
       sw.stop();
       expectOptimal(r, reason: 'factory LP should solve to optimality');
       // ignore: avoid_print
-      print('factory 400x60 solved in ${sw.elapsedMilliseconds} ms '
-          '(engine: ${r.statistics.solveTimeMs} ms)');
+      print(
+        'factory 400x60 solved in ${sw.elapsedMilliseconds} ms '
+        '(engine: ${r.statistics.solveTimeMs} ms)',
+      );
 
       // Full objective recomputation.
       var expected = 0.0;
@@ -78,8 +82,11 @@ void main() {
         for (var i = 0; i < nProducts; i++) {
           load += r.valueOf(qty[i]) * use[i][j];
         }
-        expect(load, lessThanOrEqualTo(capacity[j] * (1 + 1e-7) + 1e-6),
-            reason: 'resource $j over capacity: $load > ${capacity[j]}');
+        expect(
+          load,
+          lessThanOrEqualTo(capacity[j] * (1 + 1e-7) + 1e-6),
+          reason: 'resource $j over capacity: $load > ${capacity[j]}',
+        );
       }
     });
   });
@@ -90,8 +97,7 @@ void main() {
       const nW = 40;
       final rng = math.Random(7);
 
-      final supply =
-          List.generate(nF, (_) => 50 + rng.nextDouble() * 150);
+      final supply = List.generate(nF, (_) => 50 + rng.nextDouble() * 150);
       final demand = List.generate(nW, (_) => 20 + rng.nextDouble() * 80);
       // Balance totals by scaling demands to the supply sum (keeps every
       // demand positive and the model feasible by construction).
@@ -109,7 +115,10 @@ void main() {
       final model = MathOptModel(name: 'Delivery_Stress');
       final ship = [
         for (var i = 0; i < nF; i++)
-          [for (var j = 0; j < nW; j++) model.continuous('s_${i}_$j', lower: 0)],
+          [
+            for (var j = 0; j < nW; j++)
+              model.continuous('s_${i}_$j', lower: 0),
+          ],
       ];
       for (var i = 0; i < nF; i++) {
         ExpressionNode out = const ConstantNode(0);
@@ -138,8 +147,10 @@ void main() {
       sw.stop();
       expectOptimal(r, reason: 'balanced transport must be optimal');
       // ignore: avoid_print
-      print('delivery 15x40 solved in ${sw.elapsedMilliseconds} ms '
-          '(engine: ${r.statistics.solveTimeMs} ms)');
+      print(
+        'delivery 15x40 solved in ${sw.elapsedMilliseconds} ms '
+        '(engine: ${r.statistics.solveTimeMs} ms)',
+      );
 
       for (var i = 0; i < nF; i++) {
         var out = 0.0;
@@ -171,10 +182,8 @@ void main() {
     test('integral optimal packing within capacity', () async {
       const n = 80;
       final rng = math.Random(123);
-      final weights =
-          List.generate(n, (_) => 1 + rng.nextDouble() * 19);
-      final values =
-          List.generate(n, (_) => 10 + rng.nextDouble() * 490);
+      final weights = List.generate(n, (_) => 1 + rng.nextDouble() * 19);
+      final values = List.generate(n, (_) => 10 + rng.nextDouble() * 490);
       final totalW = weights.reduce((a, b) => a + b);
       final capacity = totalW * 0.3;
 
@@ -199,8 +208,11 @@ void main() {
       var w = 0.0, v = 0.0;
       for (var i = 0; i < n; i++) {
         final t = r.valueOf(take[i]);
-        expect(t, anyOf(closeTo(0.0, 1e-6), closeTo(1.0, 1e-6)),
-            reason: 'item $i not integral: $t');
+        expect(
+          t,
+          anyOf(closeTo(0.0, 1e-6), closeTo(1.0, 1e-6)),
+          reason: 'item $i not integral: $t',
+        );
         w += t * weights[i];
         v += t * values[i];
       }

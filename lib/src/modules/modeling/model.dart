@@ -1,10 +1,12 @@
 import '../../core/exceptions.dart';
 import '../../core/types.dart';
+import '../../math_opt.dart';
 import '../../rust/api/solver_api.dart' as bridge;
 import '../../rust/errors.dart' as bridge_err;
 import '../../rust/models/dto_request.dart' as dto;
 import '../../rust/models/dto_response.dart' as dto_resp;
 import '../solving/options.dart';
+import '../solving/registry.dart';
 import '../solving/results.dart';
 import 'ast/node.dart';
 import 'compiler.dart';
@@ -31,6 +33,22 @@ class MathOptModel {
   OptimizationSense _objectiveSense = OptimizationSense.minimize;
 
   int _nextVariableId = 0;
+
+  /// Structural version, bumped on every mutation. Backs the
+  /// compiled-request cache: repeated `solve()` calls without model
+  /// changes reuse the cached DTOs instead of recompiling the ASTs.
+  int _version = 0;
+
+  int _compiledVersion = -1;
+  List<dto.FrbVariableDto>? _cachedVariables;
+  List<dto.FrbConstraintDto>? _cachedConstraints;
+  dto.FrbObjectiveDto? _cachedObjective;
+
+  bool _lastSolveWasCached = false;
+
+  /// Whether the most recent `solve()` reused the cached compiled request
+  /// (`false` when it compiled fresh, or when no solve ran yet).
+  bool get lastSolveWasCached => _lastSolveWasCached;
 
   MathOptModel({this.name = 'MathOpt_Model'});
 
@@ -60,12 +78,103 @@ class MathOptModel {
     return _addVariable(name, VariableType.binary, lb, ub);
   }
 
-  Variable _addVariable(
+  /// Creates an N-dimensional indexed variable collection (row-major).
+  ///
+  /// Names are `'${name}_i_j_...'` in row-major order. Use [VarGrid]
+  /// conveniences (`continuousGrid` & co.) for the common 2-D case.
+  VarArray indexed(
     String name,
+    List<int> dimensions,
+    VariableType type, {
+    double? lower,
+    double? upper,
+  }) =>
+      VarArray._(
+          name, dimensions, _indexedVars(name, dimensions, type, lower, upper));
+
+  /// Creates a 2-D grid of continuous variables with `grid[i][j]`,
+  /// `grid.row(i)`, and `grid.column(j)` views.
+  VarGrid continuousGrid(
+    String name, {
+    required int rows,
+    required int cols,
+    double? lower,
+    double? upper,
+  }) =>
+      VarGrid._(
+          name,
+          [rows, cols],
+          _indexedVars(name, [rows, cols], VariableType.continuous, lower,
+              upper));
+
+  /// Creates a 2-D grid of integer variables (see [continuousGrid]).
+  VarGrid integerGrid(
+    String name, {
+    required int rows,
+    required int cols,
+    double? lower,
+    double? upper,
+  }) =>
+      VarGrid._(
+          name,
+          [rows, cols],
+          _indexedVars(
+              name, [rows, cols], VariableType.integer, lower, upper));
+
+  /// Creates a 2-D grid of binary variables (see [continuousGrid]).
+  VarGrid binaryGrid(
+    String name, {
+    required int rows,
+    required int cols,
+    double? lower,
+    double? upper,
+  }) =>
+      VarGrid._(
+          name,
+          [rows, cols],
+          _indexedVars(name, [rows, cols], VariableType.binary, lower,
+              upper));
+
+  List<Variable> _indexedVars(
+    String name,
+    List<int> dimensions,
     VariableType type,
     double? lower,
     double? upper,
   ) {
+    if (dimensions.isEmpty) {
+      throw ArgumentError('"$name": dimensions must not be empty.');
+    }
+    if (dimensions.any((d) => d <= 0)) {
+      throw ArgumentError(
+          '"$name": every dimension must be positive, got $dimensions.');
+    }
+    Variable maker(String n) => switch (type) {
+      VariableType.continuous => continuous(n, lower: lower, upper: upper),
+      VariableType.integer => integer(n, lower: lower, upper: upper),
+      VariableType.binary => binary(n, lower: lower, upper: upper),
+    };
+    final vars = <Variable>[];
+    final indices = List.filled(dimensions.length, 0);
+    void walk(int dim) {
+      if (dim == dimensions.length) {
+        vars.add(maker('${name}_${indices.join('_')}'));
+        return;
+      }
+      for (var i = 0; i < dimensions[dim]; i++) {
+        indices[dim] = i;
+        walk(dim + 1);
+      }
+    }
+
+    walk(0);
+    return vars;
+  }
+    if ((lower != null && lower.isNaN) || (upper != null && upper.isNaN)) {
+      throw ModelValidationException(
+        'Variable "$name" has a NaN bound.',
+      );
+    }
     if (lower != null && upper != null && lower > upper) {
       throw ModelValidationException(
         'Variable "$name" has lower bound $lower > upper bound $upper.',
@@ -79,6 +188,7 @@ class MathOptModel {
       upperBound: upper,
     );
     _variables.add(v);
+    _version++;
     return v;
   }
 
@@ -87,6 +197,14 @@ class MathOptModel {
   /// Adds a constraint (e.g. `model.add(x + y <= 5)`).
   void add(Constraint constraint) {
     _constraints.add(constraint);
+    _version++;
+  }
+
+  /// Adds every constraint in [constraints] (batch form of [add]).
+  void addAll(Iterable<Constraint> constraints) {
+    for (final c in constraints) {
+      add(c);
+    }
   }
 
   /// Alias for [add] (familiar to OptModel-style APIs).
@@ -96,12 +214,14 @@ class MathOptModel {
   void minimize(ExpressionNode expression) {
     _objectiveNode = expression;
     _objectiveSense = OptimizationSense.minimize;
+    _version++;
   }
 
   /// Sets a maximization objective.
   void maximize(ExpressionNode expression) {
     _objectiveNode = expression;
     _objectiveSense = OptimizationSense.maximize;
+    _version++;
   }
 
   // -- Solve --
@@ -119,57 +239,31 @@ class MathOptModel {
     if (objectiveNode == null) {
       throw const ModelValidationException('Objective function is missing.');
     }
-    final opts = options ?? const SolveOptions();
+    // Merge per-call options over the global DartMathOpt config, then
+    // validate engine capabilities Dart-side for a clear pre-FFI error.
+    final opts = DartMathOpt.config.resolve(options);
+    final hasInteger = SolverRegistry.hasIntegerVariables(
+      _variables.map((v) => v.type),
+    );
+    SolverRegistry.resolve(
+      hasInteger: hasInteger,
+      // Quadratic objectives are not representable in the linear AST yet;
+      // the flag is plumbed for future QP DTOs.
+      hasQuadratic: false,
+      preference: opts.solver,
+    );
 
+    _lastSolveWasCached = false;
     try {
-      // 1. Compile objective.
-      final objCompiler = LinearExpressionCompiler()..compile(objectiveNode);
+      // Structural DTOs are cached across unchanged solves; only the
+      // per-call options are rebuilt every time.
+      final compiled = await _compileOrReuse(objectiveNode);
 
-      // 2. Map variables to DTOs (fixed-length for native speed).
-      final frbVariables = _variables
-          .map(
-            (v) => dto.FrbVariableDto(
-              id: v.id,
-              name: v.name,
-              varType: _mapVariableType(v.type),
-              lowerBound: v.lowerBound,
-              upperBound: v.upperBound,
-            ),
-          )
-          .toList(growable: false);
-
-      // 3. Compile constraints to DTOs.
-      final frbConstraints = _constraints
-          .map((c) {
-            final cCompiler = LinearExpressionCompiler()..compile(c.expression);
-            // Move the constant to the RHS:  (terms + k) (sense) rhs
-            // -> terms (sense) (rhs - k).
-            final adjustedRhs = c.rhs - cCompiler.constant;
-            return dto.FrbConstraintDto(
-              name: c.name,
-              terms: [
-                for (final e in cCompiler.sortedTerms)
-                  dto.FrbTermDto(variableId: e.key, coefficient: e.value),
-              ],
-              sense: _mapConstraintSense(c.sense),
-              rhs: adjustedRhs,
-            );
-          })
-          .toList(growable: false);
-
-      // 4. Build the full request.
       final request = dto.FrbSolveRequest(
         name: name,
-        variables: frbVariables,
-        constraints: frbConstraints,
-        objective: dto.FrbObjectiveDto(
-          sense: _mapObjectiveSense(_objectiveSense),
-          terms: [
-            for (final e in objCompiler.sortedTerms)
-              dto.FrbTermDto(variableId: e.key, coefficient: e.value),
-          ],
-          constant: objCompiler.constant,
-        ),
+        variables: compiled.variables,
+        constraints: compiled.constraints,
+        objective: compiled.objective,
         options: dto.FrbSolveOptionsDto(
           timeLimitSec: opts.timeLimitSec,
           enableLogging: opts.enableLogging,
@@ -181,7 +275,6 @@ class MathOptModel {
       // 5. CROSS THE BRIDGE (async — never blocks the UI isolate).
       final response = await bridge.executeSolve(request: request);
 
-      // 6. Map the response back to domain objects.
       return _mapResponse(response);
     } on bridge_err.FrbSolverError catch (e) {
       throw switch (e) {
@@ -198,6 +291,103 @@ class MathOptModel {
         stackTrace,
       );
     }
+  }
+
+  // -- Compilation (with structural cache) --
+
+  /// Compiled structural DTOs (everything except per-call options).
+  ///
+  /// DTOs are immutable, so cache hits safely share list instances across
+  /// solves — the bridge only reads them.
+  /// The fresh-compile path is chunked with event-loop yields (one per
+  /// constraint): compiling a 400x60 LP is ~300 ms of synchronous AST
+  /// traversal, and without yields that would freeze the UI isolate for
+  /// ~20 frames. Each `await` costs microseconds against that budget.
+  Future<
+    ({
+      List<dto.FrbVariableDto> variables,
+      List<dto.FrbConstraintDto> constraints,
+      dto.FrbObjectiveDto objective,
+    })
+  >
+  _compileOrReuse(ExpressionNode objectiveNode) async {
+    final vars = _cachedVariables;
+    final cons = _cachedConstraints;
+    final obj = _cachedObjective;
+    if (_compiledVersion == _version &&
+        vars != null &&
+        cons != null &&
+        obj != null) {
+      _lastSolveWasCached = true;
+      return (variables: vars, constraints: cons, objective: obj);
+    }
+    final fresh = await _compileFresh(objectiveNode);
+    _cachedVariables = fresh.variables;
+    _cachedConstraints = fresh.constraints;
+    _cachedObjective = fresh.objective;
+    _compiledVersion = _version;
+    return fresh;
+  }
+
+  Future<
+    ({
+      List<dto.FrbVariableDto> variables,
+      List<dto.FrbConstraintDto> constraints,
+      dto.FrbObjectiveDto objective,
+    })
+  >
+  _compileFresh(ExpressionNode objectiveNode) async {
+    final objCompiler = LinearExpressionCompiler()..compile(objectiveNode);
+
+    final frbVariables = _variables
+        .map(
+          (v) => dto.FrbVariableDto(
+            id: v.id,
+            name: v.name,
+            varType: _mapVariableType(v.type),
+            lowerBound: v.lowerBound,
+            upperBound: v.upperBound,
+          ),
+        )
+        .toList(growable: false);
+
+    // Let timers/frames breathe before the (usually largest) phase.
+    await Future<void>.delayed(Duration.zero);
+
+    // Compile constraints to DTOs, yielding per constraint so a big
+    // model never blocks the event loop for more than one row's work.
+    final frbConstraints = <dto.FrbConstraintDto>[];
+    for (final c in _constraints) {
+      final cCompiler = LinearExpressionCompiler()..compile(c.expression);
+      // Move the constant to the RHS:  (terms + k) (sense) rhs
+      // -> terms (sense) (rhs - k).
+      final adjustedRhs = c.rhs - cCompiler.constant;
+      frbConstraints.add(
+        dto.FrbConstraintDto(
+          name: c.name,
+          terms: [
+            for (final e in cCompiler.sortedTerms)
+              dto.FrbTermDto(variableId: e.key, coefficient: e.value),
+          ],
+          sense: _mapConstraintSense(c.sense),
+          rhs: adjustedRhs,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+    }
+
+    return (
+      variables: frbVariables,
+      constraints: frbConstraints,
+      objective: dto.FrbObjectiveDto(
+        sense: _mapObjectiveSense(_objectiveSense),
+        terms: [
+          for (final e in objCompiler.sortedTerms)
+            dto.FrbTermDto(variableId: e.key, coefficient: e.value),
+        ],
+        constant: objCompiler.constant,
+      ),
+    );
   }
 
   // -- Private mappers --

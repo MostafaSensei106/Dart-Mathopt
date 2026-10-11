@@ -15,13 +15,9 @@ pub async fn execute_solve(request: FrbSolveRequest) -> Result<FrbSolveResponse,
     // 1. Route to the appropriate engine.
     let engine = route_request(&request)?;
 
-    // 2. Validate capabilities (defense in depth; adapters re-check).
-    let caps = engine.capabilities();
-    if request.has_integer() && !caps.supports_milp {
-        return Err(FrbSolverError::CapabilityError(
-            "Selected engine does not support MILP".to_string(),
-        ));
-    }
+    // 2. Validate capabilities (defense in depth; adapters re-check
+    // via the SolverEngine::validate default).
+    engine.validate(&request)?;
 
     // 3. Execute (borrows the request: zero-copy, no clone).
     let response = engine.solve(&request).await?;

@@ -1,60 +1,14 @@
-/// Solver scaling benchmarks: how fast does `dart_mathopt` answer as the
-/// model grows? Each case solves the same shape at several sizes and the
-/// harness reports user-perceived latency (Dart `await` round-trip).
+/// Shared deterministic model builders for performance tests.
 ///
-/// What to look at:
-/// - `engine ms` (from statistics) vs wall time → the gap is Dart/FFI
-///   overhead (AST compile + bridge crossing). If the gap dominates on big
-///   models, batching DTOs is the next optimization.
-/// - LP scales ~linearly; MILP can jump — watch knapsack/assignment rows.
-///
-/// Run (release native library required):
-///
-/// ```sh
-/// cargo build --release --manifest-path rust/Cargo.toml
-/// dart run example/benchmark/scaling_benchmark.dart   # from root
-/// dart run benchmark/scaling_benchmark.dart           # from example/
-/// ```
+/// Same shapes and seeds everywhere (scaling suite, latency percentiles,
+/// UI responsiveness), so numbers stay comparable across files.
 library;
 
 import 'dart:math' as math;
 
-import 'package:benchmark_harness/benchmark_harness.dart';
 import 'package:dart_mathopt/dart_mathopt.dart';
 
-import '../tool/native_init.dart';
-
-/// One benchmark case: builds the model in [setup], solves in [run].
-class _SolveBenchmark extends AsyncBenchmarkBase {
-  final String caseName;
-  final MathOptModel Function() build;
-  final int varCount;
-  final int constraintCount;
-  late MathOptModel _model;
-  SolveResult? lastResult;
-
-  _SolveBenchmark(
-    this.caseName,
-    this.build, {
-    required this.varCount,
-    required this.constraintCount,
-  }) : super('$caseName (${varCount}v/${constraintCount}c)');
-
-  @override
-  Future<void> setup() async {
-    _model = build();
-  }
-
-  @override
-  Future<void> run() async {
-    lastResult = await _model.solve();
-    if (lastResult!.status != SolveStatus.optimal) {
-      throw StateError('$caseName finished ${lastResult!.status}');
-    }
-  }
-}
-
-MathOptModel _transport(int factories, int warehouses, int seed) {
+MathOptModel buildTransport(int factories, int warehouses, int seed) {
   final rng = math.Random(seed);
   final supply = List.generate(factories, (_) => 50 + rng.nextDouble() * 150);
   final demand = List.generate(warehouses, (_) => 20 + rng.nextDouble() * 80);
@@ -70,7 +24,10 @@ MathOptModel _transport(int factories, int warehouses, int seed) {
   final model = MathOptModel(name: 'Bench_Transport');
   final ship = [
     for (var i = 0; i < factories; i++)
-      [for (var j = 0; j < warehouses; j++) model.continuous('s_${i}_$j', lower: 0)],
+      [
+        for (var j = 0; j < warehouses; j++)
+          model.continuous('s_${i}_$j', lower: 0),
+      ],
   ];
   for (var i = 0; i < factories; i++) {
     ExpressionNode out = const ConstantNode(0);
@@ -96,15 +53,14 @@ MathOptModel _transport(int factories, int warehouses, int seed) {
   return model;
 }
 
-MathOptModel _factory(int products, int resources, int seed) {
+MathOptModel buildFactory(int products, int resources, int seed) {
   final rng = math.Random(seed);
   final profit = List.generate(products, (_) => 1 + rng.nextDouble() * 99);
   final use = List.generate(
     products,
     (_) => List.generate(resources, (_) => rng.nextDouble() * 5),
   );
-  final cap =
-      List.generate(products, (_) => 5 + rng.nextDouble() * 15);
+  final cap = List.generate(products, (_) => 5 + rng.nextDouble() * 15);
   final capacity = List.generate(resources, (j) {
     var total = 0.0;
     for (var i = 0; i < products; i++) {
@@ -132,7 +88,7 @@ MathOptModel _factory(int products, int resources, int seed) {
   return model;
 }
 
-MathOptModel _knapsack(int items, int seed) {
+MathOptModel buildKnapsack(int items, int seed) {
   final rng = math.Random(seed);
   final weights = List.generate(items, (_) => 1 + rng.nextDouble() * 19);
   final values = List.generate(items, (_) => 10 + rng.nextDouble() * 490);
@@ -150,7 +106,7 @@ MathOptModel _knapsack(int items, int seed) {
   return model;
 }
 
-MathOptModel _assignment(int n, int seed) {
+MathOptModel buildAssignment(int n, int seed) {
   final rng = math.Random(seed);
   final cost = List.generate(
     n,
@@ -183,40 +139,4 @@ MathOptModel _assignment(int n, int seed) {
   }
   model.minimize(total);
   return model;
-}
-
-Future<void> main() async {
-  await initNativeLib();
-
-  final cases = [
-    _SolveBenchmark('transport', () => _transport(5, 10, 1),
-        varCount: 50, constraintCount: 15),
-    _SolveBenchmark('transport', () => _transport(10, 20, 1),
-        varCount: 200, constraintCount: 30),
-    _SolveBenchmark('transport', () => _transport(20, 40, 1),
-        varCount: 800, constraintCount: 60),
-    _SolveBenchmark('factory', () => _factory(100, 20, 2),
-        varCount: 100, constraintCount: 20),
-    _SolveBenchmark('factory', () => _factory(400, 60, 2),
-        varCount: 400, constraintCount: 60),
-    _SolveBenchmark('knapsack', () => _knapsack(30, 3),
-        varCount: 30, constraintCount: 1),
-    _SolveBenchmark('knapsack', () => _knapsack(100, 3),
-        varCount: 100, constraintCount: 1),
-    _SolveBenchmark('assignment', () => _assignment(5, 4),
-        varCount: 25, constraintCount: 10),
-    _SolveBenchmark('assignment', () => _assignment(8, 4),
-        varCount: 64, constraintCount: 16),
-  ];
-
-  for (final c in cases) {
-    await c.report();
-    final r = c.lastResult!;
-    // ignore: avoid_print
-    print('  → objective=${r.objectiveValue!.toStringAsFixed(2)} '
-        'engine=${r.statistics.solveTimeMs}ms '
-        'iters=${r.statistics.iterations}\n');
-  }
-
-  RustLib.dispose();
 }

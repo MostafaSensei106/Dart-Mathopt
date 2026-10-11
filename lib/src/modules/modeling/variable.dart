@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+import '../../core/exceptions.dart';
 import '../../core/types.dart';
 import 'ast/leaf_nodes.dart';
 import 'ast/node.dart';
@@ -35,11 +36,28 @@ class Variable extends Equatable {
   ExpressionNode get asExpr => VariableNode(this);
 
   // -- Arithmetic passthroughs so users can write `x + y` directly. --
+  //
+  // Operands accept a [Variable], an [ExpressionNode], or a plain number
+  // (`x + y`, `x - 2`). A leading number is impossible in Dart
+  // (`2 + x` would use `num.operator +`), so expressions must start
+  // from a variable or an expression: write `x * 3`, not `3 * x`.
 
-  ExpressionNode operator +(ExpressionNode other) => asExpr + other;
-  ExpressionNode operator -(ExpressionNode other) => asExpr - other;
-  ExpressionNode operator *(num value) => asExpr * value;
+  ExpressionNode operator +(Object other) => asExpr + _coerce(other);
+
+  ExpressionNode operator -(Object other) => asExpr - _coerce(other);
+
+  /// Scales by a number (`x * 3`). Anything else throws immediately:
+  /// products of variables are non-linear and unsupported.
+  ExpressionNode operator *(Object other) {
+    if (other is num) return asExpr * other;
+    throw const ModelValidationException(
+      'Non-linear multiplication is not supported yet.',
+    );
+  }
+
   ExpressionNode operator -() => -asExpr;
+
+  static ExpressionNode _coerce(Object other) => coerceOperand(other);
 
   ExpressionNode addNum(num value) => asExpr.addNum(value);
   ExpressionNode subNum(num value) => asExpr.subNum(value);

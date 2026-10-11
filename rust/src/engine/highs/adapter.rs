@@ -15,6 +15,14 @@ pub struct HighsEngine;
 
 #[async_trait]
 impl SolverEngine for HighsEngine {
+    fn name(&self) -> &'static str {
+        "highs"
+    }
+
+    fn description(&self) -> &'static str {
+        "HiGHS LP/MILP engine"
+    }
+
     fn capabilities(&self) -> EngineCapabilities {
         EngineCapabilities {
             supports_milp: true,
@@ -26,13 +34,11 @@ impl SolverEngine for HighsEngine {
     async fn solve(&self, request: &FrbSolveRequest) -> Result<FrbSolveResponse, FrbSolverError> {
         let started = Instant::now();
 
-        // ---- 1. Objective sense ----
         let highs_sense = match request.objective.sense {
             FrbOptimizationSense::Minimize => Sense::Minimise,
             FrbOptimizationSense::Maximize => Sense::Maximise,
         };
 
-        // ---- 2. Columns (variables) ----
         let mut problem = RowProblem::default();
         // Objective coefficients default to 0.0 when absent.
         let mut obj_coef = vec![0.0_f64; request.variables.len()];
@@ -76,7 +82,6 @@ impl SolverEngine for HighsEngine {
             col_indices.push(col);
         }
 
-        // ---- 3. Rows (constraints, sparse) ----
         for constraint in &request.constraints {
             let mut row_factors = Vec::with_capacity(constraint.terms.len());
             for term in &constraint.terms {
@@ -102,7 +107,6 @@ impl SolverEngine for HighsEngine {
             }
         }
 
-        // ---- 4. Build model (no panics: use try_ variants) ----
         let mut model = problem.try_optimise(highs_sense).map_err(|e| {
             FrbSolverError::EngineFailure(format!("HiGHS model build failed: {e:?}"))
         })?;
@@ -123,12 +127,10 @@ impl SolverEngine for HighsEngine {
             }
         }
 
-        // ---- 5. Solve (blocking; runs on FRB's thread pool) ----
         let solved = model
             .try_solve()
             .map_err(|e| FrbSolverError::EngineFailure(format!("HiGHS solve failed: {e:?}")))?;
 
-        // ---- 6. Status mapping ----
         let status = match solved.status() {
             HighsModelStatus::Optimal => FrbSolveStatus::Optimal,
             HighsModelStatus::Infeasible => FrbSolveStatus::Infeasible,
@@ -147,7 +149,6 @@ impl SolverEngine for HighsEngine {
             _ => FrbSolveStatus::Unknown,
         };
 
-        // ---- 7. Solution extraction (index-aligned by variable id) ----
         let solution = solved.get_solution();
         let variable_values = solution.columns().to_vec();
         let dual_values = if request.has_integer() {

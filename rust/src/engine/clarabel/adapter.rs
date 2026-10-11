@@ -17,6 +17,14 @@ pub type CscSystem = (CscMatrix<f64>, Vec<f64>, Vec<SupportedConeT<f64>>);
 
 #[async_trait]
 impl SolverEngine for ClarabelEngine {
+    fn name(&self) -> &'static str {
+        "clarabel"
+    }
+
+    fn description(&self) -> &'static str {
+        "Clarabel LP/QP/SOCP engine (no integer variables)"
+    }
+
     fn capabilities(&self) -> EngineCapabilities {
         EngineCapabilities {
             supports_milp: false,
@@ -26,12 +34,9 @@ impl SolverEngine for ClarabelEngine {
     }
 
     async fn solve(&self, request: &FrbSolveRequest) -> Result<FrbSolveResponse, FrbSolverError> {
-        if request.has_integer() {
-            return Err(FrbSolverError::CapabilityError(
-                "Clarabel does not support integer/binary variables; use HiGHS for MILP"
-                    .to_string(),
-            ));
-        }
+        // Capability gate lives on the trait default; keep the engine
+        // honest even when called without going through the router.
+        self.validate(request)?;
 
         let n = request.variables.len();
         if n == 0 {
@@ -48,7 +53,7 @@ impl SolverEngine for ClarabelEngine {
             }
         }
 
-        // ---- 1. Objective vector q (negated for maximization) ----
+        // Objective vector q (negated for maximization)
         let maximize = matches!(request.objective.sense, FrbOptimizationSense::Maximize);
         let mut q = vec![0.0_f64; n];
         for term in &request.objective.terms {
@@ -67,11 +72,9 @@ impl SolverEngine for ClarabelEngine {
             }
         }
 
-        // ---- 2. Build A/b/cones in Clarabel standard form ----
         // Clarabel: minimize q'x s.t. Ax + s = b, s in K.
         let (a, b, cones) = build_csc_system(request)?;
 
-        // ---- 3. Zero quadratic term (LP); QP wiring lands with P DTOs ----
         let p = CscMatrix::<f64>::zeros((n, n));
 
         let mut settings = DefaultSettings {
@@ -85,10 +88,8 @@ impl SolverEngine for ClarabelEngine {
         let mut solver = DefaultSolver::new(&p, &q, &a, &b, &cones, settings)
             .map_err(|e| FrbSolverError::EngineFailure(format!("Clarabel setup failed: {e}")))?;
 
-        // ---- 4. Solve (blocking; runs on FRB's thread pool) ----
         solver.solve();
 
-        // ---- 5. Status mapping ----
         let status = match solver.solution.status {
             SolverStatus::Solved | SolverStatus::AlmostSolved => FrbSolveStatus::Optimal,
             SolverStatus::PrimalInfeasible | SolverStatus::AlmostPrimalInfeasible => {
@@ -105,7 +106,6 @@ impl SolverEngine for ClarabelEngine {
             _ => FrbSolveStatus::Unknown,
         };
 
-        // ---- 6. Solution extraction ----
         let mut variable_values = solver.solution.x.clone();
         // Guard against short returns on failure paths.
         variable_values.resize(n, f64::NAN);

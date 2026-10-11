@@ -42,10 +42,10 @@ class AssignmentProblem extends DemoProblem {
 
   @override
   List<String> get modelingNotes => const [
-        'Variables: assign[w][t] = 1 if worker w takes task t (binary).',
-        'Objective: minimize Σ cost[w][t]·assign[w][t].',
-        'Constraints: each row == 1 (one shift each), each column == 1.',
-      ];
+    'Variables: assign[w][t] = 1 if worker w takes task t (binary).',
+    'Objective: minimize Σ cost[w][t]·assign[w][t].',
+    'Constraints: each row == 1 (one shift each), each column == 1.',
+  ];
 
   @override
   MathOptModel createModel() {
@@ -87,8 +87,10 @@ class AssignmentProblem extends DemoProblem {
     for (var w = 0; w < _workers.length; w++) {
       for (var t = 0; t < _tasks.length; t++) {
         if (result.valueOf(_assign[w][t]) > 0.5) {
-          lines.add('${_workers[w]} → ${_tasks[t]} '
-              '(\$${_cost[w][t].toStringAsFixed(0)})');
+          lines.add(
+            '${_workers[w]} → ${_tasks[t]} '
+            '(\$${_cost[w][t].toStringAsFixed(0)})',
+          );
         }
       }
     }

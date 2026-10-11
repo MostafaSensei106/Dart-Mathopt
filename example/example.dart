@@ -28,7 +28,7 @@ Future<void> main() async {
   }
 
   print('All ${problems.length} problems solved optimally.');
-  RustLib.dispose();
+  DartMathOpt.dispose();
 }
 
 Future<void> _runProblem(int number, DemoProblem problem) async {

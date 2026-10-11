@@ -80,11 +80,11 @@ pub enum FrbConstraintSense {
 pub struct FrbSolveOptionsDto {
     /// Wall-clock limit in seconds (`None` = no limit).
     pub time_limit_sec: Option<f64>,
-    /// Forward HiGHS stdout logging.
+    /// Forward native solver stdout logging.
     pub enable_logging: bool,
     /// Requested thread count (`None` = engine default).
     pub thread_count: Option<u32>,
-    /// Forced backend: "auto" | "highs" | "clarabel".
+    /// Forced backend: "auto" | "highs" | "clarabel" | "microlp".
     pub solver: String,
 }
 

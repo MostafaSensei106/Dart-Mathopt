@@ -27,8 +27,7 @@ void main() {
       expect(2 * r.valueOf(a) + r.valueOf(b), lessThanOrEqualTo(20.0 + 1e-6));
       expect(r.valueOf(a) + 3 * r.valueOf(b), lessThanOrEqualTo(15.0 + 1e-6));
       // Objective matches the reported value.
-      expectCloseTo(
-          30 * r.valueOf(a) + 50 * r.valueOf(b), r.objectiveValue!);
+      expectCloseTo(30 * r.valueOf(a) + 50 * r.valueOf(b), r.objectiveValue!);
     });
 
     test('LP exposes dual values (shadow prices)', () async {
@@ -40,8 +39,7 @@ void main() {
 
       final r = await model.solve();
       expectOptimal(r);
-      expect(r.dualValues, isNotNull,
-          reason: 'pure LP must return duals');
+      expect(r.dualValues, isNotNull, reason: 'pure LP must return duals');
       expect(r.dualValues, hasLength(1));
     });
   });

@@ -1,8 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+import '../../../core/exceptions.dart';
 import '../../../core/types.dart';
 import '../constraints.dart';
+import '../variable.dart';
 import 'arithmetic_nodes.dart';
 import 'leaf_nodes.dart';
 import 'visitor.dart';
@@ -20,14 +22,25 @@ abstract class ExpressionNode extends Equatable {
   R accept<R>(ExpressionVisitor<R> visitor);
 
   // -- Arithmetic builders (create new nodes, never mutate) --
+  //
+  // Like [Variable], operands accept expressions, variables (via
+  // `.asExpr`), or plain numbers. Scaling takes a trailing number
+  // (`expr * 3`); anything else is a non-linear product and throws.
 
-  ExpressionNode operator +(ExpressionNode other) => AddNode(this, other);
+  ExpressionNode operator +(Object other) =>
+      AddNode(this, coerceOperand(other));
 
-  ExpressionNode operator -(ExpressionNode other) =>
-      AddNode(this, NegateNode(other));
+  ExpressionNode operator -(Object other) =>
+      AddNode(this, NegateNode(coerceOperand(other)));
 
-  ExpressionNode operator *(num value) =>
-      MultiplyNode(this, ConstantNode(value.toDouble()));
+  ExpressionNode operator *(Object other) {
+    if (other is num) {
+      return MultiplyNode(this, ConstantNode(other.toDouble()));
+    }
+    throw const ModelValidationException(
+      'Non-linear multiplication is not supported yet.',
+    );
+  }
 
   ExpressionNode operator -() => NegateNode(this);
 
@@ -64,3 +77,17 @@ extension NumExpressionExtension on num {
   /// Wraps this number as a constant AST node.
   ConstantNode get expr => ConstantNode(toDouble());
 }
+
+/// Coerces a mixed arithmetic operand to an [ExpressionNode].
+///
+/// Accepts expressions, variables (via `.asExpr`), and plain numbers
+/// (as constants). Anything else throws [ModelValidationException].
+/// Used by the `+`/`-` overloads on [ExpressionNode] and `Variable`.
+ExpressionNode coerceOperand(Object other) => switch (other) {
+  ExpressionNode e => e,
+  Variable v => v.asExpr,
+  num n => ConstantNode(n.toDouble()),
+  _ => throw ModelValidationException(
+    'Cannot use ${other.runtimeType} in an expression.',
+  ),
+};

@@ -32,8 +32,11 @@ void main() {
       const expected = [1.0, 0.0, 1.0, 1.0];
       for (var i = 0; i < 4; i++) {
         final v = r.valueOf(packed[i]);
-        expect(v, anyOf(closeTo(0.0, 1e-6), closeTo(1.0, 1e-6)),
-            reason: 'binary variable p$i = $v is not integral');
+        expect(
+          v,
+          anyOf(closeTo(0.0, 1e-6), closeTo(1.0, 1e-6)),
+          reason: 'binary variable p$i = $v is not integral',
+        );
         expectCloseTo(v, expected[i]);
       }
 
@@ -43,8 +46,7 @@ void main() {
         w += r.valueOf(packed[i]) * weights[i];
       }
       expect(w, lessThanOrEqualTo(3.0 + 1e-6));
-      expect(r.dualValues, isNull,
-          reason: 'MILP must not return duals');
+      expect(r.dualValues, isNull, reason: 'MILP must not return duals');
     });
   });
 
@@ -76,8 +78,11 @@ void main() {
       // Integral headcounts…
       for (var i = 0; i < 7; i++) {
         final v = r.valueOf(starters[i]);
-        expect(v, closeTo(v.roundToDouble(), 1e-6),
-            reason: 'starter s$i = $v is not integral');
+        expect(
+          v,
+          closeTo(v.roundToDouble(), 1e-6),
+          reason: 'starter s$i = $v is not integral',
+        );
       }
       // …and independently verified daily coverage.
       for (var d = 0; d < 7; d++) {
@@ -85,8 +90,11 @@ void main() {
         for (var o = 0; o < 5; o++) {
           onDuty += r.valueOf(starters[(d - o + 7) % 7]);
         }
-        expect(onDuty, greaterThanOrEqualTo(demand[d] - 1e-6),
-            reason: 'day $d understaffed: $onDuty < ${demand[d]}');
+        expect(
+          onDuty,
+          greaterThanOrEqualTo(demand[d] - 1e-6),
+          reason: 'day $d understaffed: $onDuty < ${demand[d]}',
+        );
       }
     });
   });

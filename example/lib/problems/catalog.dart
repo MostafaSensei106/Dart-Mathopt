@@ -10,12 +10,12 @@ import 'transportation_problem.dart';
 
 /// The 8 showcase problems, ordered easy → hard.
 List<DemoProblem> buildCatalog() => [
-      ProductionProblem(),
-      DietProblem(),
-      AssignmentProblem(),
-      KnapsackProblem(),
-      PortfolioProblem(),
-      TransportationProblem(),
-      FacilityProblem(),
-      SchedulingProblem(),
-    ];
+  ProductionProblem(),
+  DietProblem(),
+  AssignmentProblem(),
+  KnapsackProblem(),
+  PortfolioProblem(),
+  TransportationProblem(),
+  FacilityProblem(),
+  SchedulingProblem(),
+];

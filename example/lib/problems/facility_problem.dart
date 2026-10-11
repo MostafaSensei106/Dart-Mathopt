@@ -44,10 +44,10 @@ class FacilityProblem extends DemoProblem {
 
   @override
   List<String> get modelingNotes => const [
-        'Variables: open[i] binary; serve[i][j] continuous ≥ 0.',
-        'Objective: minimize Σ fixed·open + Σ cost·serve.',
-        'Constraints: store totals == demand; depot totals ≤ capacity·open.',
-      ];
+    'Variables: open[i] binary; serve[i][j] continuous ≥ 0.',
+    'Objective: minimize Σ fixed·open + Σ cost·serve.',
+    'Constraints: store totals == demand; depot totals ≤ capacity·open.',
+  ];
 
   @override
   MathOptModel createModel() {

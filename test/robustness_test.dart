@@ -19,7 +19,10 @@ void main() {
     test('missing objective', () async {
       final model = MathOptModel(name: 'NoObj');
       model.continuous('x', lower: 0);
-      await expectLater(model.solve(), throwsA(isA<ModelValidationException>()));
+      await expectLater(
+        model.solve(),
+        throwsA(isA<ModelValidationException>()),
+      );
     });
 
     test('inverted bounds at creation', () {
@@ -108,16 +111,18 @@ void main() {
       expect(r.status, SolveStatus.unbounded);
     });
 
-    test('MILP forced onto Clarabel raises a capability error', () async {
+    test('MILP forced onto Clarabel is rejected before FFI', () async {
       final model = MathOptModel(name: 'WrongEngine');
       final b = model.binary('b');
       model.maximize(b.asExpr);
 
+      // Dart-side capability negotiation (SolverRegistry) rejects this
+      // with a clear validation error instead of a native failure.
       await expectLater(
         model.solve(
           options: const SolveOptions(solver: SolverPreference.clarabel),
         ),
-        throwsA(isA<SolverExecutionException>()),
+        throwsA(isA<ModelValidationException>()),
       );
     });
   });

@@ -10,6 +10,9 @@ enum SolverPreference {
 
   /// Force the Clarabel LP/QP/SOCP engine.
   clarabel,
+
+  /// Force the MicroLP pure-Rust LP engine (via good_lp, no C++).
+  microlp,
 }
 
 /// Options controlling a single `solve()` call.

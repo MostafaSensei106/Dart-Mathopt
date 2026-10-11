@@ -52,7 +52,14 @@ class SolveResult {
   });
 
   /// Solution value for [variable].
+  ///
+  /// Returns `double.nan` when the variable has no value (e.g. the solve
+  /// failed before producing primals). Prefer [tryValueOf] when a missing
+  /// value must be told apart from a real zero.
   double valueOf(Variable variable) => variableValues[variable] ?? double.nan;
+
+  /// Solution value for [variable], or `null` when absent.
+  double? tryValueOf(Variable variable) => variableValues[variable];
 
   /// `true` when the solver proved optimality.
   bool get isOptimal => status == SolveStatus.optimal;
