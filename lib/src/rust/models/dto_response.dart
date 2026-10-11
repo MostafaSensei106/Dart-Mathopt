@@ -4,23 +4,37 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
-
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// Response-side Data Transfer Objects (Rust -> Dart).
 ///
-/// `variable_values` is index-aligned with the request's variable IDs:
-/// `variable_values[id]` is the primal value of variable `id`. This
-/// array-based layout avoids HashMap overhead across the bridge.
+/// Mirrored to Dart by flutter_rust_bridge like the request side.
+/// Two layout rules matter to callers:
+/// - `variable_values` is index-aligned with the request's variable IDs:
+///   `variable_values[id]` is the primal value of variable `id`. This
+///   array layout avoids HashMap overhead across the bridge.
+/// - On failure statuses the engine may return NaNs or stale numbers;
+///   Dart decides usability from `status`, never from the values alone.
 class FrbSolveResponse {
+  /// Termination status. Only [`FrbSolveStatus::Optimal`] (and, with
+  /// care, [`FrbSolveStatus::TimeLimitExceeded`]) carries usable primals.
   final FrbSolveStatus status;
+
+  /// Objective value including the request's constant offset, or `None`
+  /// when the engine proved nothing (infeasible, unbounded, errors).
   final double? objectiveValue;
 
-  /// Primal values indexed by variable ID.
+  /// Primal values indexed by variable ID. Always full-length so the
+  /// Dart side can map them positionally; contents are meaningless
+  /// unless `status` says otherwise.
   final Float64List variableValues;
 
-  /// Dual values per constraint row (only for pure LP).
+  /// Dual values per constraint row, or `None` whenever duals don't
+  /// apply: integer models (duals are meaningless there) and engines
+  /// that don't expose them (Clarabel's conic duals, MicroLP).
   final Float64List? dualValues;
+
+  /// Engine-reported timing and iteration counts.
   final FrbSolveStatistics statistics;
 
   const FrbSolveResponse({
@@ -52,12 +66,16 @@ class FrbSolveResponse {
 }
 
 class FrbSolveStatistics {
-  /// Millisecond resolution (kept for backward compatibility).
+  /// Engine-reported solve time, millisecond resolution (kept for
+  /// backward compatibility).
   final PlatformInt64 solveTimeMs;
 
   /// Microsecond resolution: exact for sub-millisecond solves that
   /// would otherwise report `0 ms`. Additive field, never renamed.
   final PlatformInt64 solveTimeUs;
+
+  /// Native solver iteration count, or `0` when the engine hides it
+  /// (good_lp does not expose simplex counts).
   final PlatformInt64 iterations;
 
   const FrbSolveStatistics({
@@ -81,10 +99,29 @@ class FrbSolveStatistics {
 }
 
 enum FrbSolveStatus {
+  /// Proven optimal. Values, objective, and (where offered) duals
+  /// are usable.
   optimal,
+
+  /// No point satisfies the constraints. Objective is `None`;
+  /// primals must be ignored.
   infeasible,
+
+  /// The objective improves without bound. Objective is `None`;
+  /// primals must be ignored.
   unbounded,
+
+  /// The time limit hit first. Primals may hold a usable incumbent
+  /// (Dart accepts them only when every value is finite); the
+  /// objective may be set or `None` depending on the engine.
   timeLimitExceeded,
+
+  /// The engine failed numerically. Everything except `status` is
+  /// unreliable.
   numericalError,
+
+  /// Termination state the adapter could not classify. Treated as
+  /// unusable downstream.
   unknown,
+  ;
 }

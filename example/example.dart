@@ -3,6 +3,7 @@
 /// Two parts, runnable together or separately:
 // ignore_for_file: avoid_print
 library;
+
 ///
 /// - Usage patterns (`patterns`): short API recipes — minimal LP, indexed
 ///   grids, logical helpers, one model on three engines, honest statuses,
@@ -18,7 +19,6 @@ library;
 /// dart run example/example.dart patterns   # usage patterns only
 /// dart run example.dart                    # from example/
 /// ```
-library;
 
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:dart_mathopt_example/solve_time.dart';

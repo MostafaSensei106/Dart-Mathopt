@@ -4,17 +4,14 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'api/solver_api.dart';
-
 import 'dart:async';
 import 'dart:convert';
-
 import 'errors.dart';
 import 'frb_generated.dart';
 import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
 import 'models/dto_request.dart';
 import 'models/dto_response.dart';
-
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// Main entrypoint of the Rust API
@@ -41,8 +38,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
   /// Initialize flutter_rust_bridge in mock mode.
   /// No libraries for FFI are loaded.
-  static void initMock({required RustLibApi api}) {
-    instance.initMockImpl(api: api);
+  static void initMock({
+    required RustLibApi api,
+  }) {
+    instance.initMockImpl(
+      api: api,
+    );
   }
 
   /// Dispose flutter_rust_bridge
@@ -82,9 +83,8 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  Future<FrbSolveResponse> crateApiSolverApiExecuteSolve({
-    required FrbSolveRequest request,
-  });
+  Future<FrbSolveResponse> crateApiSolverApiExecuteSolve(
+      {required FrbSolveRequest request});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -96,34 +96,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  Future<FrbSolveResponse> crateApiSolverApiExecuteSolve({
-    required FrbSolveRequest request,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_box_autoadd_frb_solve_request(request, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 1,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_frb_solve_response,
-          decodeErrorData: sse_decode_frb_solver_error,
-        ),
-        constMeta: kCrateApiSolverApiExecuteSolveConstMeta,
-        argValues: [request],
-        apiImpl: this,
+  Future<FrbSolveResponse> crateApiSolverApiExecuteSolve(
+      {required FrbSolveRequest request}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_frb_solve_request(request, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 1, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_frb_solve_response,
+        decodeErrorData: sse_decode_frb_solver_error,
       ),
-    );
+      constMeta: kCrateApiSolverApiExecuteSolveConstMeta,
+      argValues: [request],
+      apiImpl: this,
+    ));
   }
 
   TaskConstMeta get kCrateApiSolverApiExecuteSolveConstMeta =>
-      const TaskConstMeta(debugName: "execute_solve", argNames: ["request"]);
+      const TaskConstMeta(
+        debugName: "execute_solve",
+        argNames: ["request"],
+      );
 
   @protected
   String dco_decode_String(dynamic raw) {
@@ -268,13 +264,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     switch (raw[0]) {
       case 0:
-        return FrbSolverError_CapabilityError(dco_decode_String(raw[1]));
+        return FrbSolverError_CapabilityError(
+          dco_decode_String(raw[1]),
+        );
       case 1:
-        return FrbSolverError_EngineFailure(dco_decode_String(raw[1]));
+        return FrbSolverError_EngineFailure(
+          dco_decode_String(raw[1]),
+        );
       case 2:
-        return FrbSolverError_InvalidInput(dco_decode_String(raw[1]));
+        return FrbSolverError_InvalidInput(
+          dco_decode_String(raw[1]),
+        );
       case 3:
-        return FrbSolverError_TimeLimitExceeded(dco_decode_f_64(raw[1]));
+        return FrbSolverError_TimeLimitExceeded(
+          dco_decode_f_64(raw[1]),
+        );
       default:
         throw Exception("unreachable");
     }
@@ -412,8 +416,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   FrbSolveRequest sse_decode_box_autoadd_frb_solve_request(
-    SseDeserializer deserializer,
-  ) {
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_frb_solve_request(deserializer));
   }
@@ -438,17 +441,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_sense = sse_decode_frb_constraint_sense(deserializer);
     var var_rhs = sse_decode_f_64(deserializer);
     return FrbConstraintDto(
-      name: var_name,
-      terms: var_terms,
-      sense: var_sense,
-      rhs: var_rhs,
-    );
+        name: var_name, terms: var_terms, sense: var_sense, rhs: var_rhs);
   }
 
   @protected
   FrbConstraintSense sse_decode_frb_constraint_sense(
-    SseDeserializer deserializer,
-  ) {
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_i_32(deserializer);
     return FrbConstraintSense.values[inner];
@@ -461,16 +459,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_terms = sse_decode_list_frb_term_dto(deserializer);
     var var_constant = sse_decode_f_64(deserializer);
     return FrbObjectiveDto(
-      sense: var_sense,
-      terms: var_terms,
-      constant: var_constant,
-    );
+        sense: var_sense, terms: var_terms, constant: var_constant);
   }
 
   @protected
   FrbOptimizationSense sse_decode_frb_optimization_sense(
-    SseDeserializer deserializer,
-  ) {
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_i_32(deserializer);
     return FrbOptimizationSense.values[inner];
@@ -478,19 +472,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   FrbSolveOptionsDto sse_decode_frb_solve_options_dto(
-    SseDeserializer deserializer,
-  ) {
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_timeLimitSec = sse_decode_opt_box_autoadd_f_64(deserializer);
     var var_enableLogging = sse_decode_bool(deserializer);
     var var_threadCount = sse_decode_opt_box_autoadd_u_32(deserializer);
     var var_solver = sse_decode_String(deserializer);
     return FrbSolveOptionsDto(
-      timeLimitSec: var_timeLimitSec,
-      enableLogging: var_enableLogging,
-      threadCount: var_threadCount,
-      solver: var_solver,
-    );
+        timeLimitSec: var_timeLimitSec,
+        enableLogging: var_enableLogging,
+        threadCount: var_threadCount,
+        solver: var_solver);
   }
 
   @protected
@@ -502,12 +494,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_objective = sse_decode_frb_objective_dto(deserializer);
     var var_options = sse_decode_frb_solve_options_dto(deserializer);
     return FrbSolveRequest(
-      name: var_name,
-      variables: var_variables,
-      constraints: var_constraints,
-      objective: var_objective,
-      options: var_options,
-    );
+        name: var_name,
+        variables: var_variables,
+        constraints: var_constraints,
+        objective: var_objective,
+        options: var_options);
   }
 
   @protected
@@ -519,27 +510,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_dualValues = sse_decode_opt_list_prim_f_64_strict(deserializer);
     var var_statistics = sse_decode_frb_solve_statistics(deserializer);
     return FrbSolveResponse(
-      status: var_status,
-      objectiveValue: var_objectiveValue,
-      variableValues: var_variableValues,
-      dualValues: var_dualValues,
-      statistics: var_statistics,
-    );
+        status: var_status,
+        objectiveValue: var_objectiveValue,
+        variableValues: var_variableValues,
+        dualValues: var_dualValues,
+        statistics: var_statistics);
   }
 
   @protected
   FrbSolveStatistics sse_decode_frb_solve_statistics(
-    SseDeserializer deserializer,
-  ) {
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_solveTimeMs = sse_decode_i_64(deserializer);
     var var_solveTimeUs = sse_decode_i_64(deserializer);
     var var_iterations = sse_decode_i_64(deserializer);
     return FrbSolveStatistics(
-      solveTimeMs: var_solveTimeMs,
-      solveTimeUs: var_solveTimeUs,
-      iterations: var_iterations,
-    );
+        solveTimeMs: var_solveTimeMs,
+        solveTimeUs: var_solveTimeUs,
+        iterations: var_iterations);
   }
 
   @protected
@@ -589,12 +577,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_lowerBound = sse_decode_opt_box_autoadd_f_64(deserializer);
     var var_upperBound = sse_decode_opt_box_autoadd_f_64(deserializer);
     return FrbVariableDto(
-      id: var_id,
-      name: var_name,
-      varType: var_varType,
-      lowerBound: var_lowerBound,
-      upperBound: var_upperBound,
-    );
+        id: var_id,
+        name: var_name,
+        varType: var_varType,
+        lowerBound: var_lowerBound,
+        upperBound: var_upperBound);
   }
 
   @protected
@@ -618,8 +605,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   List<FrbConstraintDto> sse_decode_list_frb_constraint_dto(
-    SseDeserializer deserializer,
-  ) {
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var len_ = sse_decode_i_32(deserializer);
@@ -644,8 +630,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   List<FrbVariableDto> sse_decode_list_frb_variable_dto(
-    SseDeserializer deserializer,
-  ) {
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var len_ = sse_decode_i_32(deserializer);
@@ -705,8 +690,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   Float64List? sse_decode_opt_list_prim_f_64_strict(
-    SseDeserializer deserializer,
-  ) {
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     if (sse_decode_bool(deserializer)) {
@@ -748,9 +732,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_box_autoadd_frb_solve_request(
-    FrbSolveRequest self,
-    SseSerializer serializer,
-  ) {
+      FrbSolveRequest self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_frb_solve_request(self, serializer);
   }
@@ -769,9 +751,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_frb_constraint_dto(
-    FrbConstraintDto self,
-    SseSerializer serializer,
-  ) {
+      FrbConstraintDto self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_opt_String(self.name, serializer);
     sse_encode_list_frb_term_dto(self.terms, serializer);
@@ -781,18 +761,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_frb_constraint_sense(
-    FrbConstraintSense self,
-    SseSerializer serializer,
-  ) {
+      FrbConstraintSense self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
   }
 
   @protected
   void sse_encode_frb_objective_dto(
-    FrbObjectiveDto self,
-    SseSerializer serializer,
-  ) {
+      FrbObjectiveDto self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_frb_optimization_sense(self.sense, serializer);
     sse_encode_list_frb_term_dto(self.terms, serializer);
@@ -801,18 +777,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_frb_optimization_sense(
-    FrbOptimizationSense self,
-    SseSerializer serializer,
-  ) {
+      FrbOptimizationSense self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
   }
 
   @protected
   void sse_encode_frb_solve_options_dto(
-    FrbSolveOptionsDto self,
-    SseSerializer serializer,
-  ) {
+      FrbSolveOptionsDto self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_opt_box_autoadd_f_64(self.timeLimitSec, serializer);
     sse_encode_bool(self.enableLogging, serializer);
@@ -822,9 +794,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_frb_solve_request(
-    FrbSolveRequest self,
-    SseSerializer serializer,
-  ) {
+      FrbSolveRequest self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.name, serializer);
     sse_encode_list_frb_variable_dto(self.variables, serializer);
@@ -835,9 +805,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_frb_solve_response(
-    FrbSolveResponse self,
-    SseSerializer serializer,
-  ) {
+      FrbSolveResponse self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_frb_solve_status(self.status, serializer);
     sse_encode_opt_box_autoadd_f_64(self.objectiveValue, serializer);
@@ -848,9 +816,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_frb_solve_statistics(
-    FrbSolveStatistics self,
-    SseSerializer serializer,
-  ) {
+      FrbSolveStatistics self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_64(self.solveTimeMs, serializer);
     sse_encode_i_64(self.solveTimeUs, serializer);
@@ -859,18 +825,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_frb_solve_status(
-    FrbSolveStatus self,
-    SseSerializer serializer,
-  ) {
+      FrbSolveStatus self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
   }
 
   @protected
   void sse_encode_frb_solver_error(
-    FrbSolverError self,
-    SseSerializer serializer,
-  ) {
+      FrbSolverError self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
       case FrbSolverError_CapabilityError(field0: final field0):
@@ -897,9 +859,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_frb_variable_dto(
-    FrbVariableDto self,
-    SseSerializer serializer,
-  ) {
+      FrbVariableDto self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self.id, serializer);
     sse_encode_String(self.name, serializer);
@@ -910,9 +870,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_frb_variable_type(
-    FrbVariableType self,
-    SseSerializer serializer,
-  ) {
+      FrbVariableType self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
   }
@@ -931,9 +889,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_frb_constraint_dto(
-    List<FrbConstraintDto> self,
-    SseSerializer serializer,
-  ) {
+      List<FrbConstraintDto> self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
@@ -943,9 +899,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_frb_term_dto(
-    List<FrbTermDto> self,
-    SseSerializer serializer,
-  ) {
+      List<FrbTermDto> self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
@@ -955,9 +909,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_frb_variable_dto(
-    List<FrbVariableDto> self,
-    SseSerializer serializer,
-  ) {
+      List<FrbVariableDto> self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
@@ -967,9 +919,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_prim_f_64_strict(
-    Float64List self,
-    SseSerializer serializer,
-  ) {
+      Float64List self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     serializer.buffer.putFloat64List(self);
@@ -977,9 +927,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_prim_u_8_strict(
-    Uint8List self,
-    SseSerializer serializer,
-  ) {
+      Uint8List self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     serializer.buffer.putUint8List(self);
@@ -1017,9 +965,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_opt_list_prim_f_64_strict(
-    Float64List? self,
-    SseSerializer serializer,
-  ) {
+      Float64List? self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     sse_encode_bool(self != null, serializer);

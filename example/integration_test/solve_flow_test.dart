@@ -1,7 +1,4 @@
 import 'package:dart_mathopt/dart_mathopt.dart';
-@Timeout(Duration(minutes: 5))
-library;
-
 import 'package:dart_mathopt_example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

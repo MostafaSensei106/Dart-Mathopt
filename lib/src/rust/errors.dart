@@ -4,7 +4,6 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import 'frb_generated.dart';
-
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'errors.freezed.dart';
@@ -13,20 +12,43 @@ part 'errors.freezed.dart';
 sealed class FrbSolverError with _$FrbSolverError implements FrbException {
   const FrbSolverError._();
 
-  /// The selected engine cannot handle this problem class
-  /// (e.g. MILP sent to a pure-LP build).
-  const factory FrbSolverError.capabilityError(String field0) =
-      FrbSolverError_CapabilityError;
+  /// The selected engine cannot handle this problem class.
+  ///
+  /// Produced before any native work starts, e.g. integer variables
+  /// routed to Clarabel or MicroLP. Dart surfaces these as
+  /// `ModelValidationException` (usage error), not engine failure.
+  /// Payload: what was requested vs. what the engine supports.
+  const factory FrbSolverError.capabilityError(
+    String field0,
+  ) = FrbSolverError_CapabilityError;
 
-  /// The native engine rejected or failed the solve.
-  const factory FrbSolverError.engineFailure(String field0) =
-      FrbSolverError_EngineFailure;
+  /// The native engine rejected the input or failed the solve.
+  ///
+  /// Covers build failures (bad options, unknown variable ids),
+  /// numerical breakdowns, and unexpected engine errors. Dart surfaces
+  /// these as `SolverExecutionException`. Payload: the engine's own
+  /// message with context about which step failed.
+  const factory FrbSolverError.engineFailure(
+    String field0,
+  ) = FrbSolverError_EngineFailure;
 
   /// Input failed validation before reaching the engine.
-  const factory FrbSolverError.invalidInput(String field0) =
-      FrbSolverError_InvalidInput;
+  ///
+  /// Covers unknown solver keys, non-dense variable ids, out-of-range
+  /// bounds, and builds compiled without the requested engine (e.g.
+  /// `"highs"` on a `--no-default-features` web build). Dart surfaces
+  /// these as `ModelValidationException`.
+  const factory FrbSolverError.invalidInput(
+    String field0,
+  ) = FrbSolverError_InvalidInput;
 
-  /// The solve exceeded the requested time limit.
-  const factory FrbSolverError.timeLimitExceeded(double field0) =
-      FrbSolverError_TimeLimitExceeded;
+  /// Reserved: the solve exceeded the requested time limit.
+  ///
+  /// Currently unconstructed — adapters report limits as a
+  /// time-limit *status* so incumbents survive. Kept so the error
+  /// shape stays forward-compatible; Dart maps it to
+  /// `SolverTimeoutException` if an engine ever returns it.
+  const factory FrbSolverError.timeLimitExceeded(
+    double field0,
+  ) = FrbSolverError_TimeLimitExceeded;
 }

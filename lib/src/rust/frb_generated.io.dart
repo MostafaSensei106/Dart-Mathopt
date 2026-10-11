@@ -4,16 +4,13 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'api/solver_api.dart';
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
-
 import 'errors.dart';
 import 'frb_generated.dart';
 import 'models/dto_request.dart';
 import 'models/dto_response.dart';
-
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
 
 abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
@@ -131,8 +128,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FrbSolveRequest sse_decode_box_autoadd_frb_solve_request(
-    SseDeserializer deserializer,
-  );
+      SseDeserializer deserializer);
 
   @protected
   int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
@@ -145,21 +141,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FrbConstraintSense sse_decode_frb_constraint_sense(
-    SseDeserializer deserializer,
-  );
+      SseDeserializer deserializer);
 
   @protected
   FrbObjectiveDto sse_decode_frb_objective_dto(SseDeserializer deserializer);
 
   @protected
   FrbOptimizationSense sse_decode_frb_optimization_sense(
-    SseDeserializer deserializer,
-  );
+      SseDeserializer deserializer);
 
   @protected
   FrbSolveOptionsDto sse_decode_frb_solve_options_dto(
-    SseDeserializer deserializer,
-  );
+      SseDeserializer deserializer);
 
   @protected
   FrbSolveRequest sse_decode_frb_solve_request(SseDeserializer deserializer);
@@ -169,8 +162,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FrbSolveStatistics sse_decode_frb_solve_statistics(
-    SseDeserializer deserializer,
-  );
+      SseDeserializer deserializer);
 
   @protected
   FrbSolveStatus sse_decode_frb_solve_status(SseDeserializer deserializer);
@@ -195,16 +187,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<FrbConstraintDto> sse_decode_list_frb_constraint_dto(
-    SseDeserializer deserializer,
-  );
+      SseDeserializer deserializer);
 
   @protected
   List<FrbTermDto> sse_decode_list_frb_term_dto(SseDeserializer deserializer);
 
   @protected
   List<FrbVariableDto> sse_decode_list_frb_variable_dto(
-    SseDeserializer deserializer,
-  );
+      SseDeserializer deserializer);
 
   @protected
   Float64List sse_decode_list_prim_f_64_strict(SseDeserializer deserializer);
@@ -223,8 +213,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Float64List? sse_decode_opt_list_prim_f_64_strict(
-    SseDeserializer deserializer,
-  );
+      SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_32(SseDeserializer deserializer);
@@ -243,9 +232,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_frb_solve_request(
-    FrbSolveRequest self,
-    SseSerializer serializer,
-  );
+      FrbSolveRequest self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
@@ -255,78 +242,54 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_frb_constraint_dto(
-    FrbConstraintDto self,
-    SseSerializer serializer,
-  );
+      FrbConstraintDto self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_constraint_sense(
-    FrbConstraintSense self,
-    SseSerializer serializer,
-  );
+      FrbConstraintSense self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_objective_dto(
-    FrbObjectiveDto self,
-    SseSerializer serializer,
-  );
+      FrbObjectiveDto self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_optimization_sense(
-    FrbOptimizationSense self,
-    SseSerializer serializer,
-  );
+      FrbOptimizationSense self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_solve_options_dto(
-    FrbSolveOptionsDto self,
-    SseSerializer serializer,
-  );
+      FrbSolveOptionsDto self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_solve_request(
-    FrbSolveRequest self,
-    SseSerializer serializer,
-  );
+      FrbSolveRequest self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_solve_response(
-    FrbSolveResponse self,
-    SseSerializer serializer,
-  );
+      FrbSolveResponse self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_solve_statistics(
-    FrbSolveStatistics self,
-    SseSerializer serializer,
-  );
+      FrbSolveStatistics self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_solve_status(
-    FrbSolveStatus self,
-    SseSerializer serializer,
-  );
+      FrbSolveStatus self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_solver_error(
-    FrbSolverError self,
-    SseSerializer serializer,
-  );
+      FrbSolverError self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_term_dto(FrbTermDto self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_variable_dto(
-    FrbVariableDto self,
-    SseSerializer serializer,
-  );
+      FrbVariableDto self, SseSerializer serializer);
 
   @protected
   void sse_encode_frb_variable_type(
-    FrbVariableType self,
-    SseSerializer serializer,
-  );
+      FrbVariableType self, SseSerializer serializer);
 
   @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
@@ -336,33 +299,23 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_frb_constraint_dto(
-    List<FrbConstraintDto> self,
-    SseSerializer serializer,
-  );
+      List<FrbConstraintDto> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_frb_term_dto(
-    List<FrbTermDto> self,
-    SseSerializer serializer,
-  );
+      List<FrbTermDto> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_frb_variable_dto(
-    List<FrbVariableDto> self,
-    SseSerializer serializer,
-  );
+      List<FrbVariableDto> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_prim_f_64_strict(
-    Float64List self,
-    SseSerializer serializer,
-  );
+      Float64List self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_prim_u_8_strict(
-    Uint8List self,
-    SseSerializer serializer,
-  );
+      Uint8List self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_String(String? self, SseSerializer serializer);
@@ -375,9 +328,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_opt_list_prim_f_64_strict(
-    Float64List? self,
-    SseSerializer serializer,
-  );
+      Float64List? self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_32(int self, SseSerializer serializer);

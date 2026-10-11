@@ -4,15 +4,22 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
-
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 class FrbConstraintDto {
+  /// Optional human-readable label, diagnostics only.
+  /// `None` for anonymous constraints built by helpers.
   final String? name;
 
-  /// Sparse representation: (variable_id, coefficient) pairs.
+  /// Sparse left-hand side: (variable_id, coefficient) pairs in
+  /// ascending id order. Every id must exist in the request.
   final List<FrbTermDto> terms;
+
+  /// The relation between the term sum and `rhs`.
   final FrbConstraintSense sense;
+
+  /// Right-hand side with the expression constant already folded in.
+  /// Must be finite (rejected Dart-side otherwise).
   final double rhs;
 
   const FrbConstraintDto({
@@ -37,11 +44,30 @@ class FrbConstraintDto {
           rhs == other.rhs;
 }
 
-enum FrbConstraintSense { lessThanOrEqual, greaterThanOrEqual, equal }
+enum FrbConstraintSense {
+  /// Left-hand side must be less than or equal to `rhs`.
+  lessThanOrEqual,
+
+  /// Left-hand side must be greater than or equal to `rhs`.
+  /// Backends without native support (e.g. good_lp's microlp
+  /// mapping) normalize this by negating terms and `rhs`.
+  greaterThanOrEqual,
+
+  /// Both sides must be equal.
+  equal,
+  ;
+}
 
 class FrbObjectiveDto {
+  /// Minimize or maximize the term sum plus [`Self::constant`].
   final FrbOptimizationSense sense;
+
+  /// Sparse linear terms, same layout as constraint terms.
   final List<FrbTermDto> terms;
+
+  /// Constant offset. Engines optimize the pure linear part and add
+  /// this back when reporting the objective value, so
+  /// `minimize(x + 5)` reports 5 more than the raw engine objective.
   final double constant;
 
   const FrbObjectiveDto({
@@ -63,19 +89,34 @@ class FrbObjectiveDto {
           constant == other.constant;
 }
 
-enum FrbOptimizationSense { minimize, maximize }
+enum FrbOptimizationSense {
+  /// Find the smallest objective value.
+  minimize,
+
+  /// Find the largest objective value. Adapters that only minimize
+  /// (e.g. Clarabel) negate the coefficients internally and flip
+  /// the reported value back.
+  maximize,
+  ;
+}
 
 class FrbSolveOptionsDto {
-  /// Wall-clock limit in seconds (`None` = no limit).
+  /// Wall-clock limit in seconds (`None` = no limit). Timeouts surface
+  /// as a time-limit status, never as an error.
   final double? timeLimitSec;
 
-  /// Forward native solver stdout logging.
+  /// Forward native solver logging (HiGHS `output_flag`, Clarabel
+  /// verbose). Off by default: solver stdout pollutes app logs.
   final bool enableLogging;
 
-  /// Requested thread count (`None` = engine default).
+  /// Requested thread count (`None` = engine default). Values of 0
+  /// are ignored by adapters that need non-zero counts.
   final int? threadCount;
 
-  /// Forced backend: "auto" | "highs" | "clarabel" | "microlp".
+  /// Routing key: `"auto" | "highs" | "clarabel" | "microlp"`.
+  /// `"auto"` prefers HiGHS for LP/MILP when compiled in, else the
+  /// pure-Rust MicroLP engine. Unknown keys fail fast with an
+  /// invalid-input error naming the available engines.
   final String solver;
 
   const FrbSolveOptionsDto({
@@ -105,13 +146,36 @@ class FrbSolveOptionsDto {
 
 /// Request-side Data Transfer Objects (Dart -> Rust).
 ///
-/// These structs are mirrored to Dart by flutter_rust_bridge. Field layout
-/// is part of the FFI contract: additive changes only, never renames.
+/// These structs are mirrored to Dart by flutter_rust_bridge: every doc
+/// comment here is transferred to the generated Dart models, so write
+/// for Dart developers, not just Rust readers.
+///
+/// Field layout is part of the FFI contract: additive changes only
+/// (new fields must be `Option`al or have wire-compatible defaults),
+/// never renames or reordering.
+///
+/// Three invariants hold for every request the Dart compiler produces:
+/// - Variable ids are dense and zero-based (`id == position`), so engines
+///   index arrays instead of hashing maps.
+/// - Constraint constants are already folded into `rhs`
+///   (`terms + k (sense) rhs` arrives as `terms (sense) (rhs - k)`).
+/// - `options` carries *effective* values: per-call options merged over
+///   the global config Dart-side, so engines never see "auto" leftovers
+///   beyond the `solver` routing key.
 class FrbSolveRequest {
+  /// Model name, diagnostics only. Never affects the solution.
   final String name;
+
+  /// Decision variables in id order. Must be non-empty and dense.
   final List<FrbVariableDto> variables;
+
+  /// Constraints in insertion order. May be empty (bound-only models).
   final List<FrbConstraintDto> constraints;
+
+  /// Objective sense, linear terms, and the constant offset.
   final FrbObjectiveDto objective;
+
+  /// Effective per-solve options (time limit, logging, threads, engine).
   final FrbSolveOptionsDto options;
 
   const FrbSolveRequest({
@@ -143,10 +207,18 @@ class FrbSolveRequest {
 }
 
 class FrbTermDto {
+  /// Referenced variable id (must be `< variables.len()`).
   final int variableId;
+
+  /// Linear coefficient. Duplicate ids for one variable are summed
+  /// by the Dart compiler before crossing, so engines may add blindly.
+  /// Must be finite.
   final double coefficient;
 
-  const FrbTermDto({required this.variableId, required this.coefficient});
+  const FrbTermDto({
+    required this.variableId,
+    required this.coefficient,
+  });
 
   @override
   int get hashCode => variableId.hashCode ^ coefficient.hashCode;
@@ -161,11 +233,21 @@ class FrbTermDto {
 }
 
 class FrbVariableDto {
-  /// Matches the Dart-side sequential ID (0-based, dense).
+  /// Dense zero-based id matching the variable's position in
+  /// [`FrbSolveRequest::variables`]. Engines reject gaps.
   final int id;
+
+  /// Stable human-readable name, diagnostics only.
   final String name;
+
+  /// Continuous, integer, or binary domain.
   final FrbVariableType varType;
+
+  /// Lower bound, or `None` when unbounded below. Must not be NaN
+  /// (rejected Dart-side); infinite values mean "no bound".
   final double? lowerBound;
+
+  /// Upper bound, or `None` when unbounded above. Same NaN rule.
   final double? upperBound;
 
   const FrbVariableDto({
@@ -196,4 +278,14 @@ class FrbVariableDto {
           upperBound == other.upperBound;
 }
 
-enum FrbVariableType { continuous, integer, binary }
+enum FrbVariableType {
+  /// Any real value within bounds.
+  continuous,
+
+  /// Whole numbers within bounds. Only MILP-capable engines accept it.
+  integer,
+
+  /// Either 0 or 1. The Dart layer normally also sets bounds `[0, 1]`.
+  binary,
+  ;
+}

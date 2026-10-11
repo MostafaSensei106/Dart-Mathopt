@@ -370,18 +370,6 @@ flutter_rust_bridge_codegen build-web --rust-root rust --cargo-build-args="--no-
 
 ---
 
-## 🧪 Testing
-
-```bash
-cargo build --release --manifest-path rust/Cargo.toml  # once (desktop)
-flutter test                 # 119 tests, all suites
-flutter test test/performance  # scaling, latency, responsiveness
-cargo test --manifest-path rust/Cargo.toml  # Rust units (also --no-default-features)
-cd example && flutter test test/showcase_smoke_test.dart
-```
-
----
-
 ## 🤝 Contributing
 
 Contributions are welcome! Here's how to get started:
