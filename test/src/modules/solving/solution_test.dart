@@ -88,6 +88,27 @@ void main() {
     });
   });
 
+  group('SolveResult value objects', () {
+    test('equality, hashCode, and toString', () {
+      final model = MathOptModel(name: 'U');
+      final x = model.continuous('x');
+      SolveResult build() => SolveResult(
+        status: SolveStatus.optimal,
+        objectiveValue: 1.0,
+        variableValues: {x: 1.0},
+        dualValues: const [2.0],
+        statistics: const SolveStatistics(),
+      );
+      expect(build(), build());
+      expect(build().hashCode, build().hashCode);
+      expect(build().toString(), contains('optimal'));
+      expect(
+        const SolveStatistics(solveTimeMs: 3, solveTimeUs: 3200),
+        isNot(const SolveStatistics()),
+      );
+    });
+  });
+
   group('engine-backed', () {
     test('optimal end to end', () async {
       final model = MathOptModel(name: 'E2E');

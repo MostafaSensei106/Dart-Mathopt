@@ -61,6 +61,18 @@ void main() {
     });
   });
 
+  group('node equality', () {
+    test('structurally equal trees compare equal', () {
+      final model = MathOptModel(name: 'Eq');
+      final x = model.continuous('x');
+      final y = model.continuous('y');
+      expect(x.asExpr + y, x.asExpr + y);
+      expect(x.asExpr + y, isNot(x.asExpr + x));
+      expect(ConstantNode(2.0), const ConstantNode(2.0));
+      expect(-x.asExpr, -x.asExpr);
+    });
+  });
+
   group('rejections', () {
     test('variable * variable throws ModelValidationException', () {
       final model = modelOf();

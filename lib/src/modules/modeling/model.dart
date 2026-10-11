@@ -234,6 +234,11 @@ class MathOptModel {
   /// objectives, [SolverTimeoutException] on time-limit errors, and
   /// [SolverExecutionException] for any other native failure.
   Future<SolveResult> solve({SolveOptions? options}) async {
+    if (!DartMathOpt.isInitialized) {
+      throw const ModelValidationException(
+        'Call await DartMathOpt.init() once before solve().',
+      );
+    }
     if (_variables.isEmpty) {
       throw const ModelValidationException('Cannot solve an empty model.');
     }

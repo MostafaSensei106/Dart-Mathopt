@@ -69,6 +69,24 @@ void main() {
     });
   });
 
+  group('variable conveniences', () {
+    test('addNum/subNum shift by plain numbers', () {
+      final model = MathOptModel(name: 'Ops');
+      final x = model.continuous('x');
+      expect(compile(x.addNum(2))[x.id], 1.0);
+      final c = LinearExpressionCompiler()..compile(x.subNum(3));
+      expect(c.terms, {x.id: 1.0});
+      expect(c.constant, -3.0);
+    });
+
+    test('eq builds equality; toString names the variable', () {
+      final model = MathOptModel(name: 'Ops');
+      final x = model.continuous('x');
+      expect(x.eq(1).sense, ConstraintSense.equal);
+      expect(x.toString(), contains('x'));
+    });
+  });
+
   group('clean-syntax solve', () {
     test('x + y <= 10 with x * 3 + y * 5 objective', () async {
       final model = MathOptModel(name: 'Clean');

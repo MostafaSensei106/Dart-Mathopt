@@ -1,3 +1,4 @@
+import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:dart_mathopt_example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,7 +16,11 @@ void main() {
 
   group('solve flow', () {
     testWidgets('budget diet solves to optimal in-app', (tester) async {
-      // Arrange: tall viewport builds every card without scrolling.
+      // Arrange: native engines first (pumpWidget does not run main(),
+      // so the app-level init must happen here), tall viewport builds
+      // every card without scrolling.
+      await DartMathOpt.init();
+      addTearDown(DartMathOpt.dispose);
       tester.view.physicalSize = const Size(800, 4000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
