@@ -2,6 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter/material.dart';
 
 import '../problems/demo_problem.dart';
+import '../solve_time.dart';
 
 /// Detail screen: story, difficulty, modeling notes, live native solve.
 class ProblemDetailScreen extends StatefulWidget {
@@ -30,15 +31,18 @@ class _ProblemDetailScreenState extends State<ProblemDetailScreen> {
       // Built fresh on every tap; runs on the Rust thread pool, so the
       // progress indicator below keeps animating at 60 fps.
       final model = widget.problem.createModel();
+      final sw = Stopwatch()..start();
       final result = await model.solve(
         options: widget.problem.preferredOptions,
       );
+      sw.stop();
       if (!mounted) return;
       setState(() {
         if (result.status == SolveStatus.optimal) {
           _output = widget.problem.describeResult(result);
           _stats =
-              'solved in ${result.statistics.solveTimeMs} ms • '
+              'solved in ${formatMicroseconds(sw.elapsedMicroseconds)} • '
+              'engine ${formatMicroseconds(result.statistics.solveTimeUs)} • '
               '${result.statistics.iterations} iterations • '
               'status: ${result.status.name}';
         } else {
