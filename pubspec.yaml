@@ -42,3 +42,8 @@ flutter:
         ffiPlugin: true
       windows:
         ffiPlugin: true
+  # NOTE: no `web:` plugin entry on purpose. Web works without a
+  # federated web plugin: build the WASM package and serve it from the
+  # *app's* `web/pkg/` directory (see README "Web builds"), because the
+  # FRB web loader fetches it from the `pkg/` server root. Flutter
+  # assets (`assets/packages/...`) would be served from the wrong path.

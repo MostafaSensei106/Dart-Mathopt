@@ -1,4 +1,5 @@
 pub mod clarabel;
+#[cfg(feature = "highs")]
 pub mod highs;
 pub mod microlp;
 pub mod registry;

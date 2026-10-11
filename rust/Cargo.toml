@@ -2,6 +2,7 @@
 name = "dart_mathopt"
 version = "0.1.0"
 edition = "2021"
+description = "Native mathematical optimization engines (HiGHS, Clarabel, MicroLP) behind a flutter_rust_bridge FFI boundary."
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
@@ -11,9 +12,14 @@ anyhow = "1.0.104"
 async-trait = "0.1.89"
 clarabel = "0.11.1"
 flutter_rust_bridge = "=2.13.0"
-good_lp = { version = "1.15.3", default-features = false, features = ["microlp"] }
-highs = "2.4.0"
+good_lp = { version = "1.15.3", default-features = false, features = [
+    "microlp",
+] }
+highs = { version = "2.4.0", optional = true }
 thiserror = "2.0.21"
+
+[features]
+default = ["highs"]
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }

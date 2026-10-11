@@ -1,4 +1,5 @@
 use crate::engine::clarabel::adapter::ClarabelEngine;
+#[cfg(feature = "highs")]
 use crate::engine::highs::adapter::HighsEngine;
 use crate::engine::microlp::adapter::MicroLpEngine;
 use crate::engine::traits::SolverEngine;
@@ -16,16 +17,32 @@ pub struct EngineEntry {
     pub engine: &'static dyn SolverEngine,
 }
 
+#[cfg(feature = "highs")]
 static HIGHS: HighsEngine = HighsEngine;
 static CLARABEL: ClarabelEngine = ClarabelEngine;
 static MICROLP: MicroLpEngine = MicroLpEngine;
 
 /// The built-in engine table (the only place that names concrete engines).
+/// Without the `highs` feature (web builds) only the pure-Rust engines
+/// remain; `route` falls back accordingly.
+#[cfg(feature = "highs")]
 static BUILTINS: [EngineEntry; 3] = [
     EngineEntry {
         key: "highs",
         engine: &HIGHS,
     },
+    EngineEntry {
+        key: "clarabel",
+        engine: &CLARABEL,
+    },
+    EngineEntry {
+        key: "microlp",
+        engine: &MICROLP,
+    },
+];
+
+#[cfg(not(feature = "highs"))]
+static BUILTINS: [EngineEntry; 2] = [
     EngineEntry {
         key: "clarabel",
         engine: &CLARABEL,
@@ -54,10 +71,12 @@ pub fn find(key: &str) -> Option<&'static dyn SolverEngine> {
 
 /// Routing decision table:
 /// - `"highs"`, `"clarabel"`, `"microlp"` force that engine (or a clear
-///   `InvalidInput` error for unknown keys).
-/// - `"auto"` (default): HiGHS for LP/MILP (mature integer support);
-///   Clarabel once quadratic DTOs mark a QP/SOCP shape. `has_quadratic`
-///   is plumbed for that future switch and currently always false.
+///   `InvalidInput` error for unknown keys — including `"highs"` on
+///   builds compiled without the `highs` feature, e.g. web).
+/// - `"auto"` (default): HiGHS for LP/MILP when compiled in, else the
+///   pure-Rust MicroLP for LP; Clarabel once quadratic DTOs mark a
+///   QP/SOCP shape. `has_quadratic` is plumbed for that future switch
+///   and currently always false.
 pub fn route(
     preference: &str,
     has_quadratic: bool,
@@ -78,11 +97,17 @@ pub fn route(
                     )
                 })
             } else {
-                find("highs").ok_or_else(|| {
-                    FrbSolverError::InvalidInput(
-                        "No LP/MILP engine registered.".to_string(),
-                    )
-                })
+                // Prefer HiGHS; on builds without it (web) fall back to
+                // the pure-Rust MicroLP engine for LP.
+                if let Some(engine) = find("highs") {
+                    Ok(engine)
+                } else {
+                    find("microlp").ok_or_else(|| {
+                        FrbSolverError::InvalidInput(
+                            "No LP engine registered in this build.".to_string(),
+                        )
+                    })
+                }
             }
         }
         other => Err(FrbSolverError::InvalidInput(format!(
@@ -120,15 +145,24 @@ mod tests {
     #[test]
     fn auto_routes_to_highs() {
         let engine = route("auto", false).unwrap();
+        // With default features this is HiGHS; web builds (no `highs`
+        // feature) fall back to the pure-Rust MicroLP engine.
+        #[cfg(feature = "highs")]
         assert_eq!(engine.name(), "highs");
+        #[cfg(not(feature = "highs"))]
+        assert_eq!(engine.name(), "microlp");
     }
 
     #[test]
     fn explicit_preferences_resolve() {
+        #[cfg(feature = "highs")]
         assert_eq!(route("highs", false).unwrap().name(), "highs");
+        #[cfg(not(feature = "highs"))]
+        assert!(route("highs", false).is_err());
         assert_eq!(route("clarabel", false).unwrap().name(), "clarabel");
         assert_eq!(route("microlp", false).unwrap().name(), "microlp");
         // Case-insensitive.
+        #[cfg(feature = "highs")]
         assert_eq!(route("HiGHS", false).unwrap().name(), "highs");
     }
 
@@ -142,8 +176,13 @@ mod tests {
 
     #[test]
     fn capability_table_is_honest() {
-        let highs = find("highs").unwrap();
-        assert!(highs.capabilities().supports_milp);
+        #[cfg(feature = "highs")]
+        {
+            let highs = find("highs").unwrap();
+            assert!(highs.capabilities().supports_milp);
+        }
+        #[cfg(not(feature = "highs"))]
+        assert!(find("highs").is_none());
         let clarabel = find("clarabel").unwrap();
         assert!(!clarabel.capabilities().supports_milp);
         assert!(clarabel.capabilities().supports_qp);
