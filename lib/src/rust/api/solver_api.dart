@@ -7,12 +7,10 @@ import '../errors.dart';
 import '../frb_generated.dart';
 import '../models/dto_request.dart';
 import '../models/dto_response.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-
-            
-
-            /// FFI entry point: the ONLY function Dart calls to solve a model.
+/// FFI entry point: the ONLY function Dart calls to solve a model.
 ///
 /// Runs off the main isolate (async on FRB's thread pool), so a large
 /// MILP never blocks the UI. Routes to HiGHS/Clarabel, validates
@@ -20,7 +18,5 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 ///
 /// NOTE: no `unwrap`/`expect`/`panic` on this path — every failure is a
 /// typed [FrbSolverError] (see agents.md 11.2).
-Future<FrbSolveResponse>  executeSolve({required FrbSolveRequest request }) => RustLib.instance.api.crateApiSolverApiExecuteSolve(request: request);
-
-            
-            
+Future<FrbSolveResponse> executeSolve({required FrbSolveRequest request}) =>
+    RustLib.instance.api.crateApiSolverApiExecuteSolve(request: request);

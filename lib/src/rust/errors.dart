@@ -4,30 +4,29 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import 'frb_generated.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'errors.freezed.dart';
 
-            
+@freezed
+sealed class FrbSolverError with _$FrbSolverError implements FrbException {
+  const FrbSolverError._();
 
-            
+  /// The selected engine cannot handle this problem class
+  /// (e.g. MILP sent to a pure-LP build).
+  const factory FrbSolverError.capabilityError(String field0) =
+      FrbSolverError_CapabilityError;
 
-            @freezed
-                sealed class FrbSolverError with _$FrbSolverError implements FrbException {
-                    const FrbSolverError._();
+  /// The native engine rejected or failed the solve.
+  const factory FrbSolverError.engineFailure(String field0) =
+      FrbSolverError_EngineFailure;
 
-                     /// The selected engine cannot handle this problem class
-/// (e.g. MILP sent to a pure-LP build).
-const factory FrbSolverError.capabilityError(  String field0,) = FrbSolverError_CapabilityError;
- /// The native engine rejected or failed the solve.
-const factory FrbSolverError.engineFailure(  String field0,) = FrbSolverError_EngineFailure;
- /// Input failed validation before reaching the engine.
-const factory FrbSolverError.invalidInput(  String field0,) = FrbSolverError_InvalidInput;
- /// The solve exceeded the requested time limit.
-const factory FrbSolverError.timeLimitExceeded(  double field0,) = FrbSolverError_TimeLimitExceeded;
+  /// Input failed validation before reaching the engine.
+  const factory FrbSolverError.invalidInput(String field0) =
+      FrbSolverError_InvalidInput;
 
-                    
-
-                    
-                }
-            
+  /// The solve exceeded the requested time limit.
+  const factory FrbSolverError.timeLimitExceeded(double field0) =
+      FrbSolverError_TimeLimitExceeded;
+}

@@ -4,198 +4,196 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+class FrbConstraintDto {
+  final String? name;
 
-            
+  /// Sparse representation: (variable_id, coefficient) pairs.
+  final List<FrbTermDto> terms;
+  final FrbConstraintSense sense;
+  final double rhs;
 
-            
+  const FrbConstraintDto({
+    this.name,
+    required this.terms,
+    required this.sense,
+    required this.rhs,
+  });
 
-            class FrbConstraintDto  {
-                final String? name;
-/// Sparse representation: (variable_id, coefficient) pairs.
-final List<FrbTermDto> terms;
-final FrbConstraintSense sense;
-final double rhs;
+  @override
+  int get hashCode =>
+      name.hashCode ^ terms.hashCode ^ sense.hashCode ^ rhs.hashCode;
 
-                const FrbConstraintDto({this.name ,required this.terms ,required this.sense ,required this.rhs ,});
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FrbConstraintDto &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          terms == other.terms &&
+          sense == other.sense &&
+          rhs == other.rhs;
+}
 
+enum FrbConstraintSense { lessThanOrEqual, greaterThanOrEqual, equal }
 
+class FrbObjectiveDto {
+  final FrbOptimizationSense sense;
+  final List<FrbTermDto> terms;
+  final double constant;
 
+  const FrbObjectiveDto({
+    required this.sense,
+    required this.terms,
+    required this.constant,
+  });
 
+  @override
+  int get hashCode => sense.hashCode ^ terms.hashCode ^ constant.hashCode;
 
-        @override
-        int get hashCode => name.hashCode^terms.hashCode^sense.hashCode^rhs.hashCode;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FrbObjectiveDto &&
+          runtimeType == other.runtimeType &&
+          sense == other.sense &&
+          terms == other.terms &&
+          constant == other.constant;
+}
 
+enum FrbOptimizationSense { minimize, maximize }
 
+class FrbSolveOptionsDto {
+  /// Wall-clock limit in seconds (`None` = no limit).
+  final double? timeLimitSec;
 
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is FrbConstraintDto &&
-                runtimeType == other.runtimeType
-                && name == other.name&& terms == other.terms&& sense == other.sense&& rhs == other.rhs;
+  /// Forward native solver stdout logging.
+  final bool enableLogging;
 
-            }
+  /// Requested thread count (`None` = engine default).
+  final int? threadCount;
 
-enum FrbConstraintSense {
-                    lessThanOrEqual,
-greaterThanOrEqual,
-equal,
-                    ;
-                    
-                }
+  /// Forced backend: "auto" | "highs" | "clarabel" | "microlp".
+  final String solver;
 
-class FrbObjectiveDto  {
-                final FrbOptimizationSense sense;
-final List<FrbTermDto> terms;
-final double constant;
+  const FrbSolveOptionsDto({
+    this.timeLimitSec,
+    required this.enableLogging,
+    this.threadCount,
+    required this.solver,
+  });
 
-                const FrbObjectiveDto({required this.sense ,required this.terms ,required this.constant ,});
+  @override
+  int get hashCode =>
+      timeLimitSec.hashCode ^
+      enableLogging.hashCode ^
+      threadCount.hashCode ^
+      solver.hashCode;
 
-
-
-
-
-        @override
-        int get hashCode => sense.hashCode^terms.hashCode^constant.hashCode;
-
-
-
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is FrbObjectiveDto &&
-                runtimeType == other.runtimeType
-                && sense == other.sense&& terms == other.terms&& constant == other.constant;
-
-            }
-
-enum FrbOptimizationSense {
-                    minimize,
-maximize,
-                    ;
-                    
-                }
-
-class FrbSolveOptionsDto  {
-                /// Wall-clock limit in seconds (`None` = no limit).
-final double? timeLimitSec;
-/// Forward native solver stdout logging.
-final bool enableLogging;
-/// Requested thread count (`None` = engine default).
-final int? threadCount;
-/// Forced backend: "auto" | "highs" | "clarabel" | "microlp".
-final String solver;
-
-                const FrbSolveOptionsDto({this.timeLimitSec ,required this.enableLogging ,this.threadCount ,required this.solver ,});
-
-
-
-
-
-        @override
-        int get hashCode => timeLimitSec.hashCode^enableLogging.hashCode^threadCount.hashCode^solver.hashCode;
-
-
-
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is FrbSolveOptionsDto &&
-                runtimeType == other.runtimeType
-                && timeLimitSec == other.timeLimitSec&& enableLogging == other.enableLogging&& threadCount == other.threadCount&& solver == other.solver;
-
-            }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FrbSolveOptionsDto &&
+          runtimeType == other.runtimeType &&
+          timeLimitSec == other.timeLimitSec &&
+          enableLogging == other.enableLogging &&
+          threadCount == other.threadCount &&
+          solver == other.solver;
+}
 
 /// Request-side Data Transfer Objects (Dart -> Rust).
 ///
 /// These structs are mirrored to Dart by flutter_rust_bridge. Field layout
 /// is part of the FFI contract: additive changes only, never renames.
-class FrbSolveRequest  {
-                final String name;
-final List<FrbVariableDto> variables;
-final List<FrbConstraintDto> constraints;
-final FrbObjectiveDto objective;
-final FrbSolveOptionsDto options;
+class FrbSolveRequest {
+  final String name;
+  final List<FrbVariableDto> variables;
+  final List<FrbConstraintDto> constraints;
+  final FrbObjectiveDto objective;
+  final FrbSolveOptionsDto options;
 
-                const FrbSolveRequest({required this.name ,required this.variables ,required this.constraints ,required this.objective ,required this.options ,});
+  const FrbSolveRequest({
+    required this.name,
+    required this.variables,
+    required this.constraints,
+    required this.objective,
+    required this.options,
+  });
 
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      variables.hashCode ^
+      constraints.hashCode ^
+      objective.hashCode ^
+      options.hashCode;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FrbSolveRequest &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          variables == other.variables &&
+          constraints == other.constraints &&
+          objective == other.objective &&
+          options == other.options;
+}
 
+class FrbTermDto {
+  final int variableId;
+  final double coefficient;
 
+  const FrbTermDto({required this.variableId, required this.coefficient});
 
-        @override
-        int get hashCode => name.hashCode^variables.hashCode^constraints.hashCode^objective.hashCode^options.hashCode;
+  @override
+  int get hashCode => variableId.hashCode ^ coefficient.hashCode;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FrbTermDto &&
+          runtimeType == other.runtimeType &&
+          variableId == other.variableId &&
+          coefficient == other.coefficient;
+}
 
+class FrbVariableDto {
+  /// Matches the Dart-side sequential ID (0-based, dense).
+  final int id;
+  final String name;
+  final FrbVariableType varType;
+  final double? lowerBound;
+  final double? upperBound;
 
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is FrbSolveRequest &&
-                runtimeType == other.runtimeType
-                && name == other.name&& variables == other.variables&& constraints == other.constraints&& objective == other.objective&& options == other.options;
+  const FrbVariableDto({
+    required this.id,
+    required this.name,
+    required this.varType,
+    this.lowerBound,
+    this.upperBound,
+  });
 
-            }
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      name.hashCode ^
+      varType.hashCode ^
+      lowerBound.hashCode ^
+      upperBound.hashCode;
 
-class FrbTermDto  {
-                final int variableId;
-final double coefficient;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FrbVariableDto &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          name == other.name &&
+          varType == other.varType &&
+          lowerBound == other.lowerBound &&
+          upperBound == other.upperBound;
+}
 
-                const FrbTermDto({required this.variableId ,required this.coefficient ,});
-
-
-
-
-
-        @override
-        int get hashCode => variableId.hashCode^coefficient.hashCode;
-
-
-
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is FrbTermDto &&
-                runtimeType == other.runtimeType
-                && variableId == other.variableId&& coefficient == other.coefficient;
-
-            }
-
-class FrbVariableDto  {
-                /// Matches the Dart-side sequential ID (0-based, dense).
-final int id;
-final String name;
-final FrbVariableType varType;
-final double? lowerBound;
-final double? upperBound;
-
-                const FrbVariableDto({required this.id ,required this.name ,required this.varType ,this.lowerBound ,this.upperBound ,});
-
-
-
-
-
-        @override
-        int get hashCode => id.hashCode^name.hashCode^varType.hashCode^lowerBound.hashCode^upperBound.hashCode;
-
-
-
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is FrbVariableDto &&
-                runtimeType == other.runtimeType
-                && id == other.id&& name == other.name&& varType == other.varType&& lowerBound == other.lowerBound&& upperBound == other.upperBound;
-
-            }
-
-enum FrbVariableType {
-                    continuous,
-integer,
-binary,
-                    ;
-                    
-                }
-            
+enum FrbVariableType { continuous, integer, binary }

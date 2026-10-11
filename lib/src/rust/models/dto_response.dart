@@ -4,83 +4,87 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-
-            
-
-            
-
-            /// Response-side Data Transfer Objects (Rust -> Dart).
+/// Response-side Data Transfer Objects (Rust -> Dart).
 ///
 /// `variable_values` is index-aligned with the request's variable IDs:
 /// `variable_values[id]` is the primal value of variable `id`. This
 /// array-based layout avoids HashMap overhead across the bridge.
-class FrbSolveResponse  {
-                final FrbSolveStatus status;
-final double? objectiveValue;
-/// Primal values indexed by variable ID.
-final Float64List variableValues;
-/// Dual values per constraint row (only for pure LP).
-final Float64List? dualValues;
-final FrbSolveStatistics statistics;
+class FrbSolveResponse {
+  final FrbSolveStatus status;
+  final double? objectiveValue;
 
-                const FrbSolveResponse({required this.status ,this.objectiveValue ,required this.variableValues ,this.dualValues ,required this.statistics ,});
+  /// Primal values indexed by variable ID.
+  final Float64List variableValues;
 
+  /// Dual values per constraint row (only for pure LP).
+  final Float64List? dualValues;
+  final FrbSolveStatistics statistics;
 
+  const FrbSolveResponse({
+    required this.status,
+    this.objectiveValue,
+    required this.variableValues,
+    this.dualValues,
+    required this.statistics,
+  });
 
+  @override
+  int get hashCode =>
+      status.hashCode ^
+      objectiveValue.hashCode ^
+      variableValues.hashCode ^
+      dualValues.hashCode ^
+      statistics.hashCode;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FrbSolveResponse &&
+          runtimeType == other.runtimeType &&
+          status == other.status &&
+          objectiveValue == other.objectiveValue &&
+          variableValues == other.variableValues &&
+          dualValues == other.dualValues &&
+          statistics == other.statistics;
+}
 
-        @override
-        int get hashCode => status.hashCode^objectiveValue.hashCode^variableValues.hashCode^dualValues.hashCode^statistics.hashCode;
+class FrbSolveStatistics {
+  /// Millisecond resolution (kept for backward compatibility).
+  final PlatformInt64 solveTimeMs;
 
+  /// Microsecond resolution: exact for sub-millisecond solves that
+  /// would otherwise report `0 ms`. Additive field, never renamed.
+  final PlatformInt64 solveTimeUs;
+  final PlatformInt64 iterations;
 
+  const FrbSolveStatistics({
+    required this.solveTimeMs,
+    required this.solveTimeUs,
+    required this.iterations,
+  });
 
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is FrbSolveResponse &&
-                runtimeType == other.runtimeType
-                && status == other.status&& objectiveValue == other.objectiveValue&& variableValues == other.variableValues&& dualValues == other.dualValues&& statistics == other.statistics;
+  @override
+  int get hashCode =>
+      solveTimeMs.hashCode ^ solveTimeUs.hashCode ^ iterations.hashCode;
 
-            }
-
-class FrbSolveStatistics  {
-                /// Millisecond resolution (kept for backward compatibility).
-final PlatformInt64 solveTimeMs;
-/// Microsecond resolution: exact for sub-millisecond solves that
-/// would otherwise report `0 ms`. Additive field, never renamed.
-final PlatformInt64 solveTimeUs;
-final PlatformInt64 iterations;
-
-                const FrbSolveStatistics({required this.solveTimeMs ,required this.solveTimeUs ,required this.iterations ,});
-
-
-
-
-
-        @override
-        int get hashCode => solveTimeMs.hashCode^solveTimeUs.hashCode^iterations.hashCode;
-
-
-
-        @override
-        bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is FrbSolveStatistics &&
-                runtimeType == other.runtimeType
-                && solveTimeMs == other.solveTimeMs&& solveTimeUs == other.solveTimeUs&& iterations == other.iterations;
-
-            }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FrbSolveStatistics &&
+          runtimeType == other.runtimeType &&
+          solveTimeMs == other.solveTimeMs &&
+          solveTimeUs == other.solveTimeUs &&
+          iterations == other.iterations;
+}
 
 enum FrbSolveStatus {
-                    optimal,
-infeasible,
-unbounded,
-timeLimitExceeded,
-numericalError,
-unknown,
-                    ;
-                    
-                }
-            
+  optimal,
+  infeasible,
+  unbounded,
+  timeLimitExceeded,
+  numericalError,
+  unknown,
+}
