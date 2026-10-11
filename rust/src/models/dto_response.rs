@@ -27,6 +27,27 @@ pub enum FrbSolveStatus {
 
 #[derive(Clone, Debug, Default)]
 pub struct FrbSolveStatistics {
+    /// Millisecond resolution (kept for backward compatibility).
     pub solve_time_ms: i64,
+    /// Microsecond resolution: exact for sub-millisecond solves that
+    /// would otherwise report `0 ms`. Additive field, never renamed.
+    pub solve_time_us: i64,
     pub iterations: i64,
+}
+
+impl FrbSolveStatistics {
+    /// Builds statistics from a start instant, saturating at `i64::MAX`.
+    pub fn since(started: std::time::Instant, iterations: i64) -> Self {
+        let micros = started.elapsed().as_micros().min(i64::MAX as u128) as i64;
+        Self::from_micros(micros, iterations)
+    }
+
+    /// Builds statistics from a measured microsecond count.
+    pub fn from_micros(micros: i64, iterations: i64) -> Self {
+        Self {
+            solve_time_ms: micros / 1000,
+            solve_time_us: micros,
+            iterations,
+        }
+    }
 }

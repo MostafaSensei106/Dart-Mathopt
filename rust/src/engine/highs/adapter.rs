@@ -172,10 +172,10 @@ impl SolverEngine for HighsEngine {
             objective_value,
             variable_values,
             dual_values,
-            statistics: FrbSolveStatistics {
-                solve_time_ms: started.elapsed().as_millis().min(i64::MAX as u128) as i64,
-                iterations: solved.simplex_iteration_count().max(0),
-            },
+            statistics: FrbSolveStatistics::since(
+                started,
+                solved.simplex_iteration_count().max(0),
+            ),
         })
     }
 }

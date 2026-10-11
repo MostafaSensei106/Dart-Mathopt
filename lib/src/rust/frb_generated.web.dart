@@ -3,400 +3,237 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
+
 // Static analysis wrongly picks the IO variant, thus ignore this
 // ignore_for_file: argument_type_not_assignable
 
 import 'api/solver_api.dart';
-
 import 'dart:async';
 import 'dart:convert';
-
 import 'errors.dart';
 import 'frb_generated.dart';
 import 'models/dto_request.dart';
 import 'models/dto_response.dart';
-
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_web.dart';
 
-abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
-  RustLibApiImplPlatform({
-    required super.handler,
-    required super.wire,
-    required super.generalizedFrbRustBinding,
-    required super.portManager,
-  });
 
-  @protected
-  String dco_decode_String(dynamic raw);
 
-  @protected
-  bool dco_decode_bool(dynamic raw);
 
-  @protected
-  double dco_decode_box_autoadd_f_64(dynamic raw);
+                abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
+                  RustLibApiImplPlatform({
+                    required super.handler,
+                    required super.wire,
+                    required super.generalizedFrbRustBinding,
+                    required super.portManager,
+                  });
 
-  @protected
-  FrbSolveRequest dco_decode_box_autoadd_frb_solve_request(dynamic raw);
+                  
 
-  @protected
-  int dco_decode_box_autoadd_u_32(dynamic raw);
+                  @protected String dco_decode_String(dynamic raw);
 
-  @protected
-  double dco_decode_f_64(dynamic raw);
+@protected bool dco_decode_bool(dynamic raw);
 
-  @protected
-  FrbConstraintDto dco_decode_frb_constraint_dto(dynamic raw);
+@protected double dco_decode_box_autoadd_f_64(dynamic raw);
 
-  @protected
-  FrbConstraintSense dco_decode_frb_constraint_sense(dynamic raw);
+@protected FrbSolveRequest dco_decode_box_autoadd_frb_solve_request(dynamic raw);
 
-  @protected
-  FrbObjectiveDto dco_decode_frb_objective_dto(dynamic raw);
+@protected int dco_decode_box_autoadd_u_32(dynamic raw);
 
-  @protected
-  FrbOptimizationSense dco_decode_frb_optimization_sense(dynamic raw);
+@protected double dco_decode_f_64(dynamic raw);
 
-  @protected
-  FrbSolveOptionsDto dco_decode_frb_solve_options_dto(dynamic raw);
+@protected FrbConstraintDto dco_decode_frb_constraint_dto(dynamic raw);
 
-  @protected
-  FrbSolveRequest dco_decode_frb_solve_request(dynamic raw);
+@protected FrbConstraintSense dco_decode_frb_constraint_sense(dynamic raw);
 
-  @protected
-  FrbSolveResponse dco_decode_frb_solve_response(dynamic raw);
+@protected FrbObjectiveDto dco_decode_frb_objective_dto(dynamic raw);
 
-  @protected
-  FrbSolveStatistics dco_decode_frb_solve_statistics(dynamic raw);
+@protected FrbOptimizationSense dco_decode_frb_optimization_sense(dynamic raw);
 
-  @protected
-  FrbSolveStatus dco_decode_frb_solve_status(dynamic raw);
+@protected FrbSolveOptionsDto dco_decode_frb_solve_options_dto(dynamic raw);
 
-  @protected
-  FrbSolverError dco_decode_frb_solver_error(dynamic raw);
+@protected FrbSolveRequest dco_decode_frb_solve_request(dynamic raw);
 
-  @protected
-  FrbTermDto dco_decode_frb_term_dto(dynamic raw);
+@protected FrbSolveResponse dco_decode_frb_solve_response(dynamic raw);
 
-  @protected
-  FrbVariableDto dco_decode_frb_variable_dto(dynamic raw);
+@protected FrbSolveStatistics dco_decode_frb_solve_statistics(dynamic raw);
 
-  @protected
-  FrbVariableType dco_decode_frb_variable_type(dynamic raw);
+@protected FrbSolveStatus dco_decode_frb_solve_status(dynamic raw);
 
-  @protected
-  int dco_decode_i_32(dynamic raw);
+@protected FrbSolverError dco_decode_frb_solver_error(dynamic raw);
 
-  @protected
-  PlatformInt64 dco_decode_i_64(dynamic raw);
+@protected FrbTermDto dco_decode_frb_term_dto(dynamic raw);
 
-  @protected
-  List<FrbConstraintDto> dco_decode_list_frb_constraint_dto(dynamic raw);
+@protected FrbVariableDto dco_decode_frb_variable_dto(dynamic raw);
 
-  @protected
-  List<FrbTermDto> dco_decode_list_frb_term_dto(dynamic raw);
+@protected FrbVariableType dco_decode_frb_variable_type(dynamic raw);
 
-  @protected
-  List<FrbVariableDto> dco_decode_list_frb_variable_dto(dynamic raw);
+@protected int dco_decode_i_32(dynamic raw);
 
-  @protected
-  Float64List dco_decode_list_prim_f_64_strict(dynamic raw);
+@protected PlatformInt64 dco_decode_i_64(dynamic raw);
 
-  @protected
-  Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
+@protected List<FrbConstraintDto> dco_decode_list_frb_constraint_dto(dynamic raw);
 
-  @protected
-  String? dco_decode_opt_String(dynamic raw);
+@protected List<FrbTermDto> dco_decode_list_frb_term_dto(dynamic raw);
 
-  @protected
-  double? dco_decode_opt_box_autoadd_f_64(dynamic raw);
+@protected List<FrbVariableDto> dco_decode_list_frb_variable_dto(dynamic raw);
 
-  @protected
-  int? dco_decode_opt_box_autoadd_u_32(dynamic raw);
+@protected Float64List dco_decode_list_prim_f_64_strict(dynamic raw);
 
-  @protected
-  Float64List? dco_decode_opt_list_prim_f_64_strict(dynamic raw);
+@protected Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
-  @protected
-  int dco_decode_u_32(dynamic raw);
+@protected String? dco_decode_opt_String(dynamic raw);
 
-  @protected
-  int dco_decode_u_8(dynamic raw);
+@protected double? dco_decode_opt_box_autoadd_f_64(dynamic raw);
 
-  @protected
-  String sse_decode_String(SseDeserializer deserializer);
+@protected int? dco_decode_opt_box_autoadd_u_32(dynamic raw);
 
-  @protected
-  bool sse_decode_bool(SseDeserializer deserializer);
+@protected Float64List? dco_decode_opt_list_prim_f_64_strict(dynamic raw);
 
-  @protected
-  double sse_decode_box_autoadd_f_64(SseDeserializer deserializer);
+@protected int dco_decode_u_32(dynamic raw);
 
-  @protected
-  FrbSolveRequest sse_decode_box_autoadd_frb_solve_request(
-    SseDeserializer deserializer,
-  );
+@protected int dco_decode_u_8(dynamic raw);
 
-  @protected
-  int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
+@protected String sse_decode_String(SseDeserializer deserializer);
 
-  @protected
-  double sse_decode_f_64(SseDeserializer deserializer);
+@protected bool sse_decode_bool(SseDeserializer deserializer);
 
-  @protected
-  FrbConstraintDto sse_decode_frb_constraint_dto(SseDeserializer deserializer);
+@protected double sse_decode_box_autoadd_f_64(SseDeserializer deserializer);
 
-  @protected
-  FrbConstraintSense sse_decode_frb_constraint_sense(
-    SseDeserializer deserializer,
-  );
+@protected FrbSolveRequest sse_decode_box_autoadd_frb_solve_request(SseDeserializer deserializer);
 
-  @protected
-  FrbObjectiveDto sse_decode_frb_objective_dto(SseDeserializer deserializer);
+@protected int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
 
-  @protected
-  FrbOptimizationSense sse_decode_frb_optimization_sense(
-    SseDeserializer deserializer,
-  );
+@protected double sse_decode_f_64(SseDeserializer deserializer);
 
-  @protected
-  FrbSolveOptionsDto sse_decode_frb_solve_options_dto(
-    SseDeserializer deserializer,
-  );
+@protected FrbConstraintDto sse_decode_frb_constraint_dto(SseDeserializer deserializer);
 
-  @protected
-  FrbSolveRequest sse_decode_frb_solve_request(SseDeserializer deserializer);
+@protected FrbConstraintSense sse_decode_frb_constraint_sense(SseDeserializer deserializer);
 
-  @protected
-  FrbSolveResponse sse_decode_frb_solve_response(SseDeserializer deserializer);
+@protected FrbObjectiveDto sse_decode_frb_objective_dto(SseDeserializer deserializer);
 
-  @protected
-  FrbSolveStatistics sse_decode_frb_solve_statistics(
-    SseDeserializer deserializer,
-  );
+@protected FrbOptimizationSense sse_decode_frb_optimization_sense(SseDeserializer deserializer);
 
-  @protected
-  FrbSolveStatus sse_decode_frb_solve_status(SseDeserializer deserializer);
+@protected FrbSolveOptionsDto sse_decode_frb_solve_options_dto(SseDeserializer deserializer);
 
-  @protected
-  FrbSolverError sse_decode_frb_solver_error(SseDeserializer deserializer);
+@protected FrbSolveRequest sse_decode_frb_solve_request(SseDeserializer deserializer);
 
-  @protected
-  FrbTermDto sse_decode_frb_term_dto(SseDeserializer deserializer);
+@protected FrbSolveResponse sse_decode_frb_solve_response(SseDeserializer deserializer);
 
-  @protected
-  FrbVariableDto sse_decode_frb_variable_dto(SseDeserializer deserializer);
+@protected FrbSolveStatistics sse_decode_frb_solve_statistics(SseDeserializer deserializer);
 
-  @protected
-  FrbVariableType sse_decode_frb_variable_type(SseDeserializer deserializer);
+@protected FrbSolveStatus sse_decode_frb_solve_status(SseDeserializer deserializer);
 
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer);
+@protected FrbSolverError sse_decode_frb_solver_error(SseDeserializer deserializer);
 
-  @protected
-  PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
+@protected FrbTermDto sse_decode_frb_term_dto(SseDeserializer deserializer);
 
-  @protected
-  List<FrbConstraintDto> sse_decode_list_frb_constraint_dto(
-    SseDeserializer deserializer,
-  );
+@protected FrbVariableDto sse_decode_frb_variable_dto(SseDeserializer deserializer);
 
-  @protected
-  List<FrbTermDto> sse_decode_list_frb_term_dto(SseDeserializer deserializer);
+@protected FrbVariableType sse_decode_frb_variable_type(SseDeserializer deserializer);
 
-  @protected
-  List<FrbVariableDto> sse_decode_list_frb_variable_dto(
-    SseDeserializer deserializer,
-  );
+@protected int sse_decode_i_32(SseDeserializer deserializer);
 
-  @protected
-  Float64List sse_decode_list_prim_f_64_strict(SseDeserializer deserializer);
+@protected PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
 
-  @protected
-  Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
+@protected List<FrbConstraintDto> sse_decode_list_frb_constraint_dto(SseDeserializer deserializer);
 
-  @protected
-  String? sse_decode_opt_String(SseDeserializer deserializer);
+@protected List<FrbTermDto> sse_decode_list_frb_term_dto(SseDeserializer deserializer);
 
-  @protected
-  double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer);
+@protected List<FrbVariableDto> sse_decode_list_frb_variable_dto(SseDeserializer deserializer);
 
-  @protected
-  int? sse_decode_opt_box_autoadd_u_32(SseDeserializer deserializer);
+@protected Float64List sse_decode_list_prim_f_64_strict(SseDeserializer deserializer);
 
-  @protected
-  Float64List? sse_decode_opt_list_prim_f_64_strict(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  int sse_decode_u_32(SseDeserializer deserializer);
+@protected Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
-  @protected
-  int sse_decode_u_8(SseDeserializer deserializer);
+@protected String? sse_decode_opt_String(SseDeserializer deserializer);
 
-  @protected
-  void sse_encode_String(String self, SseSerializer serializer);
+@protected double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer);
 
-  @protected
-  void sse_encode_bool(bool self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer);
+@protected int? sse_decode_opt_box_autoadd_u_32(SseDeserializer deserializer);
 
-  @protected
-  void sse_encode_box_autoadd_frb_solve_request(
-    FrbSolveRequest self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_f_64(double self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_frb_constraint_dto(
-    FrbConstraintDto self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_constraint_sense(
-    FrbConstraintSense self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_objective_dto(
-    FrbObjectiveDto self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_optimization_sense(
-    FrbOptimizationSense self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_solve_options_dto(
-    FrbSolveOptionsDto self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_solve_request(
-    FrbSolveRequest self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_solve_response(
-    FrbSolveResponse self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_solve_statistics(
-    FrbSolveStatistics self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_solve_status(
-    FrbSolveStatus self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_solver_error(
-    FrbSolverError self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_term_dto(FrbTermDto self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_frb_variable_dto(
-    FrbVariableDto self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_frb_variable_type(
-    FrbVariableType self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_list_frb_constraint_dto(
-    List<FrbConstraintDto> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_frb_term_dto(
-    List<FrbTermDto> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_frb_variable_dto(
-    List<FrbVariableDto> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_prim_f_64_strict(
-    Float64List self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_prim_u_8_strict(
-    Uint8List self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_opt_String(String? self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_opt_box_autoadd_u_32(int? self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_opt_list_prim_f_64_strict(
-    Float64List? self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_u_32(int self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_u_8(int self, SseSerializer serializer);
-}
+@protected Float64List? sse_decode_opt_list_prim_f_64_strict(SseDeserializer deserializer);
+
+@protected int sse_decode_u_32(SseDeserializer deserializer);
+
+@protected int sse_decode_u_8(SseDeserializer deserializer);
+
+@protected void sse_encode_String(String self, SseSerializer serializer);
+
+@protected void sse_encode_bool(bool self, SseSerializer serializer);
+
+@protected void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer);
+
+@protected void sse_encode_box_autoadd_frb_solve_request(FrbSolveRequest self, SseSerializer serializer);
+
+@protected void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
+
+@protected void sse_encode_f_64(double self, SseSerializer serializer);
+
+@protected void sse_encode_frb_constraint_dto(FrbConstraintDto self, SseSerializer serializer);
+
+@protected void sse_encode_frb_constraint_sense(FrbConstraintSense self, SseSerializer serializer);
+
+@protected void sse_encode_frb_objective_dto(FrbObjectiveDto self, SseSerializer serializer);
+
+@protected void sse_encode_frb_optimization_sense(FrbOptimizationSense self, SseSerializer serializer);
+
+@protected void sse_encode_frb_solve_options_dto(FrbSolveOptionsDto self, SseSerializer serializer);
+
+@protected void sse_encode_frb_solve_request(FrbSolveRequest self, SseSerializer serializer);
+
+@protected void sse_encode_frb_solve_response(FrbSolveResponse self, SseSerializer serializer);
+
+@protected void sse_encode_frb_solve_statistics(FrbSolveStatistics self, SseSerializer serializer);
+
+@protected void sse_encode_frb_solve_status(FrbSolveStatus self, SseSerializer serializer);
+
+@protected void sse_encode_frb_solver_error(FrbSolverError self, SseSerializer serializer);
+
+@protected void sse_encode_frb_term_dto(FrbTermDto self, SseSerializer serializer);
+
+@protected void sse_encode_frb_variable_dto(FrbVariableDto self, SseSerializer serializer);
+
+@protected void sse_encode_frb_variable_type(FrbVariableType self, SseSerializer serializer);
+
+@protected void sse_encode_i_32(int self, SseSerializer serializer);
+
+@protected void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
+
+@protected void sse_encode_list_frb_constraint_dto(List<FrbConstraintDto> self, SseSerializer serializer);
+
+@protected void sse_encode_list_frb_term_dto(List<FrbTermDto> self, SseSerializer serializer);
+
+@protected void sse_encode_list_frb_variable_dto(List<FrbVariableDto> self, SseSerializer serializer);
+
+@protected void sse_encode_list_prim_f_64_strict(Float64List self, SseSerializer serializer);
+
+@protected void sse_encode_list_prim_u_8_strict(Uint8List self, SseSerializer serializer);
+
+@protected void sse_encode_opt_String(String? self, SseSerializer serializer);
+
+@protected void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer);
+
+@protected void sse_encode_opt_box_autoadd_u_32(int? self, SseSerializer serializer);
+
+@protected void sse_encode_opt_list_prim_f_64_strict(Float64List? self, SseSerializer serializer);
+
+@protected void sse_encode_u_32(int self, SseSerializer serializer);
+
+@protected void sse_encode_u_8(int self, SseSerializer serializer);
+                }
+                
+
 
 // Section: wire_class
 
 class RustLibWire implements BaseWire {
-  RustLibWire.fromExternalLibrary(ExternalLibrary lib);
-}
+            RustLibWire.fromExternalLibrary(ExternalLibrary lib);
 
-@JS('wasm_bindgen')
-external RustLibWasmModule get wasmModule;
+            
+        }
+        @JS('wasm_bindgen') external RustLibWasmModule get wasmModule;
 
-@JS()
-@anonymous
-extension type RustLibWasmModule._(JSObject _) implements JSObject {}
+        @JS() @anonymous extension type RustLibWasmModule._(JSObject _) implements JSObject {
+            
+        }
+        

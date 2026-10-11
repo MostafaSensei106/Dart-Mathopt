@@ -126,10 +126,10 @@ impl SolverEngine for ClarabelEngine {
             // Clarabel duals (z) live in conic space, not per-constraint-row
             // LP duals; exposing them raw would mislead. Reserved for later.
             dual_values: None,
-            statistics: FrbSolveStatistics {
-                solve_time_ms: (solver.solution.solve_time * 1000.0) as i64,
-                iterations: solver.solution.iterations as i64,
-            },
+            statistics: FrbSolveStatistics::from_micros(
+                (solver.solution.solve_time * 1_000_000.0).max(0.0) as i64,
+                solver.solution.iterations as i64,
+            ),
         })
     }
 }

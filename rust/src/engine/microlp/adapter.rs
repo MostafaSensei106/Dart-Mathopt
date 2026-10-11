@@ -60,11 +60,8 @@ impl SolverEngine for MicroLpEngine {
         let n = built.vars.len();
 
         let no_primal = || vec![f64::NAN; n];
-        let stats = || FrbSolveStatistics {
-            solve_time_ms: started.elapsed().as_millis().min(i64::MAX as u128) as i64,
-            // good_lp does not expose simplex iteration counts.
-            iterations: 0,
-        };
+        // good_lp does not expose simplex iteration counts.
+        let stats = || FrbSolveStatistics::since(started, 0);
 
         match built.model.solve() {
             Err(ResolutionError::Infeasible) => Ok(FrbSolveResponse {

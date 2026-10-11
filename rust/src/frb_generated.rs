@@ -27,19 +27,20 @@
 
 // Section: imports
 
-use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
-use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
 use flutter_rust_bridge::{Handler, IntoIntoDart};
+use flutter_rust_bridge::for_generated::{Lockable, transform_result_dco, Lifetimeable};
+use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, WriteBytesExt, ReadBytesExt};
 
 // Section: boilerplate
 
 flutter_rust_bridge::frb_generated_boilerplate!(
-    default_stream_sink_codec = SseCodec,
-    default_rust_opaque = RustOpaqueMoi,
-    default_rust_auto_opaque = RustAutoOpaqueMoi,
-);
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -555205531;
+                    default_stream_sink_codec = SseCodec,
+                    default_rust_opaque = RustOpaqueMoi,
+                    default_rust_auto_opaque = RustAutoOpaqueMoi,
+                );
+                pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
+                pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -555205531;
+            
 
 // Section: executor
 
@@ -47,1110 +48,775 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
-fn wire__crate__api__solver_api__execute_solve_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "execute_solve",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
-                    ptr_,
-                    rust_vec_len_,
-                    data_len_,
-                )
-            };
-            let mut deserializer =
-                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_request =
-                <crate::models::dto_request::FrbSolveRequest>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| async move {
-                transform_result_sse::<_, crate::errors::FrbSolverError>(
-                    (move || async move {
-                        let output_ok = crate::api::solver_api::execute_solve(api_request).await?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .await,
-                )
+fn wire__crate__api__solver_api__execute_solve_impl(port_: flutter_rust_bridge::for_generated::MessagePort,ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,rust_vec_len_: i32,data_len_: i32)  {
+                FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec,_,_,_>(flutter_rust_bridge::for_generated::TaskInfo{ debug_name: "execute_solve", port: Some(port_), mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal }, move || {
+            let message = unsafe { flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_) };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_request = <crate::models::dto_request::FrbSolveRequest>::sse_decode(&mut deserializer);deserializer.end(); move |context| async move {
+                    transform_result_sse::<_, crate::errors::FrbSolverError>((move || async move {
+                         let output_ok = crate::api::solver_api::execute_solve(api_request).await?;   std::result::Result::Ok(output_ok)
+                    })().await)
+                } })
             }
-        },
-    )
-}
 
 // Section: dart2rust
 
-impl SseDecode for String {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <Vec<u8>>::sse_decode(deserializer);
-        return String::from_utf8(inner).unwrap();
-    }
-}
 
-impl SseDecode for bool {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_u8().unwrap() != 0
-    }
-}
-
-impl SseDecode for f64 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_f64::<NativeEndian>().unwrap()
-    }
-}
-
-impl SseDecode for crate::models::dto_request::FrbConstraintDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_name = <Option<String>>::sse_decode(deserializer);
-        let mut var_terms = <Vec<crate::models::dto_request::FrbTermDto>>::sse_decode(deserializer);
-        let mut var_sense =
-            <crate::models::dto_request::FrbConstraintSense>::sse_decode(deserializer);
-        let mut var_rhs = <f64>::sse_decode(deserializer);
-        return crate::models::dto_request::FrbConstraintDto {
-            name: var_name,
-            terms: var_terms,
-            sense: var_sense,
-            rhs: var_rhs,
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_request::FrbConstraintSense {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <i32>::sse_decode(deserializer);
+                impl SseDecode for String {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut inner = <Vec<u8>>::sse_decode(deserializer);
+        return String::from_utf8(inner).unwrap();}
+                }
+                
+                impl SseDecode for bool {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {deserializer.cursor.read_u8().unwrap() != 0}
+                }
+                
+                impl SseDecode for f64 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {deserializer.cursor.read_f64::<NativeEndian>().unwrap()}
+                }
+                
+                impl SseDecode for crate::models::dto_request::FrbConstraintDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_name = <Option<String>>::sse_decode(deserializer);
+let mut var_terms = <Vec<crate::models::dto_request::FrbTermDto>>::sse_decode(deserializer);
+let mut var_sense = <crate::models::dto_request::FrbConstraintSense>::sse_decode(deserializer);
+let mut var_rhs = <f64>::sse_decode(deserializer);
+return crate::models::dto_request::FrbConstraintDto{name: var_name, terms: var_terms, sense: var_sense, rhs: var_rhs};}
+                }
+                
+                impl SseDecode for crate::models::dto_request::FrbConstraintSense {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
             0 => crate::models::dto_request::FrbConstraintSense::LessThanOrEqual,
-            1 => crate::models::dto_request::FrbConstraintSense::GreaterThanOrEqual,
-            2 => crate::models::dto_request::FrbConstraintSense::Equal,
+1 => crate::models::dto_request::FrbConstraintSense::GreaterThanOrEqual,
+2 => crate::models::dto_request::FrbConstraintSense::Equal,
             _ => unreachable!("Invalid variant for FrbConstraintSense: {}", inner),
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_request::FrbObjectiveDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_sense =
-            <crate::models::dto_request::FrbOptimizationSense>::sse_decode(deserializer);
-        let mut var_terms = <Vec<crate::models::dto_request::FrbTermDto>>::sse_decode(deserializer);
-        let mut var_constant = <f64>::sse_decode(deserializer);
-        return crate::models::dto_request::FrbObjectiveDto {
-            sense: var_sense,
-            terms: var_terms,
-            constant: var_constant,
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_request::FrbOptimizationSense {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <i32>::sse_decode(deserializer);
+        };}
+                }
+                
+                impl SseDecode for crate::models::dto_request::FrbObjectiveDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_sense = <crate::models::dto_request::FrbOptimizationSense>::sse_decode(deserializer);
+let mut var_terms = <Vec<crate::models::dto_request::FrbTermDto>>::sse_decode(deserializer);
+let mut var_constant = <f64>::sse_decode(deserializer);
+return crate::models::dto_request::FrbObjectiveDto{sense: var_sense, terms: var_terms, constant: var_constant};}
+                }
+                
+                impl SseDecode for crate::models::dto_request::FrbOptimizationSense {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
             0 => crate::models::dto_request::FrbOptimizationSense::Minimize,
-            1 => crate::models::dto_request::FrbOptimizationSense::Maximize,
+1 => crate::models::dto_request::FrbOptimizationSense::Maximize,
             _ => unreachable!("Invalid variant for FrbOptimizationSense: {}", inner),
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_request::FrbSolveOptionsDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_timeLimitSec = <Option<f64>>::sse_decode(deserializer);
-        let mut var_enableLogging = <bool>::sse_decode(deserializer);
-        let mut var_threadCount = <Option<u32>>::sse_decode(deserializer);
-        let mut var_solver = <String>::sse_decode(deserializer);
-        return crate::models::dto_request::FrbSolveOptionsDto {
-            time_limit_sec: var_timeLimitSec,
-            enable_logging: var_enableLogging,
-            thread_count: var_threadCount,
-            solver: var_solver,
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_request::FrbSolveRequest {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_name = <String>::sse_decode(deserializer);
-        let mut var_variables =
-            <Vec<crate::models::dto_request::FrbVariableDto>>::sse_decode(deserializer);
-        let mut var_constraints =
-            <Vec<crate::models::dto_request::FrbConstraintDto>>::sse_decode(deserializer);
-        let mut var_objective =
-            <crate::models::dto_request::FrbObjectiveDto>::sse_decode(deserializer);
-        let mut var_options =
-            <crate::models::dto_request::FrbSolveOptionsDto>::sse_decode(deserializer);
-        return crate::models::dto_request::FrbSolveRequest {
-            name: var_name,
-            variables: var_variables,
-            constraints: var_constraints,
-            objective: var_objective,
-            options: var_options,
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_response::FrbSolveResponse {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_status =
-            <crate::models::dto_response::FrbSolveStatus>::sse_decode(deserializer);
-        let mut var_objectiveValue = <Option<f64>>::sse_decode(deserializer);
-        let mut var_variableValues = <Vec<f64>>::sse_decode(deserializer);
-        let mut var_dualValues = <Option<Vec<f64>>>::sse_decode(deserializer);
-        let mut var_statistics =
-            <crate::models::dto_response::FrbSolveStatistics>::sse_decode(deserializer);
-        return crate::models::dto_response::FrbSolveResponse {
-            status: var_status,
-            objective_value: var_objectiveValue,
-            variable_values: var_variableValues,
-            dual_values: var_dualValues,
-            statistics: var_statistics,
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_response::FrbSolveStatistics {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_solveTimeMs = <i64>::sse_decode(deserializer);
-        let mut var_iterations = <i64>::sse_decode(deserializer);
-        return crate::models::dto_response::FrbSolveStatistics {
-            solve_time_ms: var_solveTimeMs,
-            iterations: var_iterations,
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_response::FrbSolveStatus {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <i32>::sse_decode(deserializer);
+        };}
+                }
+                
+                impl SseDecode for crate::models::dto_request::FrbSolveOptionsDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_timeLimitSec = <Option<f64>>::sse_decode(deserializer);
+let mut var_enableLogging = <bool>::sse_decode(deserializer);
+let mut var_threadCount = <Option<u32>>::sse_decode(deserializer);
+let mut var_solver = <String>::sse_decode(deserializer);
+return crate::models::dto_request::FrbSolveOptionsDto{time_limit_sec: var_timeLimitSec, enable_logging: var_enableLogging, thread_count: var_threadCount, solver: var_solver};}
+                }
+                
+                impl SseDecode for crate::models::dto_request::FrbSolveRequest {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_name = <String>::sse_decode(deserializer);
+let mut var_variables = <Vec<crate::models::dto_request::FrbVariableDto>>::sse_decode(deserializer);
+let mut var_constraints = <Vec<crate::models::dto_request::FrbConstraintDto>>::sse_decode(deserializer);
+let mut var_objective = <crate::models::dto_request::FrbObjectiveDto>::sse_decode(deserializer);
+let mut var_options = <crate::models::dto_request::FrbSolveOptionsDto>::sse_decode(deserializer);
+return crate::models::dto_request::FrbSolveRequest{name: var_name, variables: var_variables, constraints: var_constraints, objective: var_objective, options: var_options};}
+                }
+                
+                impl SseDecode for crate::models::dto_response::FrbSolveResponse {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_status = <crate::models::dto_response::FrbSolveStatus>::sse_decode(deserializer);
+let mut var_objectiveValue = <Option<f64>>::sse_decode(deserializer);
+let mut var_variableValues = <Vec<f64>>::sse_decode(deserializer);
+let mut var_dualValues = <Option<Vec<f64>>>::sse_decode(deserializer);
+let mut var_statistics = <crate::models::dto_response::FrbSolveStatistics>::sse_decode(deserializer);
+return crate::models::dto_response::FrbSolveResponse{status: var_status, objective_value: var_objectiveValue, variable_values: var_variableValues, dual_values: var_dualValues, statistics: var_statistics};}
+                }
+                
+                impl SseDecode for crate::models::dto_response::FrbSolveStatistics {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_solveTimeMs = <i64>::sse_decode(deserializer);
+let mut var_solveTimeUs = <i64>::sse_decode(deserializer);
+let mut var_iterations = <i64>::sse_decode(deserializer);
+return crate::models::dto_response::FrbSolveStatistics{solve_time_ms: var_solveTimeMs, solve_time_us: var_solveTimeUs, iterations: var_iterations};}
+                }
+                
+                impl SseDecode for crate::models::dto_response::FrbSolveStatus {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
             0 => crate::models::dto_response::FrbSolveStatus::Optimal,
-            1 => crate::models::dto_response::FrbSolveStatus::Infeasible,
-            2 => crate::models::dto_response::FrbSolveStatus::Unbounded,
-            3 => crate::models::dto_response::FrbSolveStatus::TimeLimitExceeded,
-            4 => crate::models::dto_response::FrbSolveStatus::NumericalError,
-            5 => crate::models::dto_response::FrbSolveStatus::Unknown,
+1 => crate::models::dto_response::FrbSolveStatus::Infeasible,
+2 => crate::models::dto_response::FrbSolveStatus::Unbounded,
+3 => crate::models::dto_response::FrbSolveStatus::TimeLimitExceeded,
+4 => crate::models::dto_response::FrbSolveStatus::NumericalError,
+5 => crate::models::dto_response::FrbSolveStatus::Unknown,
             _ => unreachable!("Invalid variant for FrbSolveStatus: {}", inner),
-        };
-    }
-}
-
-impl SseDecode for crate::errors::FrbSolverError {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut tag_ = <i32>::sse_decode(deserializer);
-        match tag_ {
-            0 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
-                return crate::errors::FrbSolverError::CapabilityError(var_field0);
-            }
-            1 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
-                return crate::errors::FrbSolverError::EngineFailure(var_field0);
-            }
-            2 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
-                return crate::errors::FrbSolverError::InvalidInput(var_field0);
-            }
-            3 => {
-                let mut var_field0 = <f64>::sse_decode(deserializer);
-                return crate::errors::FrbSolverError::TimeLimitExceeded(var_field0);
-            }
-            _ => {
-                unimplemented!("");
-            }
-        }
-    }
-}
-
-impl SseDecode for crate::models::dto_request::FrbTermDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_variableId = <u32>::sse_decode(deserializer);
-        let mut var_coefficient = <f64>::sse_decode(deserializer);
-        return crate::models::dto_request::FrbTermDto {
-            variable_id: var_variableId,
-            coefficient: var_coefficient,
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_request::FrbVariableDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_id = <u32>::sse_decode(deserializer);
-        let mut var_name = <String>::sse_decode(deserializer);
-        let mut var_varType =
-            <crate::models::dto_request::FrbVariableType>::sse_decode(deserializer);
-        let mut var_lowerBound = <Option<f64>>::sse_decode(deserializer);
-        let mut var_upperBound = <Option<f64>>::sse_decode(deserializer);
-        return crate::models::dto_request::FrbVariableDto {
-            id: var_id,
-            name: var_name,
-            var_type: var_varType,
-            lower_bound: var_lowerBound,
-            upper_bound: var_upperBound,
-        };
-    }
-}
-
-impl SseDecode for crate::models::dto_request::FrbVariableType {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <i32>::sse_decode(deserializer);
+        };}
+                }
+                
+                impl SseDecode for crate::errors::FrbSolverError {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut tag_ = <i32>::sse_decode(deserializer);
+            match tag_ {0 => { let mut var_field0 = <String>::sse_decode(deserializer);
+return crate::errors::FrbSolverError::CapabilityError(var_field0); }
+1 => { let mut var_field0 = <String>::sse_decode(deserializer);
+return crate::errors::FrbSolverError::EngineFailure(var_field0); }
+2 => { let mut var_field0 = <String>::sse_decode(deserializer);
+return crate::errors::FrbSolverError::InvalidInput(var_field0); }
+3 => { let mut var_field0 = <f64>::sse_decode(deserializer);
+return crate::errors::FrbSolverError::TimeLimitExceeded(var_field0); }
+ _ => { unimplemented!(""); }}}
+                }
+                
+                impl SseDecode for crate::models::dto_request::FrbTermDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_variableId = <u32>::sse_decode(deserializer);
+let mut var_coefficient = <f64>::sse_decode(deserializer);
+return crate::models::dto_request::FrbTermDto{variable_id: var_variableId, coefficient: var_coefficient};}
+                }
+                
+                impl SseDecode for crate::models::dto_request::FrbVariableDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut var_id = <u32>::sse_decode(deserializer);
+let mut var_name = <String>::sse_decode(deserializer);
+let mut var_varType = <crate::models::dto_request::FrbVariableType>::sse_decode(deserializer);
+let mut var_lowerBound = <Option<f64>>::sse_decode(deserializer);
+let mut var_upperBound = <Option<f64>>::sse_decode(deserializer);
+return crate::models::dto_request::FrbVariableDto{id: var_id, name: var_name, var_type: var_varType, lower_bound: var_lowerBound, upper_bound: var_upperBound};}
+                }
+                
+                impl SseDecode for crate::models::dto_request::FrbVariableType {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
             0 => crate::models::dto_request::FrbVariableType::Continuous,
-            1 => crate::models::dto_request::FrbVariableType::Integer,
-            2 => crate::models::dto_request::FrbVariableType::Binary,
+1 => crate::models::dto_request::FrbVariableType::Integer,
+2 => crate::models::dto_request::FrbVariableType::Binary,
             _ => unreachable!("Invalid variant for FrbVariableType: {}", inner),
-        };
-    }
-}
-
-impl SseDecode for i32 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_i32::<NativeEndian>().unwrap()
-    }
-}
-
-impl SseDecode for i64 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_i64::<NativeEndian>().unwrap()
-    }
-}
-
-impl SseDecode for Vec<crate::models::dto_request::FrbConstraintDto> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut len_ = <i32>::sse_decode(deserializer);
+        };}
+                }
+                
+                impl SseDecode for i32 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {deserializer.cursor.read_i32::<NativeEndian>().unwrap()}
+                }
+                
+                impl SseDecode for i64 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {deserializer.cursor.read_i64::<NativeEndian>().unwrap()}
+                }
+                
+                impl SseDecode for Vec<crate::models::dto_request::FrbConstraintDto> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = Vec::with_capacity(len_ as usize);
-        for idx_ in 0..len_ {
-            ans_.push(<crate::models::dto_request::FrbConstraintDto>::sse_decode(
-                deserializer,
-            ));
-        }
-        return ans_;
-    }
-}
-
-impl SseDecode for Vec<crate::models::dto_request::FrbTermDto> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut len_ = <i32>::sse_decode(deserializer);
+        for idx_ in 0..len_ { ans_.push(<crate::models::dto_request::FrbConstraintDto>::sse_decode(deserializer)); }
+        return ans_;}
+                }
+                
+                impl SseDecode for Vec<crate::models::dto_request::FrbTermDto> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = Vec::with_capacity(len_ as usize);
-        for idx_ in 0..len_ {
-            ans_.push(<crate::models::dto_request::FrbTermDto>::sse_decode(
-                deserializer,
-            ));
-        }
-        return ans_;
-    }
-}
-
-impl SseDecode for Vec<crate::models::dto_request::FrbVariableDto> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut len_ = <i32>::sse_decode(deserializer);
+        for idx_ in 0..len_ { ans_.push(<crate::models::dto_request::FrbTermDto>::sse_decode(deserializer)); }
+        return ans_;}
+                }
+                
+                impl SseDecode for Vec<crate::models::dto_request::FrbVariableDto> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = Vec::with_capacity(len_ as usize);
-        for idx_ in 0..len_ {
-            ans_.push(<crate::models::dto_request::FrbVariableDto>::sse_decode(
-                deserializer,
-            ));
-        }
-        return ans_;
-    }
-}
-
-impl SseDecode for Vec<f64> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut len_ = <i32>::sse_decode(deserializer);
+        for idx_ in 0..len_ { ans_.push(<crate::models::dto_request::FrbVariableDto>::sse_decode(deserializer)); }
+        return ans_;}
+                }
+                
+                impl SseDecode for Vec<f64> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = Vec::with_capacity(len_ as usize);
-        for idx_ in 0..len_ {
-            ans_.push(<f64>::sse_decode(deserializer));
-        }
-        return ans_;
-    }
-}
-
-impl SseDecode for Vec<u8> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut len_ = <i32>::sse_decode(deserializer);
+        for idx_ in 0..len_ { ans_.push(<f64>::sse_decode(deserializer)); }
+        return ans_;}
+                }
+                
+                impl SseDecode for Vec<u8> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = Vec::with_capacity(len_ as usize);
-        for idx_ in 0..len_ {
-            ans_.push(<u8>::sse_decode(deserializer));
-        }
-        return ans_;
-    }
-}
-
-impl SseDecode for Option<String> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        if (<bool>::sse_decode(deserializer)) {
-            return Some(<String>::sse_decode(deserializer));
-        } else {
-            return None;
-        }
-    }
-}
-
-impl SseDecode for Option<f64> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        if (<bool>::sse_decode(deserializer)) {
-            return Some(<f64>::sse_decode(deserializer));
-        } else {
-            return None;
-        }
-    }
-}
-
-impl SseDecode for Option<u32> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        if (<bool>::sse_decode(deserializer)) {
-            return Some(<u32>::sse_decode(deserializer));
-        } else {
-            return None;
-        }
-    }
-}
-
-impl SseDecode for Option<Vec<f64>> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        if (<bool>::sse_decode(deserializer)) {
-            return Some(<Vec<f64>>::sse_decode(deserializer));
-        } else {
-            return None;
-        }
-    }
-}
-
-impl SseDecode for u32 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_u32::<NativeEndian>().unwrap()
-    }
-}
-
-impl SseDecode for u8 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_u8().unwrap()
-    }
-}
-
-fn pde_ffi_dispatcher_primary_impl(
-    func_id: i32,
-    port: flutter_rust_bridge::for_generated::MessagePort,
-    ptr: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len: i32,
-    data_len: i32,
-) {
-    // Codec=Pde (Serialization + dispatch), see doc to use other codecs
-    match func_id {
-        1 => wire__crate__api__solver_api__execute_solve_impl(port, ptr, rust_vec_len, data_len),
-        _ => unreachable!(),
-    }
-}
-
-fn pde_ffi_dispatcher_sync_impl(
-    func_id: i32,
-    ptr: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len: i32,
-    data_len: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    // Codec=Pde (Serialization + dispatch), see doc to use other codecs
-    match func_id {
-        _ => unreachable!(),
-    }
-}
+        for idx_ in 0..len_ { ans_.push(<u8>::sse_decode(deserializer)); }
+        return ans_;}
+                }
+                
+                impl SseDecode for Option<String> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {if (<bool>::sse_decode(deserializer)) {
+                return Some(<String>::sse_decode(deserializer));
+            } else {
+                return None;
+            }}
+                }
+                
+                impl SseDecode for Option<f64> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {if (<bool>::sse_decode(deserializer)) {
+                return Some(<f64>::sse_decode(deserializer));
+            } else {
+                return None;
+            }}
+                }
+                
+                impl SseDecode for Option<u32> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {if (<bool>::sse_decode(deserializer)) {
+                return Some(<u32>::sse_decode(deserializer));
+            } else {
+                return None;
+            }}
+                }
+                
+                impl SseDecode for Option<Vec<f64>> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {if (<bool>::sse_decode(deserializer)) {
+                return Some(<Vec<f64>>::sse_decode(deserializer));
+            } else {
+                return None;
+            }}
+                }
+                
+                impl SseDecode for u32 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {deserializer.cursor.read_u32::<NativeEndian>().unwrap()}
+                }
+                
+                impl SseDecode for u8 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {deserializer.cursor.read_u8().unwrap()}
+                }
+                
+                fn pde_ffi_dispatcher_primary_impl(
+                    func_id: i32,port: flutter_rust_bridge::for_generated::MessagePort,
+                    ptr: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+                    rust_vec_len: i32,
+                    data_len: i32,
+                )  {
+                    // Codec=Pde (Serialization + dispatch), see doc to use other codecs
+                    match func_id {
+                        1 => wire__crate__api__solver_api__execute_solve_impl(port, ptr, rust_vec_len, data_len),
+                        _ => unreachable!(),
+                    }
+                }
+                
+                fn pde_ffi_dispatcher_sync_impl(
+                    func_id: i32,
+                    ptr: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+                    rust_vec_len: i32,
+                    data_len: i32,
+                ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+                    // Codec=Pde (Serialization + dispatch), see doc to use other codecs
+                    match func_id {
+                        
+                        _ => unreachable!(),
+                    }
+                }
+                
 
 // Section: rust2dart
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbConstraintDto {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.name.into_into_dart().into_dart(),
-            self.terms.into_into_dart().into_dart(),
-            self.sense.into_into_dart().into_dart(),
-            self.rhs.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_request::FrbConstraintDto
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbConstraintDto>
-    for crate::models::dto_request::FrbConstraintDto
-{
-    fn into_into_dart(self) -> crate::models::dto_request::FrbConstraintDto {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbConstraintSense {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        match self {
-            Self::LessThanOrEqual => 0.into_dart(),
-            Self::GreaterThanOrEqual => 1.into_dart(),
-            Self::Equal => 2.into_dart(),
-            _ => unreachable!(),
-        }
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_request::FrbConstraintSense
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbConstraintSense>
-    for crate::models::dto_request::FrbConstraintSense
-{
-    fn into_into_dart(self) -> crate::models::dto_request::FrbConstraintSense {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbObjectiveDto {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.sense.into_into_dart().into_dart(),
-            self.terms.into_into_dart().into_dart(),
-            self.constant.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_request::FrbObjectiveDto
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbObjectiveDto>
-    for crate::models::dto_request::FrbObjectiveDto
-{
-    fn into_into_dart(self) -> crate::models::dto_request::FrbObjectiveDto {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbOptimizationSense {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        match self {
-            Self::Minimize => 0.into_dart(),
-            Self::Maximize => 1.into_dart(),
-            _ => unreachable!(),
-        }
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_request::FrbOptimizationSense
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbOptimizationSense>
-    for crate::models::dto_request::FrbOptimizationSense
-{
-    fn into_into_dart(self) -> crate::models::dto_request::FrbOptimizationSense {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbSolveOptionsDto {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.time_limit_sec.into_into_dart().into_dart(),
-            self.enable_logging.into_into_dart().into_dart(),
-            self.thread_count.into_into_dart().into_dart(),
-            self.solver.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_request::FrbSolveOptionsDto
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbSolveOptionsDto>
-    for crate::models::dto_request::FrbSolveOptionsDto
-{
-    fn into_into_dart(self) -> crate::models::dto_request::FrbSolveOptionsDto {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbSolveRequest {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.name.into_into_dart().into_dart(),
-            self.variables.into_into_dart().into_dart(),
-            self.constraints.into_into_dart().into_dart(),
-            self.objective.into_into_dart().into_dart(),
-            self.options.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_request::FrbSolveRequest
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbSolveRequest>
-    for crate::models::dto_request::FrbSolveRequest
-{
-    fn into_into_dart(self) -> crate::models::dto_request::FrbSolveRequest {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_response::FrbSolveResponse {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.status.into_into_dart().into_dart(),
-            self.objective_value.into_into_dart().into_dart(),
-            self.variable_values.into_into_dart().into_dart(),
-            self.dual_values.into_into_dart().into_dart(),
-            self.statistics.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_response::FrbSolveResponse
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_response::FrbSolveResponse>
-    for crate::models::dto_response::FrbSolveResponse
-{
-    fn into_into_dart(self) -> crate::models::dto_response::FrbSolveResponse {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_response::FrbSolveStatistics {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.solve_time_ms.into_into_dart().into_dart(),
-            self.iterations.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_response::FrbSolveStatistics
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_response::FrbSolveStatistics>
-    for crate::models::dto_response::FrbSolveStatistics
-{
-    fn into_into_dart(self) -> crate::models::dto_response::FrbSolveStatistics {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_response::FrbSolveStatus {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        match self {
-            Self::Optimal => 0.into_dart(),
-            Self::Infeasible => 1.into_dart(),
-            Self::Unbounded => 2.into_dart(),
-            Self::TimeLimitExceeded => 3.into_dart(),
-            Self::NumericalError => 4.into_dart(),
-            Self::Unknown => 5.into_dart(),
-            _ => unreachable!(),
-        }
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_response::FrbSolveStatus
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_response::FrbSolveStatus>
-    for crate::models::dto_response::FrbSolveStatus
-{
-    fn into_into_dart(self) -> crate::models::dto_response::FrbSolveStatus {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::errors::FrbSolverError {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        match self {
-            crate::errors::FrbSolverError::CapabilityError(field0) => {
-                [0.into_dart(), field0.into_into_dart().into_dart()].into_dart()
-            }
-            crate::errors::FrbSolverError::EngineFailure(field0) => {
-                [1.into_dart(), field0.into_into_dart().into_dart()].into_dart()
-            }
-            crate::errors::FrbSolverError::InvalidInput(field0) => {
-                [2.into_dart(), field0.into_into_dart().into_dart()].into_dart()
-            }
-            crate::errors::FrbSolverError::TimeLimitExceeded(field0) => {
-                [3.into_dart(), field0.into_into_dart().into_dart()].into_dart()
-            }
-            _ => {
-                unimplemented!("");
-            }
-        }
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::errors::FrbSolverError {}
-impl flutter_rust_bridge::IntoIntoDart<crate::errors::FrbSolverError>
-    for crate::errors::FrbSolverError
-{
-    fn into_into_dart(self) -> crate::errors::FrbSolverError {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbTermDto {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.variable_id.into_into_dart().into_dart(),
-            self.coefficient.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_request::FrbTermDto
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbTermDto>
-    for crate::models::dto_request::FrbTermDto
-{
-    fn into_into_dart(self) -> crate::models::dto_request::FrbTermDto {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbVariableDto {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.id.into_into_dart().into_dart(),
-            self.name.into_into_dart().into_dart(),
-            self.var_type.into_into_dart().into_dart(),
-            self.lower_bound.into_into_dart().into_dart(),
-            self.upper_bound.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_request::FrbVariableDto
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbVariableDto>
-    for crate::models::dto_request::FrbVariableDto
-{
-    fn into_into_dart(self) -> crate::models::dto_request::FrbVariableDto {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbVariableType {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        match self {
-            Self::Continuous => 0.into_dart(),
-            Self::Integer => 1.into_dart(),
-            Self::Binary => 2.into_dart(),
-            _ => unreachable!(),
-        }
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::dto_request::FrbVariableType
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbVariableType>
-    for crate::models::dto_request::FrbVariableType
-{
-    fn into_into_dart(self) -> crate::models::dto_request::FrbVariableType {
-        self
-    }
-}
-
-impl SseEncode for String {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Vec<u8>>::sse_encode(self.into_bytes(), serializer);
-    }
-}
-
-impl SseEncode for bool {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_u8(self as _).unwrap();
-    }
-}
-
-impl SseEncode for f64 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_f64::<NativeEndian>(self).unwrap();
-    }
-}
-
-impl SseEncode for crate::models::dto_request::FrbConstraintDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Option<String>>::sse_encode(self.name, serializer);
-        <Vec<crate::models::dto_request::FrbTermDto>>::sse_encode(self.terms, serializer);
-        <crate::models::dto_request::FrbConstraintSense>::sse_encode(self.sense, serializer);
-        <f64>::sse_encode(self.rhs, serializer);
-    }
-}
-
-impl SseEncode for crate::models::dto_request::FrbConstraintSense {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(
-            match self {
-                crate::models::dto_request::FrbConstraintSense::LessThanOrEqual => 0,
-                crate::models::dto_request::FrbConstraintSense::GreaterThanOrEqual => 1,
-                crate::models::dto_request::FrbConstraintSense::Equal => 2,
-                _ => {
-                    unimplemented!("");
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbConstraintDto {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    [
+                    self.name.into_into_dart().into_dart(),
+self.terms.into_into_dart().into_dart(),
+self.sense.into_into_dart().into_dart(),
+self.rhs.into_into_dart().into_dart()
+                ].into_dart()
                 }
-            },
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for crate::models::dto_request::FrbObjectiveDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <crate::models::dto_request::FrbOptimizationSense>::sse_encode(self.sense, serializer);
-        <Vec<crate::models::dto_request::FrbTermDto>>::sse_encode(self.terms, serializer);
-        <f64>::sse_encode(self.constant, serializer);
-    }
-}
-
-impl SseEncode for crate::models::dto_request::FrbOptimizationSense {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(
-            match self {
-                crate::models::dto_request::FrbOptimizationSense::Minimize => 0,
-                crate::models::dto_request::FrbOptimizationSense::Maximize => 1,
-                _ => {
-                    unimplemented!("");
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_request::FrbConstraintDto {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbConstraintDto> for crate::models::dto_request::FrbConstraintDto {
+            fn into_into_dart(self) -> crate::models::dto_request::FrbConstraintDto {
+                self
+            }
+        }
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbConstraintSense {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    match self {
+                    Self::LessThanOrEqual => 0.into_dart(),
+Self::GreaterThanOrEqual => 1.into_dart(),
+Self::Equal => 2.into_dart(),
+                    _ => unreachable!(),
                 }
-            },
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for crate::models::dto_request::FrbSolveOptionsDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Option<f64>>::sse_encode(self.time_limit_sec, serializer);
-        <bool>::sse_encode(self.enable_logging, serializer);
-        <Option<u32>>::sse_encode(self.thread_count, serializer);
-        <String>::sse_encode(self.solver, serializer);
-    }
-}
-
-impl SseEncode for crate::models::dto_request::FrbSolveRequest {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <String>::sse_encode(self.name, serializer);
-        <Vec<crate::models::dto_request::FrbVariableDto>>::sse_encode(self.variables, serializer);
-        <Vec<crate::models::dto_request::FrbConstraintDto>>::sse_encode(
-            self.constraints,
-            serializer,
-        );
-        <crate::models::dto_request::FrbObjectiveDto>::sse_encode(self.objective, serializer);
-        <crate::models::dto_request::FrbSolveOptionsDto>::sse_encode(self.options, serializer);
-    }
-}
-
-impl SseEncode for crate::models::dto_response::FrbSolveResponse {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <crate::models::dto_response::FrbSolveStatus>::sse_encode(self.status, serializer);
-        <Option<f64>>::sse_encode(self.objective_value, serializer);
-        <Vec<f64>>::sse_encode(self.variable_values, serializer);
-        <Option<Vec<f64>>>::sse_encode(self.dual_values, serializer);
-        <crate::models::dto_response::FrbSolveStatistics>::sse_encode(self.statistics, serializer);
-    }
-}
-
-impl SseEncode for crate::models::dto_response::FrbSolveStatistics {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i64>::sse_encode(self.solve_time_ms, serializer);
-        <i64>::sse_encode(self.iterations, serializer);
-    }
-}
-
-impl SseEncode for crate::models::dto_response::FrbSolveStatus {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(
-            match self {
-                crate::models::dto_response::FrbSolveStatus::Optimal => 0,
-                crate::models::dto_response::FrbSolveStatus::Infeasible => 1,
-                crate::models::dto_response::FrbSolveStatus::Unbounded => 2,
-                crate::models::dto_response::FrbSolveStatus::TimeLimitExceeded => 3,
-                crate::models::dto_response::FrbSolveStatus::NumericalError => 4,
-                crate::models::dto_response::FrbSolveStatus::Unknown => 5,
-                _ => {
-                    unimplemented!("");
                 }
-            },
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for crate::errors::FrbSolverError {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        match self {
-            crate::errors::FrbSolverError::CapabilityError(field0) => {
-                <i32>::sse_encode(0, serializer);
-                <String>::sse_encode(field0, serializer);
             }
-            crate::errors::FrbSolverError::EngineFailure(field0) => {
-                <i32>::sse_encode(1, serializer);
-                <String>::sse_encode(field0, serializer);
-            }
-            crate::errors::FrbSolverError::InvalidInput(field0) => {
-                <i32>::sse_encode(2, serializer);
-                <String>::sse_encode(field0, serializer);
-            }
-            crate::errors::FrbSolverError::TimeLimitExceeded(field0) => {
-                <i32>::sse_encode(3, serializer);
-                <f64>::sse_encode(field0, serializer);
-            }
-            _ => {
-                unimplemented!("");
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_request::FrbConstraintSense {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbConstraintSense> for crate::models::dto_request::FrbConstraintSense {
+            fn into_into_dart(self) -> crate::models::dto_request::FrbConstraintSense {
+                self
             }
         }
-    }
-}
-
-impl SseEncode for crate::models::dto_request::FrbTermDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <u32>::sse_encode(self.variable_id, serializer);
-        <f64>::sse_encode(self.coefficient, serializer);
-    }
-}
-
-impl SseEncode for crate::models::dto_request::FrbVariableDto {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <u32>::sse_encode(self.id, serializer);
-        <String>::sse_encode(self.name, serializer);
-        <crate::models::dto_request::FrbVariableType>::sse_encode(self.var_type, serializer);
-        <Option<f64>>::sse_encode(self.lower_bound, serializer);
-        <Option<f64>>::sse_encode(self.upper_bound, serializer);
-    }
-}
-
-impl SseEncode for crate::models::dto_request::FrbVariableType {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(
-            match self {
-                crate::models::dto_request::FrbVariableType::Continuous => 0,
-                crate::models::dto_request::FrbVariableType::Integer => 1,
-                crate::models::dto_request::FrbVariableType::Binary => 2,
-                _ => {
-                    unimplemented!("");
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbObjectiveDto {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    [
+                    self.sense.into_into_dart().into_dart(),
+self.terms.into_into_dart().into_dart(),
+self.constant.into_into_dart().into_dart()
+                ].into_dart()
                 }
-            },
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for i32 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_i32::<NativeEndian>(self).unwrap();
-    }
-}
-
-impl SseEncode for i64 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_i64::<NativeEndian>(self).unwrap();
-    }
-}
-
-impl SseEncode for Vec<crate::models::dto_request::FrbConstraintDto> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(self.len() as _, serializer);
-        for item in self {
-            <crate::models::dto_request::FrbConstraintDto>::sse_encode(item, serializer);
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_request::FrbObjectiveDto {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbObjectiveDto> for crate::models::dto_request::FrbObjectiveDto {
+            fn into_into_dart(self) -> crate::models::dto_request::FrbObjectiveDto {
+                self
+            }
         }
-    }
-}
-
-impl SseEncode for Vec<crate::models::dto_request::FrbTermDto> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(self.len() as _, serializer);
-        for item in self {
-            <crate::models::dto_request::FrbTermDto>::sse_encode(item, serializer);
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbOptimizationSense {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    match self {
+                    Self::Minimize => 0.into_dart(),
+Self::Maximize => 1.into_dart(),
+                    _ => unreachable!(),
+                }
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_request::FrbOptimizationSense {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbOptimizationSense> for crate::models::dto_request::FrbOptimizationSense {
+            fn into_into_dart(self) -> crate::models::dto_request::FrbOptimizationSense {
+                self
+            }
         }
-    }
-}
-
-impl SseEncode for Vec<crate::models::dto_request::FrbVariableDto> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(self.len() as _, serializer);
-        for item in self {
-            <crate::models::dto_request::FrbVariableDto>::sse_encode(item, serializer);
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbSolveOptionsDto {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    [
+                    self.time_limit_sec.into_into_dart().into_dart(),
+self.enable_logging.into_into_dart().into_dart(),
+self.thread_count.into_into_dart().into_dart(),
+self.solver.into_into_dart().into_dart()
+                ].into_dart()
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_request::FrbSolveOptionsDto {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbSolveOptionsDto> for crate::models::dto_request::FrbSolveOptionsDto {
+            fn into_into_dart(self) -> crate::models::dto_request::FrbSolveOptionsDto {
+                self
+            }
         }
-    }
-}
-
-impl SseEncode for Vec<f64> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(self.len() as _, serializer);
-        for item in self {
-            <f64>::sse_encode(item, serializer);
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbSolveRequest {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    [
+                    self.name.into_into_dart().into_dart(),
+self.variables.into_into_dart().into_dart(),
+self.constraints.into_into_dart().into_dart(),
+self.objective.into_into_dart().into_dart(),
+self.options.into_into_dart().into_dart()
+                ].into_dart()
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_request::FrbSolveRequest {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbSolveRequest> for crate::models::dto_request::FrbSolveRequest {
+            fn into_into_dart(self) -> crate::models::dto_request::FrbSolveRequest {
+                self
+            }
         }
-    }
-}
-
-impl SseEncode for Vec<u8> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(self.len() as _, serializer);
-        for item in self {
-            <u8>::sse_encode(item, serializer);
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_response::FrbSolveResponse {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    [
+                    self.status.into_into_dart().into_dart(),
+self.objective_value.into_into_dart().into_dart(),
+self.variable_values.into_into_dart().into_dart(),
+self.dual_values.into_into_dart().into_dart(),
+self.statistics.into_into_dart().into_dart()
+                ].into_dart()
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_response::FrbSolveResponse {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_response::FrbSolveResponse> for crate::models::dto_response::FrbSolveResponse {
+            fn into_into_dart(self) -> crate::models::dto_response::FrbSolveResponse {
+                self
+            }
         }
-    }
-}
-
-impl SseEncode for Option<String> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <bool>::sse_encode(self.is_some(), serializer);
-        if let Some(value) = self {
-            <String>::sse_encode(value, serializer);
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_response::FrbSolveStatistics {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    [
+                    self.solve_time_ms.into_into_dart().into_dart(),
+self.solve_time_us.into_into_dart().into_dart(),
+self.iterations.into_into_dart().into_dart()
+                ].into_dart()
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_response::FrbSolveStatistics {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_response::FrbSolveStatistics> for crate::models::dto_response::FrbSolveStatistics {
+            fn into_into_dart(self) -> crate::models::dto_response::FrbSolveStatistics {
+                self
+            }
         }
-    }
-}
-
-impl SseEncode for Option<f64> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <bool>::sse_encode(self.is_some(), serializer);
-        if let Some(value) = self {
-            <f64>::sse_encode(value, serializer);
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_response::FrbSolveStatus {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    match self {
+                    Self::Optimal => 0.into_dart(),
+Self::Infeasible => 1.into_dart(),
+Self::Unbounded => 2.into_dart(),
+Self::TimeLimitExceeded => 3.into_dart(),
+Self::NumericalError => 4.into_dart(),
+Self::Unknown => 5.into_dart(),
+                    _ => unreachable!(),
+                }
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_response::FrbSolveStatus {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_response::FrbSolveStatus> for crate::models::dto_response::FrbSolveStatus {
+            fn into_into_dart(self) -> crate::models::dto_response::FrbSolveStatus {
+                self
+            }
         }
-    }
-}
-
-impl SseEncode for Option<u32> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <bool>::sse_encode(self.is_some(), serializer);
-        if let Some(value) = self {
-            <u32>::sse_encode(value, serializer);
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::errors::FrbSolverError {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    match self {crate::errors::FrbSolverError::CapabilityError(field0) => { [0.into_dart(),
+field0.into_into_dart().into_dart()].into_dart() }
+crate::errors::FrbSolverError::EngineFailure(field0) => { [1.into_dart(),
+field0.into_into_dart().into_dart()].into_dart() }
+crate::errors::FrbSolverError::InvalidInput(field0) => { [2.into_dart(),
+field0.into_into_dart().into_dart()].into_dart() }
+crate::errors::FrbSolverError::TimeLimitExceeded(field0) => { [3.into_dart(),
+field0.into_into_dart().into_dart()].into_dart() }
+ _ => { unimplemented!(""); }}
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::errors::FrbSolverError {}
+impl flutter_rust_bridge::IntoIntoDart<crate::errors::FrbSolverError> for crate::errors::FrbSolverError {
+            fn into_into_dart(self) -> crate::errors::FrbSolverError {
+                self
+            }
         }
-    }
-}
-
-impl SseEncode for Option<Vec<f64>> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <bool>::sse_encode(self.is_some(), serializer);
-        if let Some(value) = self {
-            <Vec<f64>>::sse_encode(value, serializer);
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbTermDto {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    [
+                    self.variable_id.into_into_dart().into_dart(),
+self.coefficient.into_into_dart().into_dart()
+                ].into_dart()
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_request::FrbTermDto {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbTermDto> for crate::models::dto_request::FrbTermDto {
+            fn into_into_dart(self) -> crate::models::dto_request::FrbTermDto {
+                self
+            }
         }
-    }
-}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbVariableDto {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    [
+                    self.id.into_into_dart().into_dart(),
+self.name.into_into_dart().into_dart(),
+self.var_type.into_into_dart().into_dart(),
+self.lower_bound.into_into_dart().into_dart(),
+self.upper_bound.into_into_dart().into_dart()
+                ].into_dart()
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_request::FrbVariableDto {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbVariableDto> for crate::models::dto_request::FrbVariableDto {
+            fn into_into_dart(self) -> crate::models::dto_request::FrbVariableDto {
+                self
+            }
+        }
+// Codec=Dco (DartCObject based), see doc to use other codecs
+            impl flutter_rust_bridge::IntoDart for crate::models::dto_request::FrbVariableType {
+                fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+                    match self {
+                    Self::Continuous => 0.into_dart(),
+Self::Integer => 1.into_dart(),
+Self::Binary => 2.into_dart(),
+                    _ => unreachable!(),
+                }
+                }
+            }
+            impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::dto_request::FrbVariableType {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::dto_request::FrbVariableType> for crate::models::dto_request::FrbVariableType {
+            fn into_into_dart(self) -> crate::models::dto_request::FrbVariableType {
+                self
+            }
+        }
 
-impl SseEncode for u32 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_u32::<NativeEndian>(self).unwrap();
-    }
-}
+                impl SseEncode for String {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<Vec<u8>>::sse_encode(self.into_bytes(), serializer);}
+                }
+                
+                impl SseEncode for bool {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {serializer.cursor.write_u8(self as _).unwrap();}
+                }
+                
+                impl SseEncode for f64 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {serializer.cursor.write_f64::<NativeEndian>(self).unwrap();}
+                }
+                
+                impl SseEncode for crate::models::dto_request::FrbConstraintDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<Option<String>>::sse_encode(self.name, serializer);
+<Vec<crate::models::dto_request::FrbTermDto>>::sse_encode(self.terms, serializer);
+<crate::models::dto_request::FrbConstraintSense>::sse_encode(self.sense, serializer);
+<f64>::sse_encode(self.rhs, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_request::FrbConstraintSense {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(match self {crate::models::dto_request::FrbConstraintSense::LessThanOrEqual => { 0 }
+crate::models::dto_request::FrbConstraintSense::GreaterThanOrEqual => { 1 }
+crate::models::dto_request::FrbConstraintSense::Equal => { 2 }
+ _ => { unimplemented!(""); }}, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_request::FrbObjectiveDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<crate::models::dto_request::FrbOptimizationSense>::sse_encode(self.sense, serializer);
+<Vec<crate::models::dto_request::FrbTermDto>>::sse_encode(self.terms, serializer);
+<f64>::sse_encode(self.constant, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_request::FrbOptimizationSense {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(match self {crate::models::dto_request::FrbOptimizationSense::Minimize => { 0 }
+crate::models::dto_request::FrbOptimizationSense::Maximize => { 1 }
+ _ => { unimplemented!(""); }}, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_request::FrbSolveOptionsDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<Option<f64>>::sse_encode(self.time_limit_sec, serializer);
+<bool>::sse_encode(self.enable_logging, serializer);
+<Option<u32>>::sse_encode(self.thread_count, serializer);
+<String>::sse_encode(self.solver, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_request::FrbSolveRequest {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<String>::sse_encode(self.name, serializer);
+<Vec<crate::models::dto_request::FrbVariableDto>>::sse_encode(self.variables, serializer);
+<Vec<crate::models::dto_request::FrbConstraintDto>>::sse_encode(self.constraints, serializer);
+<crate::models::dto_request::FrbObjectiveDto>::sse_encode(self.objective, serializer);
+<crate::models::dto_request::FrbSolveOptionsDto>::sse_encode(self.options, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_response::FrbSolveResponse {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<crate::models::dto_response::FrbSolveStatus>::sse_encode(self.status, serializer);
+<Option<f64>>::sse_encode(self.objective_value, serializer);
+<Vec<f64>>::sse_encode(self.variable_values, serializer);
+<Option<Vec<f64>>>::sse_encode(self.dual_values, serializer);
+<crate::models::dto_response::FrbSolveStatistics>::sse_encode(self.statistics, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_response::FrbSolveStatistics {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i64>::sse_encode(self.solve_time_ms, serializer);
+<i64>::sse_encode(self.solve_time_us, serializer);
+<i64>::sse_encode(self.iterations, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_response::FrbSolveStatus {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(match self {crate::models::dto_response::FrbSolveStatus::Optimal => { 0 }
+crate::models::dto_response::FrbSolveStatus::Infeasible => { 1 }
+crate::models::dto_response::FrbSolveStatus::Unbounded => { 2 }
+crate::models::dto_response::FrbSolveStatus::TimeLimitExceeded => { 3 }
+crate::models::dto_response::FrbSolveStatus::NumericalError => { 4 }
+crate::models::dto_response::FrbSolveStatus::Unknown => { 5 }
+ _ => { unimplemented!(""); }}, serializer);}
+                }
+                
+                impl SseEncode for crate::errors::FrbSolverError {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {match self {crate::errors::FrbSolverError::CapabilityError(field0) => { <i32>::sse_encode(0, serializer); <String>::sse_encode(field0, serializer);
+ }
+crate::errors::FrbSolverError::EngineFailure(field0) => { <i32>::sse_encode(1, serializer); <String>::sse_encode(field0, serializer);
+ }
+crate::errors::FrbSolverError::InvalidInput(field0) => { <i32>::sse_encode(2, serializer); <String>::sse_encode(field0, serializer);
+ }
+crate::errors::FrbSolverError::TimeLimitExceeded(field0) => { <i32>::sse_encode(3, serializer); <f64>::sse_encode(field0, serializer);
+ }
+ _ => { unimplemented!(""); }}}
+                }
+                
+                impl SseEncode for crate::models::dto_request::FrbTermDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<u32>::sse_encode(self.variable_id, serializer);
+<f64>::sse_encode(self.coefficient, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_request::FrbVariableDto {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<u32>::sse_encode(self.id, serializer);
+<String>::sse_encode(self.name, serializer);
+<crate::models::dto_request::FrbVariableType>::sse_encode(self.var_type, serializer);
+<Option<f64>>::sse_encode(self.lower_bound, serializer);
+<Option<f64>>::sse_encode(self.upper_bound, serializer);}
+                }
+                
+                impl SseEncode for crate::models::dto_request::FrbVariableType {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(match self {crate::models::dto_request::FrbVariableType::Continuous => { 0 }
+crate::models::dto_request::FrbVariableType::Integer => { 1 }
+crate::models::dto_request::FrbVariableType::Binary => { 2 }
+ _ => { unimplemented!(""); }}, serializer);}
+                }
+                
+                impl SseEncode for i32 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {serializer.cursor.write_i32::<NativeEndian>(self).unwrap();}
+                }
+                
+                impl SseEncode for i64 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {serializer.cursor.write_i64::<NativeEndian>(self).unwrap();}
+                }
+                
+                impl SseEncode for Vec<crate::models::dto_request::FrbConstraintDto> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(self.len() as _, serializer);
+        for item in self { <crate::models::dto_request::FrbConstraintDto>::sse_encode(item, serializer); }}
+                }
+                
+                impl SseEncode for Vec<crate::models::dto_request::FrbTermDto> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(self.len() as _, serializer);
+        for item in self { <crate::models::dto_request::FrbTermDto>::sse_encode(item, serializer); }}
+                }
+                
+                impl SseEncode for Vec<crate::models::dto_request::FrbVariableDto> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(self.len() as _, serializer);
+        for item in self { <crate::models::dto_request::FrbVariableDto>::sse_encode(item, serializer); }}
+                }
+                
+                impl SseEncode for Vec<f64> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(self.len() as _, serializer);
+        for item in self { <f64>::sse_encode(item, serializer); }}
+                }
+                
+                impl SseEncode for Vec<u8> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(self.len() as _, serializer);
+        for item in self { <u8>::sse_encode(item, serializer); }}
+                }
+                
+                impl SseEncode for Option<String> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<bool>::sse_encode(self.is_some(), serializer);
+                if let Some(value) = self {
+                    <String>::sse_encode(value, serializer);
+                }}
+                }
+                
+                impl SseEncode for Option<f64> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<bool>::sse_encode(self.is_some(), serializer);
+                if let Some(value) = self {
+                    <f64>::sse_encode(value, serializer);
+                }}
+                }
+                
+                impl SseEncode for Option<u32> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<bool>::sse_encode(self.is_some(), serializer);
+                if let Some(value) = self {
+                    <u32>::sse_encode(value, serializer);
+                }}
+                }
+                
+                impl SseEncode for Option<Vec<f64>> {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<bool>::sse_encode(self.is_some(), serializer);
+                if let Some(value) = self {
+                    <Vec<f64>>::sse_encode(value, serializer);
+                }}
+                }
+                
+                impl SseEncode for u32 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {serializer.cursor.write_u32::<NativeEndian>(self).unwrap();}
+                }
+                
+                impl SseEncode for u8 {
+                    // Codec=Sse (Serialization based), see doc to use other codecs
+                    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {serializer.cursor.write_u8(self).unwrap();}
+                }
+                
 
-impl SseEncode for u8 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_u8(self).unwrap();
-    }
-}
 
-#[cfg(not(target_family = "wasm"))]
-mod io {
-    // This file is automatically generated, so please do not edit it.
-    // @generated by `flutter_rust_bridge`@ 2.13.0.
+        
+        
+        #[cfg(not(target_family = "wasm"))]
+        mod io {
+            // This file is automatically generated, so please do not edit it.
+// @generated by `flutter_rust_bridge`@ 2.13.0.
 
-    // Section: imports
 
-    use super::*;
-    use flutter_rust_bridge::for_generated::byteorder::{
-        NativeEndian, ReadBytesExt, WriteBytesExt,
-    };
-    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
-    use flutter_rust_bridge::{Handler, IntoIntoDart};
 
-    // Section: boilerplate
+// Section: imports
 
-    flutter_rust_bridge::frb_generated_boilerplate_io!();
-}
-#[cfg(not(target_family = "wasm"))]
-pub use io::*;
+use flutter_rust_bridge::{Handler, IntoIntoDart};
+use flutter_rust_bridge::for_generated::{Lockable, transform_result_dco, Lifetimeable};
+use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, WriteBytesExt, ReadBytesExt};use super::*;
 
-/// cbindgen:ignore
-#[cfg(target_family = "wasm")]
-mod web {
-    // This file is automatically generated, so please do not edit it.
-    // @generated by `flutter_rust_bridge`@ 2.13.0.
+// Section: boilerplate
 
-    // Section: imports
+flutter_rust_bridge::frb_generated_boilerplate_io!();
 
-    use super::*;
-    use flutter_rust_bridge::for_generated::byteorder::{
-        NativeEndian, ReadBytesExt, WriteBytesExt,
-    };
-    use flutter_rust_bridge::for_generated::wasm_bindgen;
-    use flutter_rust_bridge::for_generated::wasm_bindgen::prelude::*;
-    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
-    use flutter_rust_bridge::{Handler, IntoIntoDart};
 
-    // Section: boilerplate
+        }
+        #[cfg(not(target_family = "wasm"))]
+        pub use io::*;
+        
+        
+        /// cbindgen:ignore
+        #[cfg(target_family = "wasm")]
+        mod web {
+            // This file is automatically generated, so please do not edit it.
+// @generated by `flutter_rust_bridge`@ 2.13.0.
 
-    flutter_rust_bridge::frb_generated_boilerplate_web!();
-}
-#[cfg(target_family = "wasm")]
-pub use web::*;
+
+
+// Section: imports
+
+use flutter_rust_bridge::{Handler, IntoIntoDart};
+use flutter_rust_bridge::for_generated::{Lockable, transform_result_dco, Lifetimeable};
+use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, WriteBytesExt, ReadBytesExt};use super::*;
+                use flutter_rust_bridge::for_generated::wasm_bindgen;
+                use flutter_rust_bridge::for_generated::wasm_bindgen::prelude::*;
+
+
+// Section: boilerplate
+
+flutter_rust_bridge::frb_generated_boilerplate_web!();
+
+
+        }
+        #[cfg(target_family = "wasm")]
+        pub use web::*;
+        
