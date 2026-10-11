@@ -80,6 +80,7 @@ enforces a generous wall-clock ceiling as a regression tripwire.
 | Schedule shifts / tasks | Staff Scheduling, Lecture Timetabling (`exactlyOne`) |
 | Open warehouses / design networks | Warehouse Opening, Delivery Network |
 | Prove the UI won't freeze | Any app screen (tap Solve) |
+| Test a real in-app solve | `flutter test integration_test/ -d linux` (from `example/`) |
 | Measure latency at scale | `flutter test test/performance` (from root) |
 
 ## Expected outputs (sanity checks)

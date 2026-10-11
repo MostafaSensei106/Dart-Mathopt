@@ -2,6 +2,7 @@
 ///
 /// Used by both console entry points (`example/example.dart` and the
 /// legacy `lib/example.dart`) so their output can never drift apart.
+// ignore_for_file: avoid_print
 library;
 
 import 'package:dart_mathopt/dart_mathopt.dart';

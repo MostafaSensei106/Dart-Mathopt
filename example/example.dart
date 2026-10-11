@@ -1,6 +1,8 @@
 /// The main console example for `dart_mathopt`.
 ///
 /// Two parts, runnable together or separately:
+// ignore_for_file: avoid_print
+library;
 ///
 /// - Usage patterns (`patterns`): short API recipes — minimal LP, indexed
 ///   grids, logical helpers, one model on three engines, honest statuses,

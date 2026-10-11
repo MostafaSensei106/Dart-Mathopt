@@ -1,4 +1,7 @@
 import 'package:dart_mathopt/dart_mathopt.dart';
+@Timeout(Duration(minutes: 5))
+library;
+
 import 'package:dart_mathopt_example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +13,6 @@ import 'package:integration_test/integration_test.dart';
 ///
 /// Budget Diet is the subject: a millisecond-scale HiGHS LP with stable,
 /// famously asserted output (cheapest day $2.63).
-@Timeout(Duration(minutes: 5))
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
