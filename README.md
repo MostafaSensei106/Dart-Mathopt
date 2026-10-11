@@ -122,7 +122,7 @@ Initialize the entry point once — it finds and loads the native library, so ap
 import 'package:dart_mathopt/dart_mathopt.dart';
 
 Future<void> main() async {
-  await DartMathOpt.init(); // once, before the first solve()
+  await DartMathOpt.init();
   runApp(const MyApp());
 }
 ```
@@ -168,7 +168,7 @@ print(r.dualValues);     // null: integer models have no duals
 
 ## 🔬 Advanced Usage
 
-> Fragments below build on §2: `model` is a `MathOptModel`, `ship` an indexed grid.
+> Fragments below build on 2: `model` is a `MathOptModel`, `ship` an indexed grid.
 
 ### Indexed variables instead of manual indexing
 

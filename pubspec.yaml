@@ -1,7 +1,7 @@
 name: dart_mathopt
 description: "Mathematical optimization for Dart & Flutter (LP/MILP/QP) powered by HiGHS and Clarabel via Rust FFI."
 version: 0.0.1
-homepage:
+repository: https://github.com/MostafaSensei106/Dart-Mathopt
 
 environment:
   sdk: ^3.13.4

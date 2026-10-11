@@ -17,6 +17,6 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 /// capabilities, then executes.
 ///
 /// NOTE: no `unwrap`/`expect`/`panic` on this path — every failure is a
-/// typed [FrbSolverError] (see agents.md §11.2).
+/// typed [FrbSolverError] (see agents.md 11.2).
 Future<FrbSolveResponse> executeSolve({required FrbSolveRequest request}) =>
     RustLib.instance.api.crateApiSolverApiExecuteSolve(request: request);

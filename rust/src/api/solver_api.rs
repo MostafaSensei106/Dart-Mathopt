@@ -10,7 +10,7 @@ use crate::models::dto_response::FrbSolveResponse;
 /// capabilities, then executes.
 ///
 /// NOTE: no `unwrap`/`expect`/`panic` on this path — every failure is a
-/// typed [FrbSolverError] (see agents.md §11.2).
+/// typed [FrbSolverError] (see agents.md 11.2).
 pub async fn execute_solve(request: FrbSolveRequest) -> Result<FrbSolveResponse, FrbSolverError> {
     // 1. Route to the appropriate engine.
     let engine = route_request(&request)?;

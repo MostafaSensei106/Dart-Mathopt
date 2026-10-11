@@ -50,6 +50,6 @@ pub trait SolverEngine: Send + Sync {
         Ok(())
     }
 
-    /// Executes the solver. Takes a reference to avoid clones (see §11.1).
+    /// Executes the solver. Takes a reference to avoid clones (see 11.1).
     async fn solve(&self, request: &FrbSolveRequest) -> Result<FrbSolveResponse, FrbSolverError>;
 }

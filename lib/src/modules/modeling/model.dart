@@ -16,7 +16,7 @@ import 'variable.dart';
 
 /// The user-facing mathematical optimization model (fluent facade).
 ///
-/// Responsibilities ONLY (see agents.md §9):
+/// Responsibilities ONLY (see agents.md 9):
 /// 1. Fluent API for building models.
 /// 2. Sequential variable ID allocation (0, 1, 2, ...) for native speed.
 /// 3. Compiling ASTs via [LinearExpressionCompiler] and crossing the FRB

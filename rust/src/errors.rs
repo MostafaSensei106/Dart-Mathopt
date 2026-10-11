@@ -2,7 +2,7 @@ use thiserror::Error;
 
 /// Central error type returned across the FRB boundary.
 ///
-/// Rules (see agents.md §11):
+/// Rules (see agents.md 11):
 /// - No `panic!`/`unwrap()`/`expect()` in engine code; convert every
 ///   failure into one of these variants.
 /// - Keep payloads to plain strings/ints so FRB can map them to Dart.
