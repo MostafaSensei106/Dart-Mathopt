@@ -10,7 +10,7 @@ void main() {
     });
 
     test('initMathOptLogging attaches and detaches safely', () {
-      final cancelFirst = initMathOptLogging(level: Level.WARNING);
+      final cancelFirst = initMathOptLogging();
       final cancelSecond = initMathOptLogging(level: Level.SEVERE);
       expect(cancelFirst, isA<void Function()>());
       expect(cancelSecond, isA<void Function()>());
