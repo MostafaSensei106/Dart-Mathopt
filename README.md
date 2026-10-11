@@ -58,6 +58,11 @@ Expressions start from a variable or an expression (`x * 3`, not `3 * x`
 
 - Models must be linear: products of variables are rejected with
   `ModelValidationException` (at expression build or at compile time).
+- Non-finite math is rejected before FFI with the culprit named
+  (constraint name or `objective`): NaN bounds at creation, NaN/infinite
+  coefficients, constants, and right-hand sides at compile time.
+  Infinite *bounds* stay legal (open bounds, e.g. `lower:
+  double.negativeInfinity`).
 - Quadratic (QP) and conic (SOCP) DTOs are not wired yet; all engines
   currently receive linear models only.
 - Unsupported engine/model combinations are rejected before FFI with
@@ -124,6 +129,36 @@ print(r.dualValues);     // null: MILP has no duals
 trees (depth O(log n)) so large sums avoid deep `Add` chains; they are
 equivalent to hand-written loops (`test/sums_test.dart`).
 
+## Indexed variables
+
+```dart
+final ship = model.continuousGrid('s', rows: 3, cols: 4, lower: 0);
+ship[0][1];          // Variable s_0_1
+ship.row(0).sum;     // supply row as one expression
+ship.column(2);      // one column
+model.addAll([
+  for (var i = 0; i < 3; i++) ship.row(i).sum <= supply[i],
+  for (var j = 0; j < 4; j++) Expr.sumVars(ship.column(j)).eq(demand[j]),
+]);
+```
+
+Arbitrary dimensions via `model.indexed('ship', [f, w, t], VariableType.continuous, lower: 0)`
+(`at([i, j, t])`, `select({0: i})`, `sumsAlong(dim)`); names are stable
+row-major `'name_i_j_...'`, out-of-range indices throw named errors.
+Integer/binary grids: `integerGrid` / `binaryGrid`.
+
+## Choice constraints
+
+```dart
+model.add(exactlyOne(sections)); // Σ == 1, binary variables required
+model.add(atMostOne(options));   // Σ <= 1
+model.add(atLeastOne(backups));  // Σ >= 1
+```
+
+These return plain constraints through the standard compile path —
+no alternate pipeline — and reject empty or non-binary input with
+named `ModelValidationException`s.
+
 ## Engine selection
 
 ```dart
@@ -158,6 +193,12 @@ await DartMathOpt.init(config: MathOptConfig.fastLp());
   before trusting values.
 - `valueOf(variable)` returns `double.nan` for missing entries;
   `tryValueOf(variable)` returns `null` instead.
+- Availability vs quality are separate: `hasSolution` tells whether the
+  engine returned a usable primal (`optimal` always; `timeLimitExceeded`
+  only with all-finite values, i.e. an incumbent; anything else means
+  none). `requireSolution()` returns it or throws
+  `SolverExecutionException`; the returned `Solution` carries `isOptimal`
+  and `status` so an incumbent is never mistaken for proven optimal.
 - Time limits surface as `status == SolveStatus.timeLimitExceeded`,
   not as an exception.
 - Error types are distinct without string parsing: `ModelValidationException`
@@ -208,16 +249,16 @@ for validation and cannot add an executable backend by itself.
 
 ```bash
 cargo build --release --manifest-path rust/Cargo.toml  # once
-flutter test                 # 90 tests, all suites
+flutter test                 # 117 tests, all suites
 flutter test test/performance  # scaling, latency, responsiveness
 cargo test --manifest-path rust/Cargo.toml  # Rust units
 cd example && flutter test test/showcase_smoke_test.dart
 ```
 
-Suites: config, registry, compiler, operators, sums, LP/MILP/MicroLP
-correctness, robustness, stress, model cache, performance. New solvers
-should add a `*_problems_test.dart`; open an issue first for major
-changes.
+Suites: config, registry, compiler, operators, sums, indexed, logic,
+solution, LP/MILP/MicroLP correctness, robustness, stress, model cache,
+performance, README examples. New solvers should add a
+`*_problems_test.dart`; open an issue first for major changes.
 
 ## License
 

@@ -38,6 +38,8 @@ export 'src/modules/modeling/ast/arithmetic_nodes.dart';
 export 'src/modules/modeling/ast/leaf_nodes.dart';
 export 'src/modules/modeling/ast/node.dart';
 export 'src/modules/modeling/constraints.dart';
+export 'src/modules/modeling/indexed.dart';
+export 'src/modules/modeling/logic.dart';
 export 'src/modules/modeling/model.dart';
 export 'src/modules/modeling/sums.dart';
 export 'src/modules/modeling/variable.dart';

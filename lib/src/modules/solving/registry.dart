@@ -98,8 +98,8 @@ class SolverRegistry {
       );
   }
 
-  /// Returns `'highs'` or `'clarabel'` (or a custom name) for the given
-  /// problem shape. Kept for backward compatibility.
+  /// Returns the engine name for the given problem shape.
+  /// Kept for backward compatibility.
   static String route({
     required bool hasInteger,
     required bool hasQuadratic,

@@ -61,6 +61,62 @@ void main() {
         throwsA(isA<ModelValidationException>()),
       );
     });
+
+    test('NaN bounds rejected at creation, infinities allowed', () async {
+      final model = MathOptModel(name: 'Bounds');
+      expect(
+        () => model.continuous('nan', lower: double.nan),
+        throwsA(isA<ModelValidationException>()),
+      );
+      final open = model.continuous(
+        'open',
+        lower: double.negativeInfinity,
+        upper: double.infinity,
+      );
+      expect(open.lowerBound, double.negativeInfinity);
+      model.add(open <= 5);
+      model.maximize(open.asExpr);
+      final r = await model.solve();
+      expectOptimal(r);
+      expectCloseTo(r.valueOf(open), 5.0);
+    });
+
+    test(
+      'NaN coefficient rejected before FFI, naming the constraint',
+      () async {
+        final model = MathOptModel(name: 'NaN');
+        final x = model.continuous('x', lower: 0);
+        model.add((x * double.nan <= 1).named('bad_row'));
+        model.maximize(x.asExpr);
+        await expectLater(
+          model.solve(),
+          throwsA(
+            isA<ModelValidationException>().having(
+              (e) => e.message,
+              'message',
+              allOf(contains('bad_row'), contains('Non-finite')),
+            ),
+          ),
+        );
+      },
+    );
+
+    test('NaN objective constant rejected before FFI', () async {
+      final model = MathOptModel(name: 'NaNObj');
+      final x = model.continuous('x', lower: 0, upper: 1);
+      model.add(x <= 1);
+      model.maximize(x.asExpr + double.nan);
+      await expectLater(
+        model.solve(),
+        throwsA(
+          isA<ModelValidationException>().having(
+            (e) => e.message,
+            'message',
+            contains('objective'),
+          ),
+        ),
+      );
+    });
   });
 
   group('constraint constant folding', () {

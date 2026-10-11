@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
+import '../../core/exceptions.dart';
 import '../modeling/variable.dart';
 
 /// High-level solve status surfaced to Dart callers.
@@ -61,6 +62,43 @@ class SolveResult {
   /// Solution value for [variable], or `null` when absent.
   double? tryValueOf(Variable variable) => variableValues[variable];
 
+  /// Whether the engine returned a usable primal solution.
+  ///
+  /// Data-driven, not status-only: `optimal` always qualifies;
+  /// `timeLimitExceeded` qualifies when every reported value is finite
+  /// (an incumbent); every other status means no usable solution, even
+  /// if the engine returned numbers.
+  bool get hasSolution => switch (status) {
+    SolveStatus.optimal => true,
+    SolveStatus.timeLimitExceeded => variableValues.values.every(
+      (v) => v.isFinite,
+    ),
+    _ => false,
+  };
+
+  /// Returns the usable solution, or throws [SolverExecutionException]
+  /// when none is available.
+  ///
+  /// This guarantees availability, not quality: an incumbent from a
+  /// time limit is returned as-is. Check [Solution.isOptimal] (or
+  /// [status]) before claiming optimality.
+  Solution requireSolution() {
+    if (!hasSolution) {
+      throw SolverExecutionException(
+        'No usable solution available (status: $status).',
+        -3,
+      );
+    }
+    return Solution(
+      objectiveValue: objectiveValue,
+      variableValues: Map.unmodifiable(variableValues),
+      dualValues: dualValues == null ? null : List.unmodifiable(dualValues!),
+      statistics: statistics,
+      status: status,
+      isOptimal: isOptimal,
+    );
+  }
+
   /// `true` when the solver proved optimality.
   bool get isOptimal => status == SolveStatus.optimal;
 
@@ -83,4 +121,37 @@ class SolveResult {
 
   @override
   int get hashCode => Object.hash(status, objectiveValue, statistics);
+}
+
+/// A usable primal solution extracted from a [SolveResult].
+///
+/// Obtained via [SolveResult.requireSolution], which guarantees
+/// availability but not quality: check [isOptimal] (or [status]) before
+/// claiming the engine proved optimality. `objectiveValue` is null when
+/// the engine reported none (possible for some time-limit incumbents).
+@immutable
+class Solution {
+  final double? objectiveValue;
+  final Map<Variable, double> variableValues;
+  final List<double>? dualValues;
+  final SolveStatistics statistics;
+  final SolveStatus status;
+  final bool isOptimal;
+
+  const Solution({
+    required this.objectiveValue,
+    required this.variableValues,
+    required this.dualValues,
+    required this.statistics,
+    required this.status,
+    required this.isOptimal,
+  });
+
+  double valueOf(Variable variable) => variableValues[variable] ?? double.nan;
+
+  double? tryValueOf(Variable variable) => variableValues[variable];
+
+  @override
+  String toString() =>
+      'Solution(status: $status, objectiveValue: $objectiveValue)';
 }

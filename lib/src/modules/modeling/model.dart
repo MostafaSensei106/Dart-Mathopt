@@ -11,6 +11,7 @@ import '../solving/results.dart';
 import 'ast/node.dart';
 import 'compiler.dart';
 import 'constraints.dart';
+import 'indexed.dart';
 import 'variable.dart';
 
 /// The user-facing mathematical optimization model (fluent facade).
@@ -88,9 +89,11 @@ class MathOptModel {
     VariableType type, {
     double? lower,
     double? upper,
-  }) =>
-      VarArray._(
-          name, dimensions, _indexedVars(name, dimensions, type, lower, upper));
+  }) => VarArray.internal(
+    name,
+    dimensions,
+    _indexedVars(name, dimensions, type, lower, upper),
+  );
 
   /// Creates a 2-D grid of continuous variables with `grid[i][j]`,
   /// `grid.row(i)`, and `grid.column(j)` views.
@@ -100,12 +103,10 @@ class MathOptModel {
     required int cols,
     double? lower,
     double? upper,
-  }) =>
-      VarGrid._(
-          name,
-          [rows, cols],
-          _indexedVars(name, [rows, cols], VariableType.continuous, lower,
-              upper));
+  }) => VarGrid.internal(name, [
+    rows,
+    cols,
+  ], _indexedVars(name, [rows, cols], VariableType.continuous, lower, upper));
 
   /// Creates a 2-D grid of integer variables (see [continuousGrid]).
   VarGrid integerGrid(
@@ -114,12 +115,10 @@ class MathOptModel {
     required int cols,
     double? lower,
     double? upper,
-  }) =>
-      VarGrid._(
-          name,
-          [rows, cols],
-          _indexedVars(
-              name, [rows, cols], VariableType.integer, lower, upper));
+  }) => VarGrid.internal(name, [
+    rows,
+    cols,
+  ], _indexedVars(name, [rows, cols], VariableType.integer, lower, upper));
 
   /// Creates a 2-D grid of binary variables (see [continuousGrid]).
   VarGrid binaryGrid(
@@ -128,12 +127,10 @@ class MathOptModel {
     required int cols,
     double? lower,
     double? upper,
-  }) =>
-      VarGrid._(
-          name,
-          [rows, cols],
-          _indexedVars(name, [rows, cols], VariableType.binary, lower,
-              upper));
+  }) => VarGrid.internal(name, [
+    rows,
+    cols,
+  ], _indexedVars(name, [rows, cols], VariableType.binary, lower, upper));
 
   List<Variable> _indexedVars(
     String name,
@@ -147,7 +144,8 @@ class MathOptModel {
     }
     if (dimensions.any((d) => d <= 0)) {
       throw ArgumentError(
-          '"$name": every dimension must be positive, got $dimensions.');
+        '"$name": every dimension must be positive, got $dimensions.',
+      );
     }
     Variable maker(String n) => switch (type) {
       VariableType.continuous => continuous(n, lower: lower, upper: upper),
@@ -170,10 +168,15 @@ class MathOptModel {
     walk(0);
     return vars;
   }
+
+  Variable _addVariable(
+    String name,
+    VariableType type,
+    double? lower,
+    double? upper,
+  ) {
     if ((lower != null && lower.isNaN) || (upper != null && upper.isNaN)) {
-      throw ModelValidationException(
-        'Variable "$name" has a NaN bound.',
-      );
+      throw ModelValidationException('Variable "$name" has a NaN bound.');
     }
     if (lower != null && upper != null && lower > upper) {
       throw ModelValidationException(
@@ -338,6 +341,11 @@ class MathOptModel {
   >
   _compileFresh(ExpressionNode objectiveNode) async {
     final objCompiler = LinearExpressionCompiler()..compile(objectiveNode);
+    _checkFiniteTerms(
+      objCompiler.sortedTerms,
+      objCompiler.constant,
+      'objective',
+    );
 
     final frbVariables = _variables
         .map(
@@ -357,11 +365,17 @@ class MathOptModel {
     // Compile constraints to DTOs, yielding per constraint so a big
     // model never blocks the event loop for more than one row's work.
     final frbConstraints = <dto.FrbConstraintDto>[];
+    var row = 0;
     for (final c in _constraints) {
       final cCompiler = LinearExpressionCompiler()..compile(c.expression);
       // Move the constant to the RHS:  (terms + k) (sense) rhs
       // -> terms (sense) (rhs - k).
       final adjustedRhs = c.rhs - cCompiler.constant;
+      _checkFiniteTerms(
+        cCompiler.sortedTerms,
+        adjustedRhs,
+        'constraint ${c.name ?? '#$row'}',
+      );
       frbConstraints.add(
         dto.FrbConstraintDto(
           name: c.name,
@@ -373,6 +387,7 @@ class MathOptModel {
           rhs: adjustedRhs,
         ),
       );
+      row++;
       await Future<void>.delayed(Duration.zero);
     }
 
@@ -391,6 +406,28 @@ class MathOptModel {
   }
 
   // -- Private mappers --
+
+  /// Rejects NaN/infinite coefficients, constants, and right-hand sides
+  /// before FFI. Infinite variable *bounds* stay legal (open bounds);
+  /// non-finite math does not.
+  static void _checkFiniteTerms(
+    List<MapEntry<int, double>> terms,
+    double rhsOrConstant,
+    String where,
+  ) {
+    if (!rhsOrConstant.isFinite) {
+      throw ModelValidationException(
+        'Non-finite value ($rhsOrConstant) in $where.',
+      );
+    }
+    for (final e in terms) {
+      if (!e.value.isFinite) {
+        throw ModelValidationException(
+          'Non-finite coefficient (${e.value}) for variable id ${e.key} in $where.',
+        );
+      }
+    }
+  }
 
   SolveResult _mapResponse(dto_resp.FrbSolveResponse response) {
     final status = switch (response.status) {

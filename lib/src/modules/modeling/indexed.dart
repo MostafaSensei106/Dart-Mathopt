@@ -18,15 +18,21 @@ class VarArray extends Iterable<Variable> {
   final List<int> dimensions;
   final List<Variable> _vars;
 
-  VarArray._(this.name, List<int> dimensions, List<Variable> vars)
-      : dimensions = List.unmodifiable(dimensions),
-        _vars = List.unmodifiable(vars) {
+  /// Assembles an indexed view over already-allocated [vars].
+  ///
+  /// Validates dimensions against the variable count. Internal: prefer
+  /// [MathOptModel.indexed] and the grid factories.
+  @internal
+  VarArray.internal(this.name, List<int> dimensions, List<Variable> vars)
+    : dimensions = List.unmodifiable(dimensions),
+      _vars = List.unmodifiable(vars) {
     if (dimensions.isEmpty) {
       throw ArgumentError('"$name": dimensions must not be empty.');
     }
     if (dimensions.any((d) => d <= 0)) {
       throw ArgumentError(
-          '"$name": every dimension must be positive, got $dimensions.');
+        '"$name": every dimension must be positive, got $dimensions.',
+      );
     }
     var total = 1;
     for (final d in dimensions) {
@@ -34,11 +40,13 @@ class VarArray extends Iterable<Variable> {
     }
     if (vars.length != total) {
       throw ArgumentError(
-          '"$name": $total variables required for $dimensions, got ${vars.length}.');
+        '"$name": $total variables required for $dimensions, got ${vars.length}.',
+      );
     }
   }
 
   /// Total element count.
+  @override
   int get length => _vars.length;
 
   /// Number of dimensions.
@@ -49,7 +57,8 @@ class VarArray extends Iterable<Variable> {
   Variable at(List<int> indices) {
     if (indices.length != rank) {
       throw ArgumentError(
-          'Expected $rank indices for "$name" with dimensions $dimensions, got ${indices.length}.');
+        'Expected $rank indices for "$name" with dimensions $dimensions, got ${indices.length}.',
+      );
     }
     var flat = 0;
     for (var d = 0; d < rank; d++) {
@@ -57,7 +66,8 @@ class VarArray extends Iterable<Variable> {
       final size = dimensions[d];
       if (idx < 0 || idx >= size) {
         throw RangeError(
-            'Index $idx out of range for dimension $d (size $size) of "$name".');
+          'Index $idx out of range for dimension $d (size $size) of "$name".',
+        );
       }
       flat = flat * size + idx;
     }
@@ -71,12 +81,14 @@ class VarArray extends Iterable<Variable> {
     for (final entry in fixed.entries) {
       if (entry.key < 0 || entry.key >= rank) {
         throw ArgumentError(
-            'Dimension ${entry.key} out of range for "$name" with dimensions $dimensions.');
+          'Dimension ${entry.key} out of range for "$name" with dimensions $dimensions.',
+        );
       }
       final size = dimensions[entry.key];
       if (entry.value < 0 || entry.value >= size) {
         throw RangeError(
-            'Index ${entry.value} out of range for dimension ${entry.key} (size $size) of "$name".');
+          'Index ${entry.value} out of range for dimension ${entry.key} (size $size) of "$name".',
+        );
       }
     }
     final out = <Variable>[];
@@ -106,11 +118,11 @@ class VarArray extends Iterable<Variable> {
   List<ExpressionNode> sumsAlong(int dim) {
     if (dim < 0 || dim >= rank) {
       throw ArgumentError(
-          'Dimension $dim out of range for "$name" with dimensions $dimensions.');
+        'Dimension $dim out of range for "$name" with dimensions $dimensions.',
+      );
     }
     return [
-      for (var i = 0; i < dimensions[dim]; i++)
-        Expr.sumVars(select({dim: i})),
+      for (var i = 0; i < dimensions[dim]; i++) Expr.sumVars(select({dim: i})),
     ];
   }
 
@@ -124,11 +136,14 @@ class VarArray extends Iterable<Variable> {
 /// unmodifiable views (no copies); `grid[i]` is row `i`.
 @immutable
 class VarGrid extends VarArray {
-  VarGrid._(String name, List<int> dimensions, List<Variable> vars)
-      : super._(name, dimensions, vars) {
+  /// Assembles a 2-D view. Internal: prefer the grid factories.
+  @internal
+  VarGrid.internal(String name, List<int> dimensions, List<Variable> vars)
+    : super.internal(name, dimensions, vars) {
     if (dimensions.length != 2) {
       throw ArgumentError(
-          '"$name": a grid needs exactly 2 dimensions, got $dimensions.');
+        '"$name": a grid needs exactly 2 dimensions, got $dimensions.',
+      );
     }
   }
 
@@ -141,8 +156,7 @@ class VarGrid extends VarArray {
   /// Row `i` as an unmodifiable view.
   List<Variable> row(int i) {
     if (i < 0 || i >= rows) {
-      throw RangeError(
-          'Row $i out of range for "$name" with $rows rows.');
+      throw RangeError('Row $i out of range for "$name" with $rows rows.');
     }
     return List.unmodifiable(select({0: i}));
   }
@@ -151,7 +165,8 @@ class VarGrid extends VarArray {
   List<Variable> column(int j) {
     if (j < 0 || j >= cols) {
       throw RangeError(
-          'Column $j out of range for "$name" with $cols columns.');
+        'Column $j out of range for "$name" with $cols columns.',
+      );
     }
     return select({1: j});
   }
