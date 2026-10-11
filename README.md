@@ -35,7 +35,7 @@
 | :--- | :--- |
 | **Modeling** | Variables, objectives, and constraints written as equations (`x + y <= 4`); indexed variables (`continuousGrid`, N-D `indexed`); balanced `Expr.sum` / `Expr.dot` builders that avoid deep expression chains |
 | **Choice constraints** | `exactlyOne` / `atMostOne` / `atLeastOne` over binary variables, compiled through the standard constraint path |
-| **Engines** | HiGHS (LP/MILP, C++), Clarabel (LP, Rust interior-point), MicroLP (LP, pure Rust via `good_lp`) — selected with `SolverPreference`, with unsupported combinations rejected before FFI |
+| **Engines** | HiGHS (LP/MILP, C++), Clarabel (LP, Rust interior-point), MicroLP (LP, pure Rust via `good_lp`), selected with `SolverPreference`; unsupported combinations are rejected before FFI |
 | **Web builds** | HiGHS is excluded from web builds by cargo feature; Clarabel and MicroLP compile to WASM with `flutter_rust_bridge_codegen build-web` |
 | **Configuration** | `DartMathOpt.init(config:)` with presets (`fastLp` / `accurateMilp` / `lowMemory` / `verbose`); per-call `SolveOptions` override the global config field by field |
 | **Repeated solves** | The compiled request is reused while the model is unchanged (`lastSolveWasCached`); any structural edit invalidates it |
@@ -49,7 +49,7 @@
 
 > Optimization code usually ends up as index arithmetic: hand-built matrices, manual bounds, and often a separate backend service just to run a solver.
 
-When a Dart or Flutter application needs to make a computed decision — how much to produce, who works which shift, which warehouses to open — the usual options are to reimplement solver logic by hand or to send the problem to a server. `dart_mathopt` keeps that work inside the Dart codebase: the model is written next to the application code, the computation runs locally in native engines, and engine limitations are reported before the call crosses into native code rather than after.
+When a Dart or Flutter application needs to make a computed decision, such as how much to produce, who works which shift, or which warehouses to open, the usual options are to reimplement solver logic by hand or to send the problem to a server. `dart_mathopt` keeps that work inside the Dart codebase: the model is written next to the application code, the computation runs locally in native engines, and engine limitations are reported before the call crosses into native code rather than after.
 
 ### 📊 The three engines compared
 
@@ -79,7 +79,7 @@ This library connects Flutter and Rust through a bridge, so the Rust compiler is
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
   ```
 
-> **Note:** For Flutter applications, the platform build scripts compile the Rust core during the normal app build — no manual `cargo` step is needed. When working on this repository itself (`flutter test`, `dart run example/...`), build the native library once so tests can load it:
+> **Note:** For Flutter applications, the platform build scripts compile the Rust core during the normal app build, so no manual `cargo` step is needed. When working on this repository itself (`flutter test`, `dart run example/...`), build the native library once so tests can load it:
 > ```bash
 > cargo build --release --manifest-path rust/Cargo.toml
 > ```
@@ -116,7 +116,7 @@ flutter pub get
 
 ### 1. Initialize once
 
-Initialize the entry point once — it finds and loads the native library, so application code never deals with FFI setup.
+Initialize the entry point once: it finds and loads the native library, so application code never deals with FFI setup.
 
 ```dart
 import 'package:dart_mathopt/dart_mathopt.dart';
@@ -207,7 +207,7 @@ await DartMathOpt.init(config: MathOptConfig.fastLp());
 // accurateMilp() | lowMemory() | verbose() | balanced (default)
 
 await model.solve(); // compiles the model
-await model.solve(); // cache hit — model.lastSolveWasCached == true
+await model.solve(); // cache hit: model.lastSolveWasCached == true
 ```
 
 ---
@@ -216,21 +216,31 @@ await model.solve(); // cache hit — model.lastSolveWasCached == true
 
 One model, three backends. `SolverPreference.auto` selects HiGHS when it is part of the build (desktop and mobile) and falls back to pure-Rust MicroLP otherwise (web). Requesting an engine that is not in the build returns an `InvalidInput` error listing the available ones.
 
-### HiGHS — LP and integer models (C++)
+### HiGHS: LP and integer models (C++)
 
-HiGHS solves linear programs with simplex methods and integer models with branch-and-bound. In this package it is driven through a row-oriented model, and it is the only engine that accepts integer/binary variables and the only one that returns dual values (for pure LP). It is written in C++ (`highs-sys`), so builds need a C++ toolchain — which is why web builds leave it out through the `highs` cargo feature (`default = ["highs"]`, web builds pass `--no-default-features`).
+**Algorithm:** simplex methods for linear programs, branch-and-bound for integer models.
 
-**Use it for:** production planning, assignment of people to shifts, knapsack/packing choices, staff scheduling, facility location — any model with yes/no or counting decisions — and LP models where per-constraint dual values are needed.
+**Wired as:** a row-oriented model in this package. The only engine that accepts integer/binary variables, and the only one that returns dual values (pure LP only).
 
-### Clarabel — interior-point LP (Rust)
+**Build note:** written in C++ (`highs-sys`), so builds need a C++ toolchain. Web builds leave it out through the `highs` cargo feature (`default = ["highs"]`; web builds pass `--no-default-features`).
 
-Clarabel implements a primal-dual interior-point method with homogeneous embedding. This package feeds it linear models in its standard conic form with a zero quadratic term; quadratic and conic shapes remain possible later once quadratic DTOs are added. Integer variables are rejected before FFI, and conic duals are not exposed as per-row LP duals.
+**Use it for:** production planning, assignment of people to shifts, knapsack/packing choices, staff scheduling, facility location (any model with yes/no or counting decisions), and LP models where per-constraint dual values are needed.
+
+### Clarabel: interior-point LP (Rust)
+
+**Algorithm:** primal-dual interior-point method with homogeneous embedding.
+
+**Wired as:** linear models in its standard conic form with a zero quadratic term. Quadratic and conic shapes remain possible later, once quadratic DTOs are added. Integer variables are rejected before FFI, and conic duals are not exposed as per-row LP duals.
 
 **Use it for:** solving LP models with a Rust interior-point engine as an alternative to simplex, and later for quadratic and conic models once they are wired through.
 
-### MicroLP — portable simplex (Rust via `good_lp`)
+### MicroLP: portable simplex (Rust via `good_lp`)
 
-MicroLP implements a bounded-variable simplex method in pure Rust, used here through the `good_lp` modeling facade (with `anyhow` context converted to the typed `FrbSolverError` at the boundary). Its declared capability is LP only. Its practical value is portability: with no C++ dependency it compiles anywhere Rust compiles, including `wasm32-unknown-unknown` for web, where it serves as the `auto` fallback.
+**Algorithm:** bounded-variable simplex method in pure Rust.
+
+**Wired as:** driven through the `good_lp` modeling facade, with `anyhow` context converted to the typed `FrbSolverError` at the boundary. Declared capability is LP only.
+
+**Build note:** with no C++ dependency it compiles anywhere Rust compiles, including `wasm32-unknown-unknown` for web, where it serves as the `auto` fallback.
 
 **Use it for:** environments without a C++ toolchain, and web targets where HiGHS cannot be built.
 
@@ -271,7 +281,7 @@ Seeded models, release native build, Linux x64 development machine. `wall` is th
 | transport 50v/15c | p50 4 ms / ~0 ms | p50 2 ms / ~0 ms | p50 2 ms / ~0 ms |
 | factory 100v/20c | p50 21 ms / 1 ms | p50 21 ms / 2 ms | p50 25 ms / 0 ms |
 
-On small and medium linear models the three engines finish within measurement noise of each other — the wall time is spent on Dart-side compilation and bridge transfer rather than inside the solver. MicroLP matches the other two on LP while requiring no C++.
+On small and medium linear models the three engines finish within measurement noise of each other. The wall time is spent on Dart-side compilation and bridge transfer rather than inside the solver. MicroLP matches the other two on LP while requiring no C++.
 
 ### 🔬 Scaling snapshot (HiGHS, `auto` default)
 
@@ -281,7 +291,7 @@ On small and medium linear models the three engines finish within measurement no
 | factory 400v/60c, first solve | ~314 ms | 9 ms |
 | factory 400v/60c, repeated solve (cache hit) | ~12 ms | 9 ms |
 | knapsack 30 / assignment 25v/64v (MILP) | 4–7 ms | 3–7 ms |
-| knapsack 80 items (MILP) | ~64 ms | — |
+| knapsack 80 items (MILP) | ~64 ms | not recorded |
 | delivery 15x40 LP | ~23 ms | 2 ms |
 
 ### 🎛️ Latency distribution and responsiveness
@@ -310,13 +320,13 @@ Key entry points: `DartMathOpt` with `MathOptConfig`, the modeling layer (`VarAr
 
 ## 🌐 Web builds
 
-Only the C++ HiGHS engine has no web path — and it is not compiled for web at all. Clarabel and MicroLP are pure Rust and build to WASM with the prepared command:
+Only the C++ HiGHS engine has no web path, and it is not compiled for web at all. Clarabel and MicroLP are pure Rust and build to WASM with the prepared command:
 
 ```bash
 flutter_rust_bridge_codegen build-web --rust-root rust --cargo-build-args="--no-default-features"
 ```
 
-`--no-default-features` drops the `highs` cargo feature, leaving Clarabel and MicroLP in the registry: `auto` falls back to MicroLP for LP, and an explicit `highs` request returns an `InvalidInput` error listing the available engines. Integer models are rejected before FFI on web because no integer-capable engine is in that build — use a desktop or mobile build for those.
+`--no-default-features` drops the `highs` cargo feature, leaving Clarabel and MicroLP in the registry: `auto` falls back to MicroLP for LP, and an explicit `highs` request returns an `InvalidInput` error listing the available engines. Integer models are rejected before FFI on web because no integer-capable engine is in that build, so use a desktop or mobile build for those.
 
 > Build status: the command above produces `web/pkg/` (`dart_mathopt_bg.wasm`, with no HiGHS in the build graph), and `cargo test --no-default-features` passes 4/4. Running in a browser is still pending (no browser in this environment).
 
