@@ -383,9 +383,10 @@ Contributions are welcome! Here's how to get started:
     `git push origin feature/YourFeature`
 5.  Open a pull request.
 
-> 💡 New solvers: implement `SolverEngine` in Rust and register it in `engine/registry.rs`, mirror the capabilities in Dart's `SolverRegistry`, and add a `*_problems_test.dart`. Open an issue first for major ideas.
+> 💡 Please read our **[Contributing Guidelines](CONTRIBUTING.md)** and open an issue first for major feature ideas or changes.
 
 ---
+
 ## ⚖️ License
 
 This project is dual-licensed:
@@ -397,7 +398,7 @@ This project is dual-licensed:
 2. **Commercial License**:
    - Required for using the library in proprietary / closed-source products.
    - Only available from the copyright holder (Mostafa Mahmoud).
-   - Contact: [mostafasensei106@gmail.com](mailto:mostafasensei106@gmail.com)
+   - Contact: [mostafasensei106@gmail.com]
 
 See the [LICENSE](LICENSE) file for full details.
 
