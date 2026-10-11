@@ -6,9 +6,9 @@ import '../solve_time.dart';
 
 /// Detail screen: story, difficulty, modeling notes, live native solve.
 class ProblemDetailScreen extends StatefulWidget {
-  final DemoProblem problem;
 
-  const ProblemDetailScreen({super.key, required this.problem});
+  const ProblemDetailScreen({required this.problem, super.key});
+  final DemoProblem problem;
 
   @override
   State<ProblemDetailScreen> createState() => _ProblemDetailScreenState();
@@ -141,10 +141,10 @@ class _ProblemDetailScreenState extends State<ProblemDetailScreen> {
 }
 
 class _Section extends StatelessWidget {
-  final String title;
-  final String body;
 
   const _Section({required this.title, required this.body});
+  final String title;
+  final String body;
 
   @override
   Widget build(BuildContext context) {
@@ -170,10 +170,10 @@ class _Section extends StatelessWidget {
 }
 
 class _SectionList extends StatelessWidget {
-  final String title;
-  final List<String> items;
 
   const _SectionList({required this.title, required this.items});
+  final String title;
+  final List<String> items;
 
   @override
   Widget build(BuildContext context) {

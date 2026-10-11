@@ -6,7 +6,7 @@
 library;
 
 import 'package:dart_mathopt/dart_mathopt.dart';
-import 'package:dart_mathopt_example/tour.dart';
+import 'tour.dart';
 
 Future<void> main() async {
   await DartMathOpt.init();

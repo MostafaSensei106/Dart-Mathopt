@@ -1,7 +1,7 @@
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../../../helpers/test_helpers.dart';
 
 /// Typed solutions: availability vs quality.
 /// Status-driven cases are pure unit checks on constructed results;
@@ -11,8 +11,7 @@ void main() {
 
   SolveResult fake({
     required SolveStatus status,
-    double? objective,
-    required Map<Variable, double> values,
+    required Map<Variable, double> values, double? objective,
   }) => SolveResult(
     status: status,
     objectiveValue: objective,

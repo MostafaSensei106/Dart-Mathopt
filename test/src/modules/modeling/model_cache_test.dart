@@ -1,13 +1,14 @@
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../../../helpers/test_helpers.dart';
 
 /// Compiled-model cache: repeated solves skip AST recompilation, any
 /// structural mutation invalidates, results stay identical.
 void main() {
   setUpAll(ensureNativeInit);
 
+  group('MathOptModel compiled-request cache', () {
   MathOptModel smallLp() {
     final model = MathOptModel(name: 'Cache_Probe');
     final x = model.continuous('x', lower: 0);
@@ -78,8 +79,7 @@ void main() {
     expectCloseTo(r.objectiveValue!, 8.0);
   });
 
-  test('cached repeated solves agree on a larger model', () async {
-    final model = MathOptModel(name: 'Cache_Factory');
+  test('cached repeated solves agree on a larger model', () async {    final model = MathOptModel(name: 'Cache_Factory');
     final a = model.continuous('A', lower: 0);
     final b = model.continuous('B', lower: 0);
     model.maximize(a * 30 + b * 50);
@@ -99,4 +99,5 @@ void main() {
       }
     }
   });
+});
 }

@@ -1,7 +1,7 @@
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 /// The code snippets in the root README, executed verbatim (modulo test
 /// scaffolding). If a snippet stops compiling or its result changes,
@@ -9,6 +9,7 @@ import 'helpers/test_helpers.dart';
 void main() {
   setUpAll(ensureNativeInit);
 
+  group('README snippets', () {
   test('README quick example', () async {
     final model = MathOptModel(name: 'demo');
     final x = model.continuous('x', lower: 0);
@@ -36,7 +37,8 @@ void main() {
     expect(r.dualValues, isNotNull);
   });
 
-  test('README integer example: knapsack', () async {    final model = MathOptModel(name: 'Knapsack');
+  test('README integer example: knapsack', () async {
+    final model = MathOptModel(name: 'Knapsack');
     const weights = [2.0, 1.5, 0.8, 0.2];
     const values = [1000.0, 800.0, 400.0, 500.0];
     final packed = [for (var i = 0; i < 4; i++) model.binary('p$i')];
@@ -62,11 +64,7 @@ void main() {
     }
 
     expectCloseTo((await solveOn(SolverPreference.highs))!, 370.0);
-    expectCloseTo(
-      (await solveOn(SolverPreference.clarabel))!,
-      370.0,
-      1e-3,
-    );
+    expectCloseTo((await solveOn(SolverPreference.clarabel))!, 370.0, 1e-3);
     expectCloseTo((await solveOn(SolverPreference.microlp))!, 370.0);
   });
 
@@ -82,4 +80,5 @@ void main() {
     expect(r.hasSolution, isFalse);
     expect(r.objectiveValue, isNull);
   });
+});
 }

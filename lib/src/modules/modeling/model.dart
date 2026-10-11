@@ -24,6 +24,8 @@ import 'variable.dart';
 ///
 /// No complex math lives here — the compiler and the Rust engines own that.
 class MathOptModel {
+
+  MathOptModel({this.name = 'MathOpt_Model'});
   final String name;
 
   /// Variables stored strictly in ID order for array-based native lookups.
@@ -50,8 +52,6 @@ class MathOptModel {
   /// Whether the most recent `solve()` reused the cached compiled request
   /// (`false` when it compiled fresh, or when no solve ran yet).
   bool get lastSolveWasCached => _lastSolveWasCached;
-
-  MathOptModel({this.name = 'MathOpt_Model'});
 
   /// All variables in ID order (unmodifiable view).
   List<Variable> get variables => List.unmodifiable(_variables);

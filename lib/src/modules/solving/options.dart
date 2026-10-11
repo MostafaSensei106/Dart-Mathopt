@@ -20,6 +20,13 @@ enum SolverPreference {
 /// Immutable value object; use [copyWith] to derive variants.
 @immutable
 class SolveOptions {
+
+  const SolveOptions({
+    this.timeLimitSec,
+    this.enableLogging = false,
+    this.threadCount,
+    this.solver = SolverPreference.auto,
+  });
   /// Wall-clock limit in seconds. `null` means no limit.
   final double? timeLimitSec;
 
@@ -32,13 +39,6 @@ class SolveOptions {
 
   /// Which backend engine to use.
   final SolverPreference solver;
-
-  const SolveOptions({
-    this.timeLimitSec,
-    this.enableLogging = false,
-    this.threadCount,
-    this.solver = SolverPreference.auto,
-  });
 
   SolveOptions copyWith({
     double? timeLimitSec,

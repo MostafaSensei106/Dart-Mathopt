@@ -2,8 +2,8 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:dart_mathopt/src/modules/modeling/compiler.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/benchmark_models.dart';
-import 'helpers/test_helpers.dart';
+import '../../../helpers/benchmark_models.dart';
+import '../../../helpers/test_helpers.dart';
 
 /// Indexed variables: factories, names, views, aggregation, errors.
 /// The e2e transport case stays native; the rest is pure Dart.

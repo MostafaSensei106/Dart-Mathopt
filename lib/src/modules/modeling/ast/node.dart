@@ -84,9 +84,9 @@ extension NumExpressionExtension on num {
 /// (as constants). Anything else throws [ModelValidationException].
 /// Used by the `+`/`-` overloads on [ExpressionNode] and `Variable`.
 ExpressionNode coerceOperand(Object other) => switch (other) {
-  ExpressionNode e => e,
-  Variable v => v.asExpr,
-  num n => ConstantNode(n.toDouble()),
+  final ExpressionNode e => e,
+  final Variable v => v.asExpr,
+  final num n => ConstantNode(n.toDouble()),
   _ => throw ModelValidationException(
     'Cannot use ${other.runtimeType} in an expression.',
   ),

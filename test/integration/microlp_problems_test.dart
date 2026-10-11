@@ -1,7 +1,7 @@
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 /// MicroLP engine (pure Rust via good_lp): LP correctness against known
 /// optima, `>=` normalization, and MILP rejection.

@@ -1,7 +1,7 @@
 import 'assignment_problem.dart';
 import 'blending_problem.dart';
-import 'diet_problem.dart';
 import 'demo_problem.dart';
+import 'diet_problem.dart';
 import 'facility_problem.dart';
 import 'farm_problem.dart';
 import 'funding_problem.dart';

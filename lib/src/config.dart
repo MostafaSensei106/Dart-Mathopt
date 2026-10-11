@@ -14,6 +14,40 @@ import 'modules/solving/options.dart';
 /// fields here — they are resolved Dart-side before crossing).
 @immutable
 class MathOptConfig {
+
+  const MathOptConfig({
+    this.defaultSolver = SolverPreference.auto,
+    this.defaultTimeLimitSec,
+    this.defaultThreadCount,
+    this.enableLogging = false,
+    this.libraryPath,
+    this.engineTuning = const {},
+  });
+
+  /// Big sparse LPs (factory/transport at scale): all cores, no logging.
+  factory MathOptConfig.fastLp({int? threadCount}) => MathOptConfig(
+    defaultSolver: SolverPreference.highs,
+    defaultThreadCount: threadCount,
+  );
+
+  /// MILP shapes (assignment/knapsack/scheduling): generous time budget.
+  factory MathOptConfig.accurateMilp({double timeLimitSec = 120}) =>
+      MathOptConfig(
+        defaultSolver: SolverPreference.highs,
+        defaultTimeLimitSec: timeLimitSec,
+      );
+
+  /// Constrained devices / embedded: single thread, quiet.
+  factory MathOptConfig.lowMemory() => const MathOptConfig(
+    defaultSolver: SolverPreference.highs,
+    defaultThreadCount: 1,
+  );
+
+  /// Debugging: native logs on, short limit so hangs surface fast.
+  factory MathOptConfig.verbose({double timeLimitSec = 30}) => MathOptConfig(
+    defaultTimeLimitSec: timeLimitSec,
+    enableLogging: true,
+  );
   /// Default backend when a solve call passes `solver: auto` (or null).
   final SolverPreference defaultSolver;
 
@@ -34,48 +68,10 @@ class MathOptConfig {
   /// Reserved for future engine adapters; ignored when unknown.
   final Map<String, String> engineTuning;
 
-  const MathOptConfig({
-    this.defaultSolver = SolverPreference.auto,
-    this.defaultTimeLimitSec,
-    this.defaultThreadCount,
-    this.enableLogging = false,
-    this.libraryPath,
-    this.engineTuning = const {},
-  });
-
   // -- Presets for the known use-cases (see example catalog) --
 
   /// General default: auto routing, engine-chosen threads.
   static const MathOptConfig balanced = MathOptConfig();
-
-  /// Big sparse LPs (factory/transport at scale): all cores, no logging.
-  factory MathOptConfig.fastLp({int? threadCount}) => MathOptConfig(
-    defaultSolver: SolverPreference.highs,
-    defaultThreadCount: threadCount,
-    enableLogging: false,
-  );
-
-  /// MILP shapes (assignment/knapsack/scheduling): generous time budget.
-  factory MathOptConfig.accurateMilp({double timeLimitSec = 120}) =>
-      MathOptConfig(
-        defaultSolver: SolverPreference.highs,
-        defaultTimeLimitSec: timeLimitSec,
-        enableLogging: false,
-      );
-
-  /// Constrained devices / embedded: single thread, quiet.
-  factory MathOptConfig.lowMemory() => const MathOptConfig(
-    defaultSolver: SolverPreference.highs,
-    defaultThreadCount: 1,
-    enableLogging: false,
-  );
-
-  /// Debugging: native logs on, short limit so hangs surface fast.
-  factory MathOptConfig.verbose({double timeLimitSec = 30}) => MathOptConfig(
-    defaultSolver: SolverPreference.auto,
-    defaultTimeLimitSec: timeLimitSec,
-    enableLogging: true,
-  );
 
   MathOptConfig copyWith({
     SolverPreference? defaultSolver,

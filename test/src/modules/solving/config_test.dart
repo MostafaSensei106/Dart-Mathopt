@@ -47,7 +47,6 @@ void main() {
         defaultSolver: SolverPreference.highs,
         defaultTimeLimitSec: 60,
         defaultThreadCount: 2,
-        enableLogging: false,
       );
       const call = SolveOptions(
         timeLimitSec: 5,

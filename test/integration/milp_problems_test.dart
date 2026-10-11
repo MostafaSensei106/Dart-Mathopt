@@ -1,7 +1,7 @@
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 /// Correctness of MILP models: exact optima plus integrality proofs.
 /// MILP must NOT return duals (they are meaningless for integer models).

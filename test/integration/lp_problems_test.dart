@@ -1,7 +1,7 @@
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 /// Correctness of pure-LP models: the optimum is known analytically, and
 /// every constraint is re-checked from the returned primal values.

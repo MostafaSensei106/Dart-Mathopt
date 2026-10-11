@@ -17,6 +17,12 @@ enum SolveStatus {
 /// Timing/iteration statistics for a solve call.
 @immutable
 class SolveStatistics {
+
+  const SolveStatistics({
+    this.solveTimeMs = 0,
+    this.solveTimeUs = 0,
+    this.iterations = 0,
+  });
   /// Engine-reported solve time, millisecond resolution.
   final int solveTimeMs;
 
@@ -26,12 +32,6 @@ class SolveStatistics {
 
   final int iterations;
 
-  const SolveStatistics({
-    this.solveTimeMs = 0,
-    this.solveTimeUs = 0,
-    this.iterations = 0,
-  });
-
   @override
   String toString() =>
       'SolveStatistics(solveTimeUs: $solveTimeUs, iterations: $iterations)';
@@ -40,6 +40,14 @@ class SolveStatistics {
 /// The result of a successful `MathOptModel.solve()` call.
 @immutable
 class SolveResult {
+
+  const SolveResult({
+    required this.status,
+    required this.objectiveValue,
+    required this.variableValues,
+    required this.dualValues,
+    required this.statistics,
+  });
   final SolveStatus status;
 
   /// Objective value reported by the engine (`null` if unavailable,
@@ -53,14 +61,6 @@ class SolveResult {
   final List<double>? dualValues;
 
   final SolveStatistics statistics;
-
-  const SolveResult({
-    required this.status,
-    required this.objectiveValue,
-    required this.variableValues,
-    required this.dualValues,
-    required this.statistics,
-  });
 
   /// Solution value for [variable].
   ///
@@ -141,12 +141,6 @@ class SolveResult {
 /// the engine reported none (possible for some time-limit incumbents).
 @immutable
 class Solution {
-  final double? objectiveValue;
-  final Map<Variable, double> variableValues;
-  final List<double>? dualValues;
-  final SolveStatistics statistics;
-  final SolveStatus status;
-  final bool isOptimal;
 
   const Solution({
     required this.objectiveValue,
@@ -156,6 +150,12 @@ class Solution {
     required this.status,
     required this.isOptimal,
   });
+  final double? objectiveValue;
+  final Map<Variable, double> variableValues;
+  final List<double>? dualValues;
+  final SolveStatistics statistics;
+  final SolveStatus status;
+  final bool isOptimal;
 
   double valueOf(Variable variable) => variableValues[variable] ?? double.nan;
 

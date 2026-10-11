@@ -10,12 +10,12 @@ import 'ast/node.dart';
 /// `Constraint(AddNode(...), ConstraintSense.lessThanOrEqual, 5.0)`.
 @immutable
 class Constraint extends Equatable {
+
+  const Constraint(this.expression, this.sense, this.rhs, {this.name});
   final ExpressionNode expression;
   final ConstraintSense sense;
   final double rhs;
   final String? name;
-
-  const Constraint(this.expression, this.sense, this.rhs, {this.name});
 
   /// Returns a copy with an optional human-readable [name].
   Constraint named(String name) =>
@@ -39,10 +39,10 @@ class Constraint extends Equatable {
 /// The optimization objective: an expression plus a sense.
 @immutable
 class Objective extends Equatable {
-  final ExpressionNode expression;
-  final OptimizationSense sense;
 
   const Objective(this.expression, this.sense);
+  final ExpressionNode expression;
+  final OptimizationSense sense;
 
   @override
   List<Object?> get props => [expression, sense];

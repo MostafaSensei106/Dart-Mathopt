@@ -9,7 +9,7 @@ import 'dart:math' as math;
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 void main() {
   setUpAll(ensureNativeInit);

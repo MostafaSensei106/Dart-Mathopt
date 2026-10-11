@@ -36,9 +36,9 @@ class ProblemListScreen extends StatelessWidget {
 }
 
 class _ProblemCard extends StatelessWidget {
-  final DemoProblem problem;
 
   const _ProblemCard({required this.problem});
+  final DemoProblem problem;
 
   @override
   Widget build(BuildContext context) {
@@ -96,9 +96,9 @@ class _ProblemCard extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-  final String label;
 
   const _Chip({required this.label});
+  final String label;
 
   @override
   Widget build(BuildContext context) {

@@ -6,9 +6,9 @@ import 'visitor.dart';
 /// Sum of two sub-expressions: `left + right`.
 @immutable
 class AddNode extends ExpressionNode {
+  const AddNode(this.left, this.right);
   final ExpressionNode left;
   final ExpressionNode right;
-  const AddNode(this.left, this.right);
 
   @override
   R accept<R>(ExpressionVisitor<R> visitor) => visitor.visitAddNode(this);
@@ -23,9 +23,9 @@ class AddNode extends ExpressionNode {
 /// node. The [LinearExpressionCompiler] enforces this.
 @immutable
 class MultiplyNode extends ExpressionNode {
+  const MultiplyNode(this.operand, this.factor);
   final ExpressionNode operand;
   final ExpressionNode factor;
-  const MultiplyNode(this.operand, this.factor);
 
   @override
   R accept<R>(ExpressionVisitor<R> visitor) => visitor.visitMultiplyNode(this);
@@ -37,8 +37,8 @@ class MultiplyNode extends ExpressionNode {
 /// Negation of a sub-expression: `-operand`.
 @immutable
 class NegateNode extends ExpressionNode {
-  final ExpressionNode operand;
   const NegateNode(this.operand);
+  final ExpressionNode operand;
 
   @override
   R accept<R>(ExpressionVisitor<R> visitor) => visitor.visitNegateNode(this);

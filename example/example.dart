@@ -152,8 +152,9 @@ Future<void> _repeatCache() async {
     await model.solve();
     sw.stop();
     print(
-        'solve ${i + 1}: ${formatMicroseconds(sw.elapsedMicroseconds)} '
-        'cached=${model.lastSolveWasCached}');
+      'solve ${i + 1}: ${formatMicroseconds(sw.elapsedMicroseconds)} '
+      'cached=${model.lastSolveWasCached}',
+    );
   }
   print('');
 }

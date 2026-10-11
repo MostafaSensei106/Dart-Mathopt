@@ -1,7 +1,7 @@
 import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 /// Failure modes: bad input throws typed errors *before* any solve, and
 /// pathological models report honest statuses instead of garbage.

@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:dart_mathopt/src/modules/modeling/compiler.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../../../helpers/test_helpers.dart';
 
 /// Vectorized builders: balanced sums, dot products, batch constraints.
 /// Pure Dart — no native library needed.
@@ -42,7 +42,7 @@ void main() {
       final vars = [for (var i = 0; i < 4096; i++) model.continuous('v$i')];
       final tree = vars.sum;
       var depth = 0;
-      ExpressionNode node = tree;
+      var node = tree;
       // Left spine length bounds the depth from above for a balanced fold.
       while (node is AddNode) {
         depth++;

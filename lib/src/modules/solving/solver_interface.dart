@@ -6,15 +6,15 @@ import 'results.dart';
 /// Capabilities advertised by a solver backend.
 @immutable
 class SolverCapabilities {
-  final bool supportsMilp;
-  final bool supportsQp;
-  final bool supportsSocp;
 
   const SolverCapabilities({
     this.supportsMilp = false,
     this.supportsQp = false,
     this.supportsSocp = false,
   });
+  final bool supportsMilp;
+  final bool supportsQp;
+  final bool supportsSocp;
 }
 
 /// Abstract solver interface (Dart side).
@@ -40,11 +40,6 @@ abstract interface class SolverInterface {
 /// generated bridge code.
 @immutable
 class SolverVariableDto {
-  final int id;
-  final String name;
-  final int varTypeIndex;
-  final double? lowerBound;
-  final double? upperBound;
 
   const SolverVariableDto({
     required this.id,
@@ -53,22 +48,23 @@ class SolverVariableDto {
     this.lowerBound,
     this.upperBound,
   });
+  final int id;
+  final String name;
+  final int varTypeIndex;
+  final double? lowerBound;
+  final double? upperBound;
 }
 
 @immutable
 class SolverTermDto {
-  final int variableId;
-  final double coefficient;
 
   const SolverTermDto({required this.variableId, required this.coefficient});
+  final int variableId;
+  final double coefficient;
 }
 
 @immutable
 class SolverConstraintDto {
-  final String? name;
-  final List<SolverTermDto> terms;
-  final int senseIndex;
-  final double rhs;
 
   const SolverConstraintDto({
     required this.name,
@@ -76,17 +72,21 @@ class SolverConstraintDto {
     required this.senseIndex,
     required this.rhs,
   });
+  final String? name;
+  final List<SolverTermDto> terms;
+  final int senseIndex;
+  final double rhs;
 }
 
 @immutable
 class SolverObjectiveDto {
-  final int senseIndex;
-  final List<SolverTermDto> terms;
-  final double constant;
 
   const SolverObjectiveDto({
     required this.senseIndex,
     required this.terms,
     required this.constant,
   });
+  final int senseIndex;
+  final List<SolverTermDto> terms;
+  final double constant;
 }

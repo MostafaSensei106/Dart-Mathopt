@@ -22,18 +22,11 @@
 /// ```
 library;
 
-// Core domain (public, dependency-free).
+export 'src/config.dart';
 export 'src/core/exceptions.dart';
 export 'src/core/logger.dart';
 export 'src/core/types.dart';
-
-// Library entry point + global configuration (init once, then solve).
-export 'src/config.dart';
 export 'src/math_opt.dart';
-
-// Modeling layer (AST, variables, constraints, model facade, compiler
-// internals stay hidden — only the compiler's *users* need it; advanced
-// users can import it directly from src).
 export 'src/modules/modeling/ast/arithmetic_nodes.dart';
 export 'src/modules/modeling/ast/leaf_nodes.dart';
 export 'src/modules/modeling/ast/node.dart';
@@ -43,13 +36,8 @@ export 'src/modules/modeling/logic.dart';
 export 'src/modules/modeling/model.dart';
 export 'src/modules/modeling/sums.dart';
 export 'src/modules/modeling/variable.dart';
-
 // Solving layer.
 export 'src/modules/solving/options.dart';
 export 'src/modules/solving/registry.dart';
 export 'src/modules/solving/results.dart';
 export 'src/modules/solving/solver_interface.dart';
-
-// Rust bridge initialization only. Generated DTOs stay under
-// `src/rust` and are NOT part of the public API.
-export 'src/rust/frb_generated.dart' show RustLib;

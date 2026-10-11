@@ -70,7 +70,7 @@ void main() {
   testWidgets('animation advances across frames during a solve', (
     tester,
   ) async {
-    final vsync = TestVSync();
+    const vsync = TestVSync();
     final controller = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: vsync,

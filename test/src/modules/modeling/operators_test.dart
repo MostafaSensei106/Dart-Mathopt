@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:dart_mathopt/src/modules/modeling/compiler.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../../../helpers/test_helpers.dart';
 
 /// Mixed-operand expressions: `x + y`, `x - 2`, `expr + var`.
 /// Compile-level checks are pure Dart; one small solve proves the

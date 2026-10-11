@@ -17,12 +17,6 @@ import 'constraints.dart';
 /// (`continuous`, `integer`, `binary`) to create instances.
 @immutable
 class Variable extends Equatable {
-  /// Zero-based sequential index within the owning model.
-  final int id;
-  final String name;
-  final VariableType type;
-  final double? lowerBound;
-  final double? upperBound;
 
   const Variable({
     required this.id,
@@ -31,6 +25,12 @@ class Variable extends Equatable {
     this.lowerBound,
     this.upperBound,
   });
+  /// Zero-based sequential index within the owning model.
+  final int id;
+  final String name;
+  final VariableType type;
+  final double? lowerBound;
+  final double? upperBound;
 
   /// This variable as an AST expression.
   ExpressionNode get asExpr => VariableNode(this);

@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:dart_mathopt/src/modules/modeling/compiler.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/test_helpers.dart';
+import '../../../helpers/test_helpers.dart';
 
 /// Logical choice helpers: math, validation, and engine equivalence.
 /// Helpers return plain constraints through the standard compile path.
