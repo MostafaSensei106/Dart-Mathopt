@@ -1,0 +1,10 @@
+{
+  "name": "dart_mathopt",
+  "description": "Native mathematical optimization engines (HiGHS, Clarabel, MicroLP) behind a flutter_rust_bridge FFI boundary.",
+  "version": "0.1.0",
+  "files": [
+    "dart_mathopt_bg.wasm",
+    "dart_mathopt.js"
+  ],
+  "browser": "dart_mathopt.js"
+}
