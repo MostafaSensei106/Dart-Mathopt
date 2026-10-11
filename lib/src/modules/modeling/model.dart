@@ -457,6 +457,7 @@ class MathOptModel {
       dualValues: dualRaw == null ? null : List.unmodifiable(dualRaw),
       statistics: SolveStatistics(
         solveTimeMs: response.statistics.solveTimeMs,
+        solveTimeUs: response.statistics.solveTimeUs,
         iterations: response.statistics.iterations,
       ),
     );

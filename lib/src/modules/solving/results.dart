@@ -17,14 +17,24 @@ enum SolveStatus {
 /// Timing/iteration statistics for a solve call.
 @immutable
 class SolveStatistics {
+  /// Engine-reported solve time, millisecond resolution.
   final int solveTimeMs;
+
+  /// Engine-reported solve time, microsecond resolution: exact for
+  /// sub-millisecond solves that report `0` in [solveTimeMs].
+  final int solveTimeUs;
+
   final int iterations;
 
-  const SolveStatistics({this.solveTimeMs = 0, this.iterations = 0});
+  const SolveStatistics({
+    this.solveTimeMs = 0,
+    this.solveTimeUs = 0,
+    this.iterations = 0,
+  });
 
   @override
   String toString() =>
-      'SolveStatistics(solveTimeMs: $solveTimeMs, iterations: $iterations)';
+      'SolveStatistics(solveTimeUs: $solveTimeUs, iterations: $iterations)';
 }
 
 /// The result of a successful `MathOptModel.solve()` call.
