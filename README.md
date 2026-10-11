@@ -11,9 +11,12 @@
 <p align="center">
   <a href="https://pub.dev/packages/dart_mathopt"><img src="https://img.shields.io/pub/v/dart_mathopt.svg" alt="pub version"></a>
   <a href="https://pub.dev/packages/dart_mathopt/score"><img src="https://img.shields.io/pub/points/dart_mathopt.svg" alt="pub points"></a>
+  <img src="https://img.shields.io/badge/status-dev%20preview-orange" alt="Status: development preview">
   <img src="https://img.shields.io/badge/platforms-android%20%7C%20ios%20%7C%20linux%20%7C%20macos%20%7C%20windows-blue" alt="Platforms">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
 </p>
+
+> **Development preview (`0.0.1-dev.1`):** this is a trial release for early feedback. The public API may still change before the first stable version pin the exact version in your `pubspec.yaml` and report anything that breaks.
 
 <p align="center">
   <a href="#-key-features">Key Features</a> •
@@ -102,13 +105,6 @@ Then fetch packages:
 ```bash
 flutter pub get
 ```
-
-> **Note:** `0.0.1-dev.1` is working toward its first pub.dev release. Until then, depend on the repository directly:
-> ```yaml
-> dependencies:
->   dart_mathopt:
->     path: ../dart_mathopt   # or a git: reference
-> ```
 
 ---
 

@@ -1,5 +1,7 @@
 ## 0.0.1-dev.1
 
+- Preview release for pub.dev: `LICENSE` carries the full GPL-3.0 text with the commercial-license alternative (`dart pub publish --dry-run` clean).
+
 - Single entry point `DartMathOpt.init(config:)` with `MathOptConfig` presets.
 - Engine registries (Dart + Rust); MicroLP pure-Rust LP engine; `anyhow` context at the FFI boundary.
 - Compiled-request cache + per-constraint event-loop yields.
