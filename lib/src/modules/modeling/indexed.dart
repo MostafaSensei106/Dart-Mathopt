@@ -14,7 +14,6 @@ import 'variable.dart';
 /// order; [select] and [sumsAlong] aggregate along dimensions.
 @immutable
 class VarArray extends Iterable<Variable> {
-
   /// Assembles an indexed view over already-allocated [vars].
   ///
   /// Validates dimensions against the variable count. Internal: prefer

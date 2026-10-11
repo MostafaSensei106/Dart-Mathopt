@@ -11,7 +11,6 @@ import 'solver_interface.dart';
 /// no changes to `MathOptModel` or the compiler are required.
 @immutable
 class SolverRegistration {
-
   const SolverRegistration({
     required this.name,
     required this.capabilities,

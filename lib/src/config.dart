@@ -14,7 +14,6 @@ import 'modules/solving/options.dart';
 /// fields here — they are resolved Dart-side before crossing).
 @immutable
 class MathOptConfig {
-
   const MathOptConfig({
     this.defaultSolver = SolverPreference.auto,
     this.defaultTimeLimitSec,
@@ -44,10 +43,9 @@ class MathOptConfig {
   );
 
   /// Debugging: native logs on, short limit so hangs surface fast.
-  factory MathOptConfig.verbose({double timeLimitSec = 30}) => MathOptConfig(
-    defaultTimeLimitSec: timeLimitSec,
-    enableLogging: true,
-  );
+  factory MathOptConfig.verbose({double timeLimitSec = 30}) =>
+      MathOptConfig(defaultTimeLimitSec: timeLimitSec, enableLogging: true);
+
   /// Default backend when a solve call passes `solver: auto` (or null).
   final SolverPreference defaultSolver;
 

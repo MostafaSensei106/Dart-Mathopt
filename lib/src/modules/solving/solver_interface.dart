@@ -6,7 +6,6 @@ import 'results.dart';
 /// Capabilities advertised by a solver backend.
 @immutable
 class SolverCapabilities {
-
   const SolverCapabilities({
     this.supportsMilp = false,
     this.supportsQp = false,
@@ -40,7 +39,6 @@ abstract interface class SolverInterface {
 /// generated bridge code.
 @immutable
 class SolverVariableDto {
-
   const SolverVariableDto({
     required this.id,
     required this.name,
@@ -57,7 +55,6 @@ class SolverVariableDto {
 
 @immutable
 class SolverTermDto {
-
   const SolverTermDto({required this.variableId, required this.coefficient});
   final int variableId;
   final double coefficient;
@@ -65,7 +62,6 @@ class SolverTermDto {
 
 @immutable
 class SolverConstraintDto {
-
   const SolverConstraintDto({
     required this.name,
     required this.terms,
@@ -80,7 +76,6 @@ class SolverConstraintDto {
 
 @immutable
 class SolverObjectiveDto {
-
   const SolverObjectiveDto({
     required this.senseIndex,
     required this.terms,

@@ -11,7 +11,8 @@ void main() {
 
   SolveResult fake({
     required SolveStatus status,
-    required Map<Variable, double> values, double? objective,
+    required Map<Variable, double> values,
+    double? objective,
   }) => SolveResult(
     status: status,
     objectiveValue: objective,

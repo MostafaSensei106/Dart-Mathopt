@@ -24,7 +24,6 @@ import 'variable.dart';
 ///
 /// No complex math lives here — the compiler and the Rust engines own that.
 class MathOptModel {
-
   MathOptModel({this.name = 'MathOpt_Model'});
   final String name;
 

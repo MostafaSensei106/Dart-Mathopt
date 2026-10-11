@@ -6,7 +6,6 @@ import '../solve_time.dart';
 
 /// Detail screen: story, difficulty, modeling notes, live native solve.
 class ProblemDetailScreen extends StatefulWidget {
-
   const ProblemDetailScreen({required this.problem, super.key});
   final DemoProblem problem;
 
@@ -76,6 +75,7 @@ class _ProblemDetailScreenState extends State<ProblemDetailScreen> {
             _SectionList(title: 'How it becomes math', items: p.modelingNotes),
             const SizedBox(height: 8),
             ElevatedButton.icon(
+              key: const ValueKey('solve_button'),
               onPressed: _isSolving ? null : _solve,
               icon: _isSolving
                   ? const SizedBox.square(
@@ -88,6 +88,7 @@ class _ProblemDetailScreenState extends State<ProblemDetailScreen> {
             if (_output != null) ...[
               const SizedBox(height: 12),
               Card(
+                key: const ValueKey('solve_output'),
                 color: Colors.green.shade50,
                 elevation: 0,
                 child: Padding(
@@ -113,6 +114,7 @@ class _ProblemDetailScreenState extends State<ProblemDetailScreen> {
                         const SizedBox(height: 8),
                         Text(
                           _stats!,
+                          key: const ValueKey('solve_stats'),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.black54,
                           ),
@@ -141,7 +143,6 @@ class _ProblemDetailScreenState extends State<ProblemDetailScreen> {
 }
 
 class _Section extends StatelessWidget {
-
   const _Section({required this.title, required this.body});
   final String title;
   final String body;
@@ -170,7 +171,6 @@ class _Section extends StatelessWidget {
 }
 
 class _SectionList extends StatelessWidget {
-
   const _SectionList({required this.title, required this.items});
   final String title;
   final List<String> items;

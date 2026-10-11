@@ -36,7 +36,6 @@ class ProblemListScreen extends StatelessWidget {
 }
 
 class _ProblemCard extends StatelessWidget {
-
   const _ProblemCard({required this.problem});
   final DemoProblem problem;
 
@@ -96,7 +95,6 @@ class _ProblemCard extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-
   const _Chip({required this.label});
   final String label;
 

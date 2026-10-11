@@ -31,10 +31,7 @@ void main() {
         timeLimitSec: 60,
         solver: SolverPreference.highs,
       );
-      final next = base.copyWith(
-        timeLimitSec: 5,
-        enableLogging: true,
-      );
+      final next = base.copyWith(timeLimitSec: 5, enableLogging: true);
       expect(next.timeLimitSec, 5);
       expect(next.enableLogging, isTrue);
       expect(next.solver, SolverPreference.highs);

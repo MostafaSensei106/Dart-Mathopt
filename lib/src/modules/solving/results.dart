@@ -17,12 +17,12 @@ enum SolveStatus {
 /// Timing/iteration statistics for a solve call.
 @immutable
 class SolveStatistics {
-
   const SolveStatistics({
     this.solveTimeMs = 0,
     this.solveTimeUs = 0,
     this.iterations = 0,
   });
+
   /// Engine-reported solve time, millisecond resolution.
   final int solveTimeMs;
 
@@ -40,7 +40,6 @@ class SolveStatistics {
 /// The result of a successful `MathOptModel.solve()` call.
 @immutable
 class SolveResult {
-
   const SolveResult({
     required this.status,
     required this.objectiveValue,
@@ -141,7 +140,6 @@ class SolveResult {
 /// the engine reported none (possible for some time-limit incumbents).
 @immutable
 class Solution {
-
   const Solution({
     required this.objectiveValue,
     required this.variableValues,

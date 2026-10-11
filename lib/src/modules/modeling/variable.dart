@@ -17,7 +17,6 @@ import 'constraints.dart';
 /// (`continuous`, `integer`, `binary`) to create instances.
 @immutable
 class Variable extends Equatable {
-
   const Variable({
     required this.id,
     required this.name,
@@ -25,6 +24,7 @@ class Variable extends Equatable {
     this.lowerBound,
     this.upperBound,
   });
+
   /// Zero-based sequential index within the owning model.
   final int id;
   final String name;
