@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../problems/catalog.dart';
 import '../problems/demo_problem.dart';
+import 'cutting_stock_screen.dart';
 import 'problem_detail_screen.dart';
 
 /// Home screen: cards for all 6 everyday optimization problems.
@@ -19,13 +20,99 @@ class ProblemListScreen extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           if (index == 0) {
-            return const Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Text(
-                'Six everyday problems, solved natively with HiGHS & Clarabel. '
-                'Tap one to see the story, the model, and the live result.',
-                style: TextStyle(fontSize: 14, color: Colors.black54),
-              ),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    'Six everyday problems, solved natively with HiGHS & Clarabel. '
+                    'Tap one to see the story, the model, and the live result.',
+                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                  ),
+                ),
+                Card(
+                  elevation: 0,
+                  color: Colors.purple.shade50,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CuttingStockScreen(),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.purple.shade700,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Text(
+                                  'FACTORY MVP',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Expanded(
+                                child: Text(
+                                  'UPVC Cutting Stock',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const Text(
+                                '★★★',
+                                style: TextStyle(
+                                  color: Colors.amber,
+                                  fontSize: 16,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Order windows (Sliding / Tilt / Casement), set the bar & kerf, get the optimal cutting plan. For the workshop, not the classroom.',
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Interactive • MILP + FFD • HiGHS',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.purple.shade700,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 12),
+                  child: Text(
+                    'Academy examples',
+                    style:
+                        TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             );
           }
           return _ProblemCard(problem: problems[index - 1]);

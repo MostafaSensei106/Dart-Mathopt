@@ -21,6 +21,7 @@ library;
 /// ```
 
 import 'package:dart_mathopt/dart_mathopt.dart';
+import 'package:dart_mathopt_example/problems/cutting_stock.dart';
 import 'package:dart_mathopt_example/solve_time.dart';
 import 'package:dart_mathopt_example/tour.dart';
 
@@ -29,9 +30,11 @@ Future<void> main(List<String> args) async {
 
   final runTour = args.isEmpty || args.contains('tour');
   final runPatterns = args.isEmpty || args.contains('patterns');
+  final runCutting = args.isEmpty || args.contains('cutting');
 
   if (runPatterns) await _runPatterns();
   if (runTour) await _runTour();
+  if (runCutting) await runCuttingStockDemo();
 
   DartMathOpt.dispose();
 }
