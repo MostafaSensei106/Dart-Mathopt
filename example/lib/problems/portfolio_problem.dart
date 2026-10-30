@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 
 import 'demo_problem.dart';
 
-/// NEW — investment portfolio (LP with risk + policy constraints).
+/// NEW  investment portfolio (LP with risk + policy constraints).
 class PortfolioProblem extends DemoProblem {
   static const _assets = ['Stocks A', 'Stocks B', 'Bonds C'];
   static const _returns = [0.08, 0.12, 0.05]; // expected yearly return
@@ -36,7 +36,7 @@ class PortfolioProblem extends DemoProblem {
   @override
   String get difficultyReason =>
       'Medium: one equality plus three different policy rows, and the '
-      'winner is not obvious — the hottest fund eats the risk budget '
+      'winner is not obvious  the hottest fund eats the risk budget '
       'fastest. Solved here with Clarabel to show engine choice.';
 
   @override

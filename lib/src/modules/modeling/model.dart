@@ -22,7 +22,7 @@ import 'variable.dart';
 /// 3. Compiling ASTs via [LinearExpressionCompiler] and crossing the FRB
 ///    bridge asynchronously (never blocks the UI isolate).
 ///
-/// No complex math lives here — the compiler and the Rust engines own that.
+/// No complex math lives here  the compiler and the Rust engines own that.
 class MathOptModel {
   /// Creates an empty model with a diagnostic [name].
   MathOptModel({this.name = 'MathOpt_Model'});
@@ -296,7 +296,7 @@ class MathOptModel {
         ),
       );
 
-      // 5. CROSS THE BRIDGE (async — never blocks the UI isolate).
+      // 5. CROSS THE BRIDGE (async  never blocks the UI isolate).
       final response = await bridge.executeSolve(request: request);
 
       return _mapResponse(response);
@@ -322,7 +322,7 @@ class MathOptModel {
   /// Compiled structural DTOs (everything except per-call options).
   ///
   /// DTOs are immutable, so cache hits safely share list instances across
-  /// solves — the bridge only reads them.
+  /// solves  the bridge only reads them.
   /// The fresh-compile path is chunked with event-loop yields (one per
   /// constraint): compiling a 400x60 LP is ~300 ms of synchronous AST
   /// traversal, and without yields that would freeze the UI isolate for

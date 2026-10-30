@@ -48,7 +48,7 @@ void main() {
       expect(model.lastSolveWasCached, isFalse);
       expectOptimal(r);
       // x <= 1 is non-binding here (y dominates the objective), so the
-      // optimum is unchanged — but it must come from a fresh compile.
+      // optimum is unchanged  but it must come from a fresh compile.
       expectCloseTo(r.objectiveValue!, 8.0);
       expect(r.valueOf(x), lessThanOrEqualTo(1.0 + 1e-6));
     });

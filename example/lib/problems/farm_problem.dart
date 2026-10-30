@@ -18,7 +18,7 @@ class FarmProblem extends DemoProblem {
   String get title => 'Farm Planning';
 
   @override
-  String get tagline => 'Best crop mix for 100 acres — solved in pure Rust.';
+  String get tagline => 'Best crop mix for 100 acres  solved in pure Rust.';
 
   @override
   String get technique => 'LP • MicroLP';

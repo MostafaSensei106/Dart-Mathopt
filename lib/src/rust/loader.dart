@@ -5,7 +5,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'frb_generated.dart';
 
 /// Internal native-library bootstrap (moved out of `example/tool/` so all
-/// entry points — app, tests, benchmarks — share one path).
+/// entry points  app, tests, benchmarks  share one path).
 ///
 /// Resolution order:
 /// 1. [explicitPath] when given (from [MathOptConfig.libraryPath]).

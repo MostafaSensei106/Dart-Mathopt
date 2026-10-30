@@ -8,7 +8,7 @@ import 'variable.dart';
 ///
 /// Each returns a plain [Constraint] through the same expression path as
 /// hand-written models (balanced sum, standard compile, standard engine
-/// capability checks) — no alternate constraint pipeline:
+/// capability checks)  no alternate constraint pipeline:
 ///
 /// - [exactlyOne]: Σ vars = 1.
 /// - [atMostOne]: Σ vars ≤ 1.

@@ -1,5 +1,7 @@
 pub mod clarabel;
-#[cfg(feature = "highs")]
+// HiGHS is C++ and cannot target WebAssembly; it is compiled in
+// automatically on every native platform (Android/iOS/desktop).
+#[cfg(not(target_arch = "wasm32"))]
 pub mod highs;
 pub mod microlp;
 pub mod registry;

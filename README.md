@@ -39,7 +39,7 @@
 | **Modeling** | Variables, objectives, and constraints written as equations (`x + y <= 4`); indexed variables (`continuousGrid`, N-D `indexed`); balanced `Expr.sum` / `Expr.dot` builders that avoid deep expression chains |
 | **Choice constraints** | `exactlyOne` / `atMostOne` / `atLeastOne` over binary variables, compiled through the standard constraint path |
 | **Engines** | HiGHS (LP/MILP, C++), Clarabel (LP, Rust interior-point), MicroLP (LP, pure Rust via `good_lp`), selected with `SolverPreference`; unsupported combinations are rejected before FFI |
-| **Web builds** | HiGHS is excluded from web builds by cargo feature; Clarabel and MicroLP compile to WASM with `flutter_rust_bridge_codegen build-web` |
+| **Web builds** | HiGHS is a native-only dependency (it is C++ and cannot compile to WASM), so web builds automatically get Clarabel + MicroLP only |
 | **Configuration** | `DartMathOpt.init(config:)` with presets (`fastLp` / `accurateMilp` / `lowMemory` / `verbose`); per-call `SolveOptions` override the global config field by field |
 | **Repeated solves** | The compiled request is reused while the model is unchanged (`lastSolveWasCached`); any structural edit invalidates it |
 | **Results** | `hasSolution` reports whether a usable primal exists, `isOptimal` whether optimality was proved; `requireSolution()` returns either an optimal solution or an incumbent, and throws only when there is none |
@@ -63,7 +63,7 @@ When a Dart or Flutter application needs to make a computed decision, such as ho
 | **Integer/binary variables** | Supported | Rejected before FFI | Rejected before FFI |
 | **Dual values** | Returned for pure LP only | Not exposed | Not exposed |
 | **Native requirements** | C++ toolchain (`highs-sys`) | None | None |
-| **Web (WASM)** | Excluded from web builds | Included | Included; the `auto` fallback |
+| **Web (WASM)** | Excluded automatically (native-only dependency) | Included | Included |
 | **Typical use** | Integer decisions (assignment, packing, scheduling, facility choice), LP models where dual values are needed | LP solving with a Rust interior-point engine; later quadratic/conic models | Targets without a C++ toolchain, and web builds |
 
 The selection policy, per-engine behavior, and measured numbers are documented under [Solver Engines](#-solver-engines) and [Benchmarks](#-performance-benchmarks).
@@ -244,7 +244,7 @@ await model.solve(); // cache hit: model.lastSolveWasCached == true
 
 ## 🧠 Solver Engines
 
-One model, three backends. `SolverPreference.auto` selects HiGHS when it is part of the build (desktop and mobile) and falls back to pure-Rust MicroLP otherwise (web). Requesting an engine that is not in the build returns an `InvalidInput` error listing the available ones.
+One model, three backends. `SolverPreference.auto` sends integer models (MILP) to HiGHS on native platforms (desktop and mobile) and continuous LP/QP models to Clarabel everywhere. HiGHS is a native-only dependency, so web builds contain Clarabel and MicroLP only; MILP on the web is rejected with a clear `ModelValidationException` before FFI. Requesting an engine that is not in the build returns an `InvalidInput` error listing the available ones.
 
 ### HiGHS: LP and integer models (C++)
 
@@ -252,7 +252,7 @@ One model, three backends. `SolverPreference.auto` selects HiGHS when it is part
 
 **Wired as:** a row-oriented model in this package. The only engine that accepts integer/binary variables, and the only one that returns dual values (pure LP only).
 
-**Build note:** written in C++ (`highs-sys`), so builds need a C++ toolchain. Web builds leave it out through the `highs` cargo feature (`default = ["highs"]`; web builds pass `--no-default-features`).
+**Build note:** written in C++ (`highs-sys`), so builds need a C++ toolchain. It is declared as a target-specific dependency (`cfg(not(target_arch = "wasm32"))`), which means it is compiled in automatically on Android, iOS, Windows, macOS, and Linux, and left out of web builds with no flags to pass.
 
 **Use it for:** production planning, assignment of people to shifts, knapsack/packing choices, staff scheduling, facility location (any model with yes/no or counting decisions), and LP models where per-constraint dual values are needed.
 
@@ -270,7 +270,7 @@ One model, three backends. `SolverPreference.auto` selects HiGHS when it is part
 
 **Wired as:** driven through the `good_lp` modeling facade, with `anyhow` context converted to the typed `FrbSolverError` at the boundary. Declared capability is LP only.
 
-**Build note:** with no C++ dependency it compiles anywhere Rust compiles, including `wasm32-unknown-unknown` for web, where it serves as the `auto` fallback.
+**Build note:** with no C++ dependency it compiles anywhere Rust compiles, including `wasm32-unknown-unknown` for web.
 
 **Use it for:** environments without a C++ toolchain, and web targets where HiGHS cannot be built.
 
@@ -317,7 +317,7 @@ Seeded models, release native build, Linux x64 development machine. `wall` is th
 
 On small and medium linear models the three engines finish within measurement noise of each other. The wall time is spent on Dart-side compilation and bridge transfer rather than inside the solver. MicroLP matches the other two on LP while requiring no C++.
 
-### 🔬 Scaling snapshot (HiGHS, `auto` default)
+### 🔬 Scaling snapshot (HiGHS)
 
 | Case | wall | engine |
 | :--- | :---: | :---: |
@@ -348,21 +348,21 @@ Rust bridge (flutter_rust_bridge, async thread pool)
 Native engines (C++ HiGHS • Rust Clarabel • Rust MicroLP via good_lp)
 ```
 
-Key entry points: `DartMathOpt` with `MathOptConfig`, the modeling layer (`VarArray`/`VarGrid`, `Expr`, the logical helpers), and the solving layer (`SolveOptions`, `Solution`). Cargo features: `highs` (default, C++) for desktop and mobile, pure-Rust builds for web. Generated bridge files are not public API.
+Key entry points: `DartMathOpt` with `MathOptConfig`, the modeling layer (`VarArray`/`VarGrid`, `Expr`, the logical helpers), and the solving layer (`SolveOptions`, `Solution`). HiGHS is a native-only dependency selected by target (not by a cargo feature); web builds get the pure-Rust engines. Generated bridge files are not public API.
 
 ---
 
 ## 🌐 Web builds
 
-Only the C++ HiGHS engine has no web path, and it is not compiled for web at all. Clarabel and MicroLP are pure Rust and build to WASM with the prepared command:
+Only the C++ HiGHS engine has no web path, and it is not compiled for web at all: `rust/Cargo.toml` declares it under `[target.'cfg(not(target_arch = "wasm32"))'.dependencies]`, so a `wasm32-unknown-unknown` build simply never sees it. Clarabel and MicroLP are pure Rust and build to WASM with the prepared command:
 
 ```bash
-flutter_rust_bridge_codegen build-web --rust-root rust --cargo-build-args="--no-default-features"
+flutter_rust_bridge_codegen build-web --rust-root rust
 ```
 
-`--no-default-features` drops the `highs` cargo feature, leaving Clarabel and MicroLP in the registry: `auto` falls back to MicroLP for LP, and an explicit `highs` request returns an `InvalidInput` error listing the available engines. Integer models are rejected before FFI on web because no integer-capable engine is in that build, so use a desktop or mobile build for those.
+No cargo features or `--no-default-features` are involved  the target triple alone decides. On the web the registry contains Clarabel and MicroLP: `auto` sends continuous models to Clarabel, an explicit `highs` request returns an `InvalidInput` error explaining that HiGHS cannot run in WASM, and integer models are rejected in Dart with a `ModelValidationException` before FFI (use a desktop or mobile build for MILP).
 
-> Build status: the command above produces `web/pkg/` (`dart_mathopt_bg.wasm`, with no HiGHS in the build graph), and `cargo test --no-default-features` passes 4/4. Running in a browser is still pending (no browser in this environment).
+> Build status: the command above produces `web/pkg/` (`dart_mathopt_bg.wasm`, with no HiGHS in the build graph), and `cargo test` passes on both native and `wasm32-unknown-unknown`. Running in a browser is still pending (no browser in this environment).
 
 ---
 

@@ -3,7 +3,7 @@ import 'package:dart_mathopt/src/modules/modeling/compiler.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Compiler unit tests: AST → sparse linear form without native solves.
-/// Pure Dart — fast and deterministic.
+/// Pure Dart  fast and deterministic.
 void main() {
   MathOptModel modelOf() => MathOptModel(name: 'Compiler_Probe');
 

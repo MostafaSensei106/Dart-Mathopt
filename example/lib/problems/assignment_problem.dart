@@ -32,7 +32,7 @@ class AssignmentProblem extends DemoProblem {
   String get story =>
       'A restaurant has five workers and five evening shifts, each worker '
       'with a different "cost" (overtime, preference) per shift. Everyone '
-      'takes exactly one shift and every shift gets exactly one worker — '
+      'takes exactly one shift and every shift gets exactly one worker  '
       'what is the cheapest valid roster?';
 
   @override

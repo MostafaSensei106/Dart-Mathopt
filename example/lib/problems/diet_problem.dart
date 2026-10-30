@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 
 import 'demo_problem.dart';
 
-/// NEW — daily diet on a budget (LP).
+/// NEW  daily diet on a budget (LP).
 class DietProblem extends DemoProblem {
   static const _foods = ['Bread', 'Milk', 'Eggs'];
   static const _price = [0.5, 0.8, 0.6]; // $ per serving
@@ -29,7 +29,7 @@ class DietProblem extends DemoProblem {
   String get story =>
       'You want a day of eating with at least $_minCalories calories and '
       '$_minProtein g of protein, spending as little as possible. Bread, '
-      'milk and eggs have different prices and nutrition per serving — '
+      'milk and eggs have different prices and nutrition per serving  '
       'what is the cheapest mix?';
 
   @override

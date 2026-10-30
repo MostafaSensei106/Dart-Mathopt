@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 
 import 'demo_problem.dart';
 
-/// Level 4 — transportation / logistics network (LP on a 2-D grid).
+/// Level 4  transportation / logistics network (LP on a 2-D grid).
 class TransportationProblem extends DemoProblem {
   static const _factories = ['F1', 'F2', 'F3'];
   static const _warehouses = ['W1', 'W2', 'W3', 'W4'];

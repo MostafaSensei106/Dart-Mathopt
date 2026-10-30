@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../helpers/test_helpers.dart';
 
 /// Vectorized builders: balanced sums, dot products, batch constraints.
-/// Pure Dart — no native library needed.
+/// Pure Dart  no native library needed.
 void main() {
   setUpAll(ensureNativeInit);
 

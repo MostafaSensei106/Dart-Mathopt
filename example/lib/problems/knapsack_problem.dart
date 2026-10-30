@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 
 import 'demo_problem.dart';
 
-/// Level 2 — knapsack / packing (Binary MILP).
+/// Level 2  knapsack / packing (Binary MILP).
 class KnapsackProblem extends DemoProblem {
   static const _names = ['Laptop', 'Camera', 'Tablet', 'Watch'];
   static const _weights = [2.0, 1.5, 0.8, 0.2];

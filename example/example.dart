@@ -5,7 +5,7 @@
 library;
 
 ///
-/// - Usage patterns (`patterns`): short API recipes — minimal LP, indexed
+/// - Usage patterns (`patterns`): short API recipes  minimal LP, indexed
 ///   grids, logical helpers, one model on three engines, honest statuses,
 ///   and the repeated-solve cache.
 /// - Catalog tour (`tour`): all twelve showcase problems (the same ones in
@@ -40,7 +40,7 @@ Future<void> main(List<String> args) async {
 }
 
 // ---------------------------------------------------------------------------
-// Part 1 — usage patterns.
+// Part 1  usage patterns.
 // ---------------------------------------------------------------------------
 
 Future<void> _runPatterns() async {
@@ -165,7 +165,7 @@ Future<void> _repeatCache() async {
 }
 
 // ---------------------------------------------------------------------------
-// Part 2 — catalog tour (shared with lib/example.dart).
+// Part 2  catalog tour (shared with lib/example.dart).
 // ---------------------------------------------------------------------------
 
 Future<void> _runTour() => runCatalogTour();

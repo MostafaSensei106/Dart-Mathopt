@@ -9,7 +9,8 @@ use crate::models::dto_response::FrbSolveResponse;
 /// Rust-side) refuse anything else before native work starts.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct EngineCapabilities {
-    /// Accepts integer/binary variables (MILP). Only HiGHS sets this.
+    /// Accepts integer/binary variables (MILP). Only HiGHS sets this, and
+    /// HiGHS is compiled only on native targets (not `wasm32`).
     pub supports_milp: bool,
     /// Accepts quadratic objectives. Reserved: no quadratic DTOs exist yet.
     pub supports_qp: bool,
@@ -36,7 +37,7 @@ impl EngineCapabilities {
 /// # Adding a new solver (3 steps)
 /// 1. Implement this trait for the new engine type.
 /// 2. Append one entry to `BUILTINS` in `engine/registry.rs`.
-/// 3. Declare honest [`EngineCapabilities`] — the default
+/// 3. Declare honest [`EngineCapabilities`]  the default
 ///    [`validate`](SolverEngine::validate) rejects unsupported shapes
 ///    before any native work starts.
 #[async_trait::async_trait]
@@ -56,12 +57,15 @@ pub trait SolverEngine: Send + Sync {
 
     /// Pre-solve capability check (defense in depth: the router calls
     /// this too). The default rejects integer variables on engines
-    /// without MILP support with a clear error.
+    /// without MILP support with a clear error pointing at HiGHS when it
+    /// exists on this target.
     fn validate(&self, request: &FrbSolveRequest) -> Result<(), FrbSolverError> {
         let caps = self.capabilities();
         if request.has_integer() && !caps.supports_milp {
             return Err(FrbSolverError::CapabilityError(format!(
-                "Engine '{}' does not support integer/binary variables; use HiGHS for MILP",
+                "Engine '{}' does not support integer/binary variables; \
+                 use HiGHS for MILP (native platforms only  web builds are \
+                 LP-only)",
                 self.name()
             )));
         }

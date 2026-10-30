@@ -39,7 +39,7 @@ class FacilityProblem extends DemoProblem {
 
   @override
   String get difficultyReason =>
-      'Hard: binary open/close choices linked to continuous flows — a '
+      'Hard: binary open/close choices linked to continuous flows  a '
       'closed depot must ship exactly zero (capacity × open trick).';
 
   @override

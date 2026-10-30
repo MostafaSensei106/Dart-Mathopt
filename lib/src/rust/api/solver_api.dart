@@ -19,10 +19,10 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 /// 2. **Validate** capabilities through the engine trait default
 ///    (integer models on LP-only engines fail here, before any
 ///    native work, with `FrbSolverError::CapabilityError`).
-/// 3. **Execute** by lending the engine a borrow of the request —
+/// 3. **Execute** by lending the engine a borrow of the request
 ///    zero-copy, no clone (see §11.1).
 ///
-/// NOTE: no `unwrap`/`expect`/`panic` on this path — every failure is a
+/// NOTE: no `unwrap`/`expect`/`panic` on this path  every failure is a
 /// typed `FrbSolverError` (see agents.md §11.2). Timeouts are not
 /// errors: they come back inside the response as a time-limit status.
 Future<FrbSolveResponse> executeSolve({required FrbSolveRequest request}) =>

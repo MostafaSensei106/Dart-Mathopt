@@ -14,9 +14,10 @@ pub enum FrbSolverError {
     /// The selected engine cannot handle this problem class.
     ///
     /// Produced before any native work starts, e.g. integer variables
-    /// routed to Clarabel or MicroLP. Dart surfaces these as
+    /// routed to Clarabel or MicroLP, or MILP on a WASM build where HiGHS
+    /// is not compiled in. Dart surfaces these as
     /// `ModelValidationException` (usage error), not engine failure.
-    /// Payload: what was requested vs. what the engine supports.
+    /// Payload: what was requested vs. what the engine/platform supports.
     #[error("Capability error: {0}")]
     CapabilityError(String),
 
@@ -32,15 +33,15 @@ pub enum FrbSolverError {
     /// Input failed validation before reaching the engine.
     ///
     /// Covers unknown solver keys, non-dense variable ids, out-of-range
-    /// bounds, and builds compiled without the requested engine (e.g.
-    /// `"highs"` on a `--no-default-features` web build). Dart surfaces
-    /// these as `ModelValidationException`.
+    /// bounds, and engines absent from the current target (e.g. `"highs"`
+    /// on a `wasm32` build, where HiGHS is not a dependency). Dart
+    /// surfaces these as `ModelValidationException`.
     #[error("Invalid input: {0}")]
     InvalidInput(String),
 
     /// Reserved: the solve exceeded the requested time limit.
     ///
-    /// Currently unconstructed — adapters report limits as a
+    /// Currently unconstructed  adapters report limits as a
     /// time-limit *status* so incumbents survive. Kept so the error
     /// shape stays forward-compatible; Dart maps it to
     /// `SolverTimeoutException` if an engine ever returns it.

@@ -144,9 +144,12 @@ pub struct FrbSolveOptionsDto {
     /// are ignored by adapters that need non-zero counts.
     pub thread_count: Option<u32>,
     /// Routing key: `"auto" | "highs" | "clarabel" | "microlp"`.
-    /// `"auto"` prefers HiGHS for LP/MILP when compiled in, else the
-    /// pure-Rust MicroLP engine. Unknown keys fail fast with an
-    /// invalid-input error naming the available engines.
+    /// `"auto"` sends integer models to HiGHS on native platforms and
+    /// continuous LP/QP models to Clarabel on every platform. HiGHS is a
+    /// native-only dependency, so `"highs"` on a web build fails fast
+    /// with an invalid-input error explaining the platform limitation;
+    /// MILP on the web fails with a capability error. Unknown keys fail
+    /// fast with an invalid-input error naming the available engines.
     pub solver: String,
 }
 

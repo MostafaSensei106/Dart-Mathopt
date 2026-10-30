@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 
 import 'demo_problem.dart';
 
-/// Level 3 — weekly staff scheduling (Integer MILP).
+/// Level 3  weekly staff scheduling (Integer MILP).
 class SchedulingProblem extends DemoProblem {
   static const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   static const _demand = [17, 13, 15, 19, 14, 16, 11];
@@ -29,7 +29,7 @@ class SchedulingProblem extends DemoProblem {
 
   @override
   String get difficultyReason =>
-      'Hard: integer headcounts plus cyclic coverage — every day is covered '
+      'Hard: integer headcounts plus cyclic coverage  every day is covered '
       'by shifts started on 5 different days, wrapping around the week.';
 
   @override

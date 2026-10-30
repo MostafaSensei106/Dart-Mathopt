@@ -1,4 +1,4 @@
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../core/exceptions.dart';
 import '../../core/types.dart';
@@ -7,7 +7,7 @@ import 'solver_interface.dart';
 
 /// A named backend registered for model routing.
 ///
-/// Adding a future solver (e.g. OSQP) means registering one of these —
+/// Adding a future solver (e.g. OSQP) means registering one of these
 /// no changes to `MathOptModel` or the compiler are required.
 @immutable
 class SolverRegistration {
@@ -59,7 +59,26 @@ class SolverRegistry {
     ),
   };
 
+  /// Test hook that simulates a web build on the Dart VM.
+  ///
+  /// `null` (the default) means "use [kIsWeb]"; [resetToDefaults] clears it.
+  @visibleForTesting
+  static bool? debugIsWeb;
+
+  /// `true` when the app runs on the web (WebAssembly).
+  ///
+  /// The C++ HiGHS engine is not compiled into WASM builds, so every
+  /// web-only routing decision is gated on this flag.
+  static bool get isWeb => debugIsWeb ?? kIsWeb;
+
+  /// `true` when the current platform ships a MILP-capable engine (HiGHS).
+  static bool get supportsMilp => !isWeb;
+
   /// All registered engine names (unmodifiable view).
+  ///
+  /// Includes `highs` even on the web: the entry describes the engine's
+  /// capabilities, while [resolve] rejects it at routing time with a
+  /// platform-specific message.
   static Iterable<String> get names => List.unmodifiable(_entries.keys);
 
   /// Looks up a registration by engine name (case-insensitive).
@@ -85,6 +104,7 @@ class SolverRegistry {
   /// Restores the built-in `highs`/`clarabel`/`microlp` table.
   @visibleForTesting
   static void resetToDefaults() {
+    debugIsWeb = null;
     _entries
       ..clear()
       ..['highs'] = const SolverRegistration(
@@ -120,17 +140,36 @@ class SolverRegistry {
 
   /// Resolves the registration that should handle a request, throwing a
   /// [ModelValidationException] with an actionable message when the
-  /// requested engine cannot handle the problem shape or is unknown.
+  /// requested engine cannot handle the problem shape, is unknown, or is
+  /// not compiled into this platform (HiGHS on the web).
   static SolverRegistration resolve({
     required bool hasInteger,
     required bool hasQuadratic,
     SolverPreference preference = SolverPreference.auto,
   }) {
+    if (isWeb && preference == SolverPreference.highs) {
+      throw const ModelValidationException(
+        'HiGHS is not available on the web: it is C++ and cannot be '
+        'compiled to WebAssembly. Use SolverPreference.clarabel or '
+        'SolverPreference.microlp for continuous LP models, or run the '
+        'model on a native platform (Android, iOS, Windows, macOS, Linux) '
+        'for MILP.',
+      );
+    }
+    if (isWeb && preference == SolverPreference.auto && hasInteger) {
+      throw const ModelValidationException(
+        'Integer/binary (MILP) models require HiGHS, which is only '
+        'available on native platforms (Android, iOS, Windows, macOS, '
+        'Linux). Web builds support continuous LP only: relax the integer '
+        'variables or solve the model natively.',
+      );
+    }
     final preferred = switch (preference) {
       SolverPreference.highs => 'highs',
       SolverPreference.clarabel => 'clarabel',
       SolverPreference.microlp => 'microlp',
-      SolverPreference.auto => hasQuadratic ? 'clarabel' : 'highs',
+      // HiGHS owns MILP on native; every continuous LP/QP goes to Clarabel.
+      SolverPreference.auto => hasInteger ? 'highs' : 'clarabel',
     };
     final reg = lookup(preferred);
     if (reg == null) {

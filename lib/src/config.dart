@@ -11,7 +11,7 @@ import 'modules/solving/options.dart';
 /// The Rust engines receive the *effective* options inside every
 /// `FrbSolveRequest`, so this config steers native behavior without
 /// changing the FFI surface (no bridge regeneration needed to add
-/// fields here — they are resolved Dart-side before crossing).
+/// fields here  they are resolved Dart-side before crossing).
 @immutable
 class MathOptConfig {
   /// Creates a global config; every field is optional.

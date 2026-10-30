@@ -2,20 +2,27 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Solver registry: routing, capability negotiation, and custom backends.
-/// Pure Dart — no native library needed.
+/// Pure Dart  no native library needed.
 void main() {
   setUp(SolverRegistry.resetToDefaults);
   tearDown(SolverRegistry.resetToDefaults);
 
   group('built-in routing', () {
-    test('auto LP routes to highs', () {
+    test('auto LP routes to clarabel', () {
       expect(
         SolverRegistry.route(hasInteger: false, hasQuadratic: false),
-        'highs',
+        'clarabel',
       );
     });
 
-    test('auto MILP still routes to highs (integer support)', () {
+    test('auto QP routes to clarabel', () {
+      expect(
+        SolverRegistry.route(hasInteger: false, hasQuadratic: true),
+        'clarabel',
+      );
+    });
+
+    test('auto MILP routes to highs (integer support)', () {
       expect(
         SolverRegistry.route(hasInteger: true, hasQuadratic: false),
         'highs',
@@ -84,6 +91,52 @@ void main() {
       expect(
         SolverRegistry.resolve(hasInteger: true, hasQuadratic: false).name,
         'highs',
+      );
+    });
+  });
+
+  group('web platform gating (HiGHS is C++/WASM-incompatible)', () {
+    setUp(() => SolverRegistry.debugIsWeb = true);
+
+    test('isWeb is true and supportsMilp is false', () {
+      expect(SolverRegistry.isWeb, isTrue);
+      expect(SolverRegistry.supportsMilp, isFalse);
+    });
+
+    test('auto continuous model still routes to clarabel', () {
+      expect(
+        SolverRegistry.route(hasInteger: false, hasQuadratic: false),
+        'clarabel',
+      );
+    });
+
+    test('auto MILP throws with an actionable platform message', () {
+      expect(
+        () => SolverRegistry.resolve(hasInteger: true, hasQuadratic: false),
+        throwsA(
+          isA<ModelValidationException>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('native'), contains('continuous LP')),
+          ),
+        ),
+      );
+    });
+
+    test('explicit highs on web throws a platform message', () {
+      expect(
+        () => SolverRegistry.resolve(
+          hasInteger: false,
+          hasQuadratic: false,
+          preference: SolverPreference.highs,
+        ),
+        throwsA(
+          isA<ModelValidationException>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('WebAssembly'), contains('clarabel')),
+          ),
+        ),
       );
     });
   });

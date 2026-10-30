@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Mobile layout guard: the cutting screen must render cleanly on a
-/// 360px phone with no overflow exceptions — form, both bottom sheets.
+/// 360px phone with no overflow exceptions  form, both bottom sheets.
 void main() {
   testWidgets('cutting screen fits a 360px phone', (tester) async {
     tester.view.physicalSize = const Size(360, 740);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    await tester.pumpWidget(
-      const MaterialApp(home: CuttingStockScreen()),
-    );
+    await tester.pumpWidget(const MaterialApp(home: CuttingStockScreen()));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
 

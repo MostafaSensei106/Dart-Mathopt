@@ -19,7 +19,7 @@ use crate::models::dto_response::{FrbSolveResponse, FrbSolveStatistics, FrbSolve
 /// Pure-Rust LP engine built on `good_lp` with its `microlp` solver.
 ///
 /// Why a third LP engine next to HiGHS: zero C++ (no `highs-sys` native
-/// build), so it stays available wherever a C++ toolchain is missing —
+/// build), so it stays available wherever a C++ toolchain is missing
 /// notably Web/WASM. LP-only: integer variables are rejected by the
 /// shared [`SolverEngine::validate`] gate before any work starts.
 pub struct MicroLpEngine;

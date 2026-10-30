@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 
 import 'demo_problem.dart';
 
-/// Level 1 — factory production planning (LP).
+/// Level 1  factory production planning (LP).
 class ProductionProblem extends DemoProblem {
   late Variable _a;
   late Variable _b;

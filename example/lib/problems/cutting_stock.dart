@@ -320,7 +320,7 @@ Future<CuttingPlan> solveCuttingStock(
   // Large orders: heuristic only (assignment MILP would explode).
   if (n > s.maxMilpPieces || maxBars > s.maxMilpBars) {
     print(
-      'CuttingStock: $n pieces / $maxBars bars — above MILP budget, using BFD.',
+      'CuttingStock: $n pieces / $maxBars bars  above MILP budget, using BFD.',
     );
     return buildBFDPlan(demand, s);
   }
@@ -457,7 +457,7 @@ Future<({CuttingPlan plan, double barLengthMm})> solveBestLength(
 }
 /// Factory-batch console demo (`dart run example/example.dart cutting`).
 ///
-/// One mixed batch — 2 sliding + 1 tilt windows — solved against every
+/// One mixed batch  2 sliding + 1 tilt windows  solved against every
 /// stocked bar length; the cheapest stock wins. Pieces carry their order
 /// line (W1/W2/W3) so each bar says which windows it serves.
 Future<void> runCuttingStockDemo() async {

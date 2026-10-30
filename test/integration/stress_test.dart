@@ -1,5 +1,5 @@
 /// Stress tests: factory-scale and delivery-scale models with seeded
-/// randomness (deterministic), validated by independent recomputation —
+/// randomness (deterministic), validated by independent recomputation
 /// the same shapes as the showcase examples, 10–100x larger.
 @Timeout(Duration(minutes: 3))
 library;

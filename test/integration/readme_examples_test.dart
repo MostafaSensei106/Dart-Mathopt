@@ -5,7 +5,7 @@ import '../helpers/test_helpers.dart';
 
 /// The code snippets in the root README, executed verbatim (modulo test
 /// scaffolding). If a snippet stops compiling or its result changes,
-/// this file — not just the docs — fails.
+/// this file  not just the docs  fails.
 void main() {
   setUpAll(ensureNativeInit);
 

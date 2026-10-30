@@ -9,14 +9,15 @@ use crate::models::dto_response::FrbSolveResponse;
 /// MILP never blocks the UI. The three steps never change order:
 ///
 /// 1. **Route** to the engine named by `request.options.solver`
-///    (`"auto"` prefers HiGHS when compiled in, else MicroLP).
+///    (`"auto"` sends MILP to HiGHS on native targets and continuous
+///    LP/QP to Clarabel everywhere).
 /// 2. **Validate** capabilities through the engine trait default
 ///    (integer models on LP-only engines fail here, before any
 ///    native work, with `FrbSolverError::CapabilityError`).
-/// 3. **Execute** by lending the engine a borrow of the request —
+/// 3. **Execute** by lending the engine a borrow of the request
 ///    zero-copy, no clone (see §11.1).
 ///
-/// NOTE: no `unwrap`/`expect`/`panic` on this path — every failure is a
+/// NOTE: no `unwrap`/`expect`/`panic` on this path  every failure is a
 /// typed `FrbSolverError` (see agents.md §11.2). Timeouts are not
 /// errors: they come back inside the response as a time-limit status.
 pub async fn execute_solve(request: FrbSolveRequest) -> Result<FrbSolveResponse, FrbSolverError> {

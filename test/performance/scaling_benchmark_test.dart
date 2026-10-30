@@ -21,7 +21,7 @@ import '../helpers/test_helpers.dart';
 
 /// Solves [model], asserts optimality, logs the wall/engine split, and
 /// enforces a generous wall-clock ceiling (regression tripwire, not a
-/// strict perf gate — CI machines vary).
+/// strict perf gate  CI machines vary).
 Future<void> expectScalingCase(
   String label,
   MathOptModel Function() build, {

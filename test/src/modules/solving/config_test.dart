@@ -2,7 +2,7 @@ import 'package:dart_mathopt/dart_mathopt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Global config: defaults, presets, and per-call override precedence.
-/// Pure Dart — no native library needed.
+/// Pure Dart  no native library needed.
 void main() {
   setUp(DartMathOpt.resetForTesting);
 

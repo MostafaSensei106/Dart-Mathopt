@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// `DartMathOpt` lifecycle against the real native library:
 /// init, explicit-path init, dispose, and re-init as one ordered flow
-/// (a single test — lifecycle steps are inherently sequential).
+/// (a single test  lifecycle steps are inherently sequential).
 void main() {
   group('DartMathOpt lifecycle', () {
     test('init, dispose, and re-init', () async {

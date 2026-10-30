@@ -6,8 +6,10 @@
 //! backends: HiGHS (LP/MILP, C++), Clarabel (LP, Rust interior-point),
 //! or MicroLP (LP, pure Rust via `good_lp`).
 //!
-//! The `highs` cargo feature (on by default) gates the C++ engine;
-//! `--no-default-features` builds the pure-Rust subset for web.
+//! HiGHS is a native-only dependency (it is C++ and cannot target
+//! WebAssembly). Platform selection is automatic: the engine is compiled
+//! only when `target_arch != "wasm32"`, so web builds expose Clarabel
+//! and MicroLP without any cargo feature flags.
 pub mod api;
 pub mod engine;
 pub mod errors;

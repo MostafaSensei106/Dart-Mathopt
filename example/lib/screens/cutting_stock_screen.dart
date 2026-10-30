@@ -1,4 +1,4 @@
-/// UPVC Cutting Stock MVP screen — the factory-owner page.
+/// UPVC Cutting Stock MVP screen  the factory-owner page.
 ///
 /// Separate section from the 12 academic demos: a real order form.
 /// Data entry lives in modal bottom sheets (window presets / custom
@@ -60,8 +60,13 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
     }
     for (var c = 0; c < _custom.length; c++) {
       for (var i = 0; i < _custom[c].qty; i++) {
-        out.add(DemandedPiece(_custom[c].label, _custom[c].lengthMm,
-            source: 'C${c + 1}'));
+        out.add(
+          DemandedPiece(
+            _custom[c].label,
+            _custom[c].lengthMm,
+            source: 'C${c + 1}',
+          ),
+        );
       }
     }
     return out;
@@ -85,7 +90,11 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
       final sw = Stopwatch()..start();
       final CuttingPlan plan;
       if (_autoLength) {
-        final best = await solveBestLength(demand, settings, [5000, 5800, 6000]);
+        final best = await solveBestLength(demand, settings, [
+          5000,
+          5800,
+          6000,
+        ]);
         plan = best.plan;
         if (mounted) setState(() => _barLength = best.barLengthMm);
       } else {
@@ -139,13 +148,12 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                         DropdownMenuItem(
                           value: p,
                           child: Text(
-                            '${p.name} — ${p.nameAr}',
+                            '${p.name}  ${p.nameAr}',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                     ],
-                    onChanged: (v) =>
-                        setState(() => _profile = v ?? _profile),
+                    onChanged: (v) => setState(() => _profile = v ?? _profile),
                   ),
                   const SizedBox(height: 8),
                   // 2×2 grid: 4 narrow fields never fit one phone row.
@@ -156,9 +164,8 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                           label: 'Sash ded.',
                           value: _profile.sashDeduction,
                           onChanged: (v) => setState(
-                            () => _profile = _profile.copyWith(
-                              sashDeduction: v,
-                            ),
+                            () =>
+                                _profile = _profile.copyWith(sashDeduction: v),
                           ),
                         ),
                       ),
@@ -168,9 +175,8 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                           label: 'Bead ded.',
                           value: _profile.beadDeduction,
                           onChanged: (v) => setState(
-                            () => _profile = _profile.copyWith(
-                              beadDeduction: v,
-                            ),
+                            () =>
+                                _profile = _profile.copyWith(beadDeduction: v),
                           ),
                         ),
                       ),
@@ -211,8 +217,7 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                         child: _NumField(
                           label: 'Bar (mm)',
                           value: _barLength,
-                          onChanged: (v) =>
-                              setState(() => _barLength = v),
+                          onChanged: (v) => setState(() => _barLength = v),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -228,20 +233,22 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                   SwitchListTile(
                     dense: true,
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Glass beads (باكيت)',
-                        style: TextStyle(fontSize: 14)),
+                    title: const Text(
+                      'Glass beads (باكيت)',
+                      style: TextStyle(fontSize: 14),
+                    ),
                     value: _withBeads,
-                    onChanged: (v) =>
-                        setState(() => _withBeads = v),
+                    onChanged: (v) => setState(() => _withBeads = v),
                   ),
                   SwitchListTile(
                     dense: true,
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Fly screen (سلك)',
-                        style: TextStyle(fontSize: 14)),
+                    title: const Text(
+                      'Fly screen (سلك)',
+                      style: TextStyle(fontSize: 14),
+                    ),
                     value: _withScreen,
-                    onChanged: (v) =>
-                        setState(() => _withScreen = v),
+                    onChanged: (v) => setState(() => _withScreen = v),
                   ),
                 ],
               ),
@@ -251,8 +258,10 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
               actionLabel: 'Add window',
               onAction: _openWindowSheet,
               child: _windows.isEmpty
-                  ? const Text('No windows yet — add one.',
-                      style: TextStyle(color: Colors.black54))
+                  ? const Text(
+                      'No windows yet  add one.',
+                      style: TextStyle(color: Colors.black54),
+                    )
                   : Column(
                       children: [
                         for (var i = 0; i < _windows.length; i++)
@@ -273,8 +282,10 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
               actionLabel: 'Add piece',
               onAction: _openPieceSheet,
               child: _custom.isEmpty
-                  ? const Text('No custom pieces.',
-                      style: TextStyle(color: Colors.black54))
+                  ? const Text(
+                      'No custom pieces.',
+                      style: TextStyle(color: Colors.black54),
+                    )
                   : Column(
                       children: [
                         for (var i = 0; i < _custom.length; i++)
@@ -283,8 +294,7 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                             title:
                                 '${_custom[i].label} ${_custom[i].lengthMm.toStringAsFixed(0)}mm ×${_custom[i].qty}',
                             subtitle: 'custom',
-                            onDelete: () =>
-                                setState(() => _custom.removeAt(i)),
+                            onDelete: () => setState(() => _custom.removeAt(i)),
                           ),
                       ],
                     ),
@@ -300,8 +310,7 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                         Expanded(
                           child: Text(
                             'Batch total: ${demand.length} pieces',
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                         SizedBox(
@@ -309,8 +318,7 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                           child: _NumField(
                             label: 'Time (s)',
                             value: _timeLimit,
-                            onChanged: (v) =>
-                                setState(() => _timeLimit = v),
+                            onChanged: (v) => setState(() => _timeLimit = v),
                           ),
                         ),
                       ],
@@ -323,8 +331,7 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                         style: TextStyle(fontSize: 13),
                       ),
                       value: _autoLength,
-                      onChanged: (v) =>
-                          setState(() => _autoLength = v ?? true),
+                      onChanged: (v) => setState(() => _autoLength = v ?? true),
                     ),
                     Row(
                       children: [
@@ -332,8 +339,7 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                           child: _NumField(
                             label: 'Bar (mm)',
                             value: _barLength,
-                            onChanged: (v) =>
-                                setState(() => _barLength = v),
+                            onChanged: (v) => setState(() => _barLength = v),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -341,8 +347,7 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
                           child: _NumField(
                             label: 'Reusable ≥ (mm)',
                             value: _reuseMin,
-                            onChanged: (v) =>
-                                setState(() => _reuseMin = v),
+                            onChanged: (v) => setState(() => _reuseMin = v),
                           ),
                         ),
                       ],
@@ -418,73 +423,76 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('Add window / إضافة شباك',
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<WindowType>(
-                initialValue: type,
-                isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Type / النوع',
-                  border: OutlineInputBorder(),
+                const Text(
+                  'Add window / إضافة شباك',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                items: [
-                  for (final t in WindowType.values)
-                    DropdownMenuItem(
-                      value: t,
-                      child: Text(
-                        '${t.labelEn} — ${t.labelAr}',
-                        overflow: TextOverflow.ellipsis,
+                const SizedBox(height: 12),
+                DropdownButtonFormField<WindowType>(
+                  initialValue: type,
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Type / النوع',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: [
+                    for (final t in WindowType.values)
+                      DropdownMenuItem(
+                        value: t,
+                        child: Text(
+                          '${t.labelEn}  ${t.labelAr}',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                  onChanged: (v) => setSheet(() => type = v ?? type),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _NumField(
+                        label: 'Width (mm)',
+                        value: w,
+                        onChanged: (v) => setSheet(() => w = v),
                       ),
                     ),
-                ],
-                onChanged: (v) => setSheet(() => type = v ?? type),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _NumField(
-                      label: 'Width (mm)',
-                      value: w,
-                      onChanged: (v) => setSheet(() => w = v),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _NumField(
+                        label: 'Height (mm)',
+                        value: h,
+                        onChanged: (v) => setSheet(() => h = v),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _NumField(
-                      label: 'Height (mm)',
-                      value: h,
-                      onChanged: (v) => setSheet(() => h = v),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _NumField(
+                        label: 'Qty',
+                        value: qty.toDouble(),
+                        onChanged: (v) =>
+                            setSheet(() => qty = v.round().clamp(1, 999)),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _NumField(
-                      label: 'Qty',
-                      value: qty.toDouble(),
-                      onChanged: (v) =>
-                          setSheet(() => qty = v.round().clamp(1, 999)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() => _windows.add(
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(
+                      () => _windows.add(
                         WindowOrder(
                           type: type,
                           widthMm: w,
                           heightMm: h,
                           qty: qty,
                         ),
-                      ));
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text('Add to order'),
-              ),
+                      ),
+                    );
+                    Navigator.of(ctx).pop();
+                  },
+                  child: const Text('Add to order'),
+                ),
               ],
             ),
           ),
@@ -513,53 +521,52 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('Add custom piece / قطعة حرة',
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              TextFormField(
-                initialValue: label,
-                decoration: const InputDecoration(
-                  labelText: 'Label',
-                  border: OutlineInputBorder(),
+                const Text(
+                  'Add custom piece / قطعة حرة',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                onChanged: (v) => label = v.isEmpty ? 'Custom' : v,
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _NumField(
-                      label: 'Length (mm)',
-                      value: len,
-                      onChanged: (v) => setSheet(() => len = v),
-                    ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  initialValue: label,
+                  decoration: const InputDecoration(
+                    labelText: 'Label',
+                    border: OutlineInputBorder(),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _NumField(
-                      label: 'Qty',
-                      value: qty.toDouble(),
-                      onChanged: (v) =>
-                          setSheet(() => qty = v.round().clamp(1, 999)),
+                  onChanged: (v) => label = v.isEmpty ? 'Custom' : v,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _NumField(
+                        label: 'Length (mm)',
+                        value: len,
+                        onChanged: (v) => setSheet(() => len = v),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() => _custom.add(
-                        _CustomRow(
-                          label: label,
-                          lengthMm: len,
-                          qty: qty,
-                        ),
-                      ));
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text('Add to order'),
-              ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _NumField(
+                        label: 'Qty',
+                        value: qty.toDouble(),
+                        onChanged: (v) =>
+                            setSheet(() => qty = v.round().clamp(1, 999)),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(
+                      () => _custom.add(
+                        _CustomRow(label: label, lengthMm: len, qty: qty),
+                      ),
+                    );
+                    Navigator.of(ctx).pop();
+                  },
+                  child: const Text('Add to order'),
+                ),
               ],
             ),
           ),
@@ -570,11 +577,7 @@ class _CuttingStockScreenState extends State<CuttingStockScreen> {
 }
 
 class _CustomRow {
-  _CustomRow({
-    required this.label,
-    required this.lengthMm,
-    required this.qty,
-  });
+  _CustomRow({required this.label, required this.lengthMm, required this.qty});
   String label;
   double lengthMm;
   int qty;
@@ -604,8 +607,10 @@ class _Section extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(title,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
                 if (actionLabel != null)
                   TextButton.icon(
@@ -646,8 +651,10 @@ class _OrderTile extends StatelessWidget {
         child: Text(tag, style: const TextStyle(fontSize: 12)),
       ),
       title: Text(title, style: const TextStyle(fontSize: 14)),
-      subtitle: Text(subtitle,
-          style: const TextStyle(fontSize: 12, color: Colors.black54)),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(fontSize: 12, color: Colors.black54),
+      ),
       trailing: IconButton(
         icon: const Icon(Icons.delete_outline, size: 20),
         onPressed: onDelete,
@@ -657,7 +664,11 @@ class _OrderTile extends StatelessWidget {
 }
 
 class _NumField extends StatelessWidget {
-  const _NumField({required this.label, required this.value, required this.onChanged});
+  const _NumField({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
   final String label;
   final double value;
   final ValueChanged<double> onChanged;
@@ -745,17 +756,17 @@ class _ResultHeader extends StatelessWidget {
               'Reusable offcuts: ${plan.reusableMm.toStringAsFixed(0)}mm • '
               'Kerf: ${plan.kerfMm}mm • '
               '${plan.piecesPerSource.entries.map((e) => '${e.key}:${e.value}pcs').join(' ')}',
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
             ),
             if (stats != null) ...[
               const SizedBox(height: 4),
-              Text(stats!,
-                  key: const ValueKey('solve_stats'),
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: Colors.black54)),
+              Text(
+                stats!,
+                key: const ValueKey('solve_stats'),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: Colors.black54,
+                ),
+              ),
             ],
           ],
         ),
@@ -798,11 +809,8 @@ class _BarCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Bar ${index + 1} — leftover ${bar.wasteMm.toStringAsFixed(0)}mm',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+              'Bar ${index + 1}  leftover ${bar.wasteMm.toStringAsFixed(0)}mm',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 4),
             // Wraps on narrow phones instead of overflowing the title row.
@@ -813,7 +821,9 @@ class _BarCard extends StatelessWidget {
                 for (final s in bar.sources)
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
@@ -829,7 +839,9 @@ class _BarCard extends StatelessWidget {
                 if (reusable)
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green.shade100,
                       borderRadius: BorderRadius.circular(8),
@@ -863,15 +875,15 @@ class _BarCard extends StatelessWidget {
                               final wPx = frac(bar.pieces[i].lengthMm);
                               return Container(
                                 width: wPx,
-                                color: _palette[i % _palette.length]
-                                    .shade500,
+                                color: _palette[i % _palette.length].shade500,
                                 alignment: Alignment.center,
                                 // Tiny slivers stay color-only so the
                                 // label never squeezes on phones.
                                 child: wPx >= 40
                                     ? Text(
-                                        bar.pieces[i].lengthMm
-                                            .toStringAsFixed(0),
+                                        bar.pieces[i].lengthMm.toStringAsFixed(
+                                          0,
+                                        ),
                                         style: const TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
@@ -920,8 +932,10 @@ class _BarCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               bar.pieces
-                  .map((p) =>
-                      '${p.lengthMm.toStringAsFixed(0)}${p.source.isEmpty ? '' : '[${p.source}]'} (${p.label})')
+                  .map(
+                    (p) =>
+                        '${p.lengthMm.toStringAsFixed(0)}${p.source.isEmpty ? '' : '[${p.source}]'} (${p.label})',
+                  )
                   .join(' + '),
               style: const TextStyle(
                 fontFamily: 'monospace',

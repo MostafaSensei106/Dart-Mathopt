@@ -1,7 +1,7 @@
 //! Link the NDK C++ standard library **statically** on Android.
 //!
 //! Background: `highs-sys` unconditionally emits `cargo:rustc-link-lib=stdc++`
-//! for any `*-linux-*` target — including `*-linux-android`. Android has no
+//! for any `*-linux-*` target  including `*-linux-android`. Android has no
 //! `libstdc++.so` (only the NDK's `libc++`), so the produced `.so` fails to
 //! `dlopen` on devices with `cannot locate symbol ...` / missing
 //! `libstdc++.so`. Pulling `libc++_static.a` (+ `libc++abi.a`, `libunwind.a`)
@@ -69,12 +69,12 @@ fn main() {
 
     // `highs-sys` unconditionally emits `cargo:rustc-link-lib=stdc++` for any
     // `*-linux-*` target. The linker would resolve it to the NDK's per-API
-    // `libstdc++.so` stub and record it as DT_NEEDED — but no such file
+    // `libstdc++.so` stub and record it as DT_NEEDED  but no such file
     // exists on devices, so `dlopen` fails. Shadow it with an *empty* static
     // archive placed earlier on the search path: `-lstdc++` then resolves to
     // nothing (all real symbols already came from `libc++_static.a` above),
     // and static archives never produce DT_NEEDED entries.
-    // An empty archive is just the 8-byte magic — no tooling required.
+    // An empty archive is just the 8-byte magic  no tooling required.
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap_or_default());
     let stub_dir = out_dir.join("android_stubs");
     std::fs::create_dir_all(&stub_dir).ok();

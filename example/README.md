@@ -19,11 +19,11 @@ dart run example/example.dart patterns   # usage patterns only
 dart run example.dart                    # from example/
 ```
 
-## B. Showcase app — 12 everyday problems (`lib/`)
+## B. Showcase app  12 everyday problems (`lib/`)
 
 The same twelve problems in one Flutter app. Each screen shows the **story**,
 **difficulty** (★☆☆ → ★★★), **modeling notes**, and a **live solve** button.
-The progress indicator keeps animating during every solve — proof the UI
+The progress indicator keeps animating during every solve  proof the UI
 never blocks.
 
 ```sh
