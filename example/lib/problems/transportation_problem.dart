@@ -84,6 +84,10 @@ class TransportationProblem extends DemoProblem {
   }
 
   @override
+  SolveOptions get preferredOptions =>
+      const SolveOptions(solver: SolverPreference.highs);
+
+  @override
   String describeResult(SolveResult result) {
     final lines = <String>[
       'Minimum cost: \$${result.objectiveValue!.toStringAsFixed(1)}',

@@ -21,6 +21,7 @@ library;
 /// ```
 
 import 'package:dart_mathopt/dart_mathopt.dart';
+import 'package:dart_mathopt_example/feature_demos.dart';
 import 'package:dart_mathopt_example/problems/cutting_stock.dart';
 import 'package:dart_mathopt_example/solve_time.dart';
 import 'package:dart_mathopt_example/tour.dart';
@@ -51,6 +52,10 @@ Future<void> _runPatterns() async {
   await _oneModelThreeEngines();
   await _honestStatuses();
   await _repeatCache();
+  for (final demo in buildFeatureDemos()) {
+    print('--- ${demo.title} ---');
+    print(await demo.run());
+  }
 }
 
 /// Minimal LP: variables, one constraint, objective, guarded result read.

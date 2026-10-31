@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../problems/catalog.dart';
 import '../problems/demo_problem.dart';
 import 'cutting_stock_screen.dart';
+import 'feature_demos_screen.dart';
 import 'problem_detail_screen.dart';
 
-/// Home screen: cards for all 6 everyday optimization problems.
+/// Home screen: live API demos and everyday optimization problems.
 class ProblemListScreen extends StatelessWidget {
   const ProblemListScreen({super.key});
 
@@ -26,9 +27,23 @@ class ProblemListScreen extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.only(bottom: 8),
                   child: Text(
-                    'Six everyday problems, solved natively with HiGHS & Clarabel. '
+                    'Twelve everyday problems with HiGHS, Clarabel and MicroLP. '
                     'Tap one to see the story, the model, and the live result.',
                     style: TextStyle(fontSize: 14, color: Colors.black54),
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    title: const Text('Engine & API demos'),
+                    subtitle: const Text(
+                      'Compare engines, auto routing, cache and validation',
+                    ),
+                    trailing: const Icon(Icons.science_outlined),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const FeatureDemosScreen(),
+                      ),
+                    ),
                   ),
                 ),
                 Card(
@@ -108,8 +123,7 @@ class ProblemListScreen extends StatelessWidget {
                   padding: EdgeInsets.only(top: 12),
                   child: Text(
                     'Academy examples',
-                    style:
-                        TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],

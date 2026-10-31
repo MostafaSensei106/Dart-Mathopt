@@ -99,3 +99,27 @@ enforces a generous wall-clock ceiling as a regression tripwire.
 | Warehouse Opening | Minimum cost $795 (North closed; East serves S1/S2/S5, West serves S3/S4) |
 | Lecture Timetabling | Dissatisfaction 3 (Math→Mon, Physics→Tue, History→Thu) |
 | Staff Scheduling | Minimum staff 23, all 7 demands covered |
+
+## Live changelog demos
+
+Open **Engine & API demos** from the app home page, or run
+`dart run example/example.dart patterns` from the repository root.
+Both entry points use `lib/feature_demos.dart`:
+
+| Demo | What runs |
+| --- | --- |
+| Compare LP engines | Auto (Clarabel), explicit Clarabel, MicroLP, and native HiGHS; objective, status, timing, dual availability |
+| Automatic integer routing | Binary `exactlyOne` model routed to native HiGHS; expected MILP validation on web |
+| Repeated solves | Cache miss, cache hit, then invalidation after a new constraint |
+| Infeasible result | `hasSolution` and `requireSolution()` guard |
+| Unsupported engine | Expected pre-FFI rejection of Clarabel MILP or web HiGHS |
+
+Factory Production, Budget Diet, and Delivery Network now explicitly select
+HiGHS to match their labels; Delivery Network keeps its LP shadow prices.
+The academic MILP examples and UPVC solver require a native target.
+The comparison demo skips HiGHS on web and still runs the two WASM engines.
+No cargo feature flags are needed: the target selects the engine set.
+
+The changelog’s QP/SOCP, Clarabel duals, implication/indicator helpers, and
+SOS1/SOS2 entries are roadmap work, not implemented APIs. The demo labels
+them as unavailable rather than offering solve buttons for them.

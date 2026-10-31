@@ -39,7 +39,7 @@
 | **Modeling** | Variables, objectives, and constraints written as equations (`x + y <= 4`); indexed variables (`continuousGrid`, N-D `indexed`); balanced `Expr.sum` / `Expr.dot` builders that avoid deep expression chains |
 | **Choice constraints** | `exactlyOne` / `atMostOne` / `atLeastOne` over binary variables, compiled through the standard constraint path |
 | **Engines** | HiGHS (LP/MILP, C++), Clarabel (LP, Rust interior-point), MicroLP (LP, pure Rust via `good_lp`), selected with `SolverPreference`; unsupported combinations are rejected before FFI |
-| **Web builds** | HiGHS is a native-only dependency (it is C++ and cannot compile to WASM), so web builds automatically get Clarabel + MicroLP only |
+| **Web builds** | HiGHS is a native-only dependency (excluded from this package’s WASM build), so web builds automatically get Clarabel + MicroLP only |
 | **Configuration** | `DartMathOpt.init(config:)` with presets (`fastLp` / `accurateMilp` / `lowMemory` / `verbose`); per-call `SolveOptions` override the global config field by field |
 | **Repeated solves** | The compiled request is reused while the model is unchanged (`lastSolveWasCached`); any structural edit invalidates it |
 | **Results** | `hasSolution` reports whether a usable primal exists, `isOptimal` whether optimality was proved; `requireSolution()` returns either an optimal solution or an incumbent, and throws only when there is none |
@@ -141,11 +141,12 @@ if (result.isOptimal) {
 }
 ```
 
-Expressions start from a variable (`x * 3`, not `3 * x`, because Dart resolves `num` operators first). Every snippet in this document is executed by `test/readme_examples_test.dart`.
+Expressions start from a variable (`x * 3`, not `3 * x`, because Dart resolves `num` operators first). Core solving examples are covered by [`test/integration/readme_examples_test.dart`](test/integration/readme_examples_test.dart); advanced fragments require the surrounding variables shown or described.
 
 ### 3. Integer decisions and engine choice
 
 ```dart
+final model = MathOptModel(name: 'Knapsack');
 final packed = [for (var i = 0; i < 4; i++) model.binary('p$i')];
 model.maximize(Expr.dotLists(packed, [1000.0, 800.0, 400.0, 500.0]));
 model.add(Expr.dotLists(packed, [2.0, 1.5, 0.8, 0.2]) <= 3.0);
@@ -198,7 +199,7 @@ print(r.objectiveValue); // null
 
 ## 🔬 Advanced Usage
 
-> Fragments below build on 2: `model` is a `MathOptModel`, `ship` an indexed grid.
+> The fragments below assume initialization and an existing `MathOptModel`; supply, demand, and choice-variable lists are application inputs.
 
 ### Indexed variables instead of manual indexing
 
@@ -244,7 +245,77 @@ await model.solve(); // cache hit: model.lastSolveWasCached == true
 
 ## 🧠 Solver Engines
 
-One model, three backends. `SolverPreference.auto` sends integer models (MILP) to HiGHS on native platforms (desktop and mobile) and continuous LP/QP models to Clarabel everywhere. HiGHS is a native-only dependency, so web builds contain Clarabel and MicroLP only; MILP on the web is rejected with a clear `ModelValidationException` before FFI. Requesting an engine that is not in the build returns an `InvalidInput` error listing the available ones.
+One model, three backends. `SolverPreference.auto` sends integer models (MILP) to HiGHS on native platforms (desktop and mobile) and continuous LP models to Clarabel everywhere. QP routing is reserved for future use; the current public modeling API is linear only. HiGHS is a native-only dependency, so web builds contain Clarabel and MicroLP only; MILP on the web is rejected with a clear `ModelValidationException` before FFI. On the web, explicitly selecting HiGHS raises `ModelValidationException` in Dart before FFI; direct bridge requests receive Rust `InvalidInput`.
+
+### Usage changes in the latest source
+
+See [`CHANGELOG.md`](CHANGELOG.md#001-dev2) for the `0.0.1-dev.2` changes; `pubspec.yaml` still declares `0.0.1-dev.1`.
+
+- `SolverPreference.auto` now selects Clarabel for continuous LP, instead of HiGHS. Select HiGHS explicitly on native platforms when you need LP dual values.
+- Integer and binary models use HiGHS automatically on native platforms. Web builds reject MILP; choosing Clarabel or MicroLP does not relax integer variables automatically.
+- The build target selects the engines: native builds include all three, WASM builds include Clarabel and MicroLP. No `--features highs` or `--no-default-features` flags are needed.
+
+```dart
+// Native only: preserve LP shadow prices after the auto-routing change.
+final model = MathOptModel(name: 'Shadow_prices');
+final x = model.continuous('x', lower: 0);
+model.add(x <= 10);
+model.maximize(x * 3);
+final result = await model.solve(
+  options: const SolveOptions(solver: SolverPreference.highs),
+);
+if (result.isOptimal) {
+  print(result.valueOf(x));       // 10.0
+  print(result.dualValues);       // One value per constraint, in insertion order.
+}
+```
+
+```dart
+// Continuous LP: works with the engines included in native and WASM builds.
+final model = MathOptModel(name: 'Portable_LP');
+final x = model.continuous('x', lower: 0, upper: 10);
+model.maximize(x * 3);
+final result = await model.solve(
+  options: const SolveOptions(solver: SolverPreference.auto), // Clarabel
+);
+if (result.hasSolution) {
+  final solution = result.requireSolution();
+  print(solution.valueOf(x)); // Approximately 10.0
+  print(solution.isOptimal); // Check before claiming optimality.
+}
+```
+
+### Supported problem classes and why others are unavailable
+
+Support below means accessible through this package’s current public Dart API, rather than every capability of the underlying engines. LP means linear programming; MILP adds integer/binary variables; QP adds a quadratic objective; SOCP adds second-order cone constraints.
+
+| Model or output | HiGHS (native) | Clarabel (native / WASM) | MicroLP (native / WASM) | Reason / current limitation |
+| :--- | :--- | :--- | :--- | :--- |
+| Continuous LP, minimize or maximize | Supported | Supported; default for `auto` | Supported | Linear objectives and `<=`, `>=`, `.eq()` constraints are compiled to sparse linear DTOs. |
+| Integer / binary / mixed-integer linear models (MILP) | Supported; default for integer `auto` | Unsupported | Unsupported | Only HiGHS is declared MILP-capable in this package; the other adapters reject discrete variables. |
+| MILP on web | Unavailable | Unsupported | Unsupported | HiGHS is excluded from WASM builds and no web MILP backend is exposed. |
+| Convex quadratic objective (QP) | Unsupported through this API | Planned; unavailable through this API | Unsupported | The compiler is linear-only and objective DTOs have no quadratic matrix, even though Clarabel has QP capability flags. |
+| SOCP / other conic constraints | Unsupported through this API | Planned for SOCP; unavailable through this API | Unsupported | No public cone builders or cone DTOs; Clarabel currently receives linear constraints and a zero quadratic term. |
+| Quadratic constraints / MIQP / MIQCP | Unsupported | Unsupported | Unsupported | No quadratic expression/constraint transport or mixed-integer quadratic integration. |
+| General nonlinear / nonconvex models (NLP / MINLP) | Unsupported | Unsupported | Unsupported | No nonlinear compiler, derivative interface, or suitable integrated backend. Products of variable expressions are rejected. |
+| Choice constraints (`exactlyOne`, `atMostOne`, `atLeastOne`) | Supported | Unsupported | Unsupported | Helpers require binary variables and emit ordinary linear constraints, so they need the MILP backend. |
+| Indicator / implication / SOS1 / SOS2 builders | Unavailable | Unavailable | Unavailable | No public builders or DTO support. Conditional rules can be modeled manually as linear MILP constraints when a valid Big-M formulation is available. |
+| CP-SAT / global optimization | Unsupported | Unsupported | Unsupported | No constraint-programming or global-search backend is integrated. |
+| Stochastic / robust / decomposition workflows | No dedicated API | No dedicated API | No dedicated API | No scenario, uncertainty, Benders, or column-generation orchestration; a manually formulated LP/MILP can still use the supported engines. |
+| Primal variable values and objective | Supported | Supported | Supported | Read only when `hasSolution` is true; optimality is a separate check. |
+| LP dual values / shadow prices | Returned for pure LP | Not exposed | Not exposed | Clarabel conic duals are not mapped to public row duals; the MicroLP `good_lp` adapter does not expose them. MILP duals are not returned. |
+
+### Result states
+
+| `SolveStatus` | Usable solution? | How to handle it |
+| :--- | :--- | :--- |
+| `optimal` | Yes | `isOptimal` is true; use `requireSolution()` or `valueOf()`. |
+| `timeLimitExceeded` | An incumbent may be available | Check `hasSolution`; an incumbent is not proof of optimality. Some engine iteration/gap limits also map to this status. |
+| `infeasible` | No | The constraints have no feasible point; revise the model. |
+| `unbounded` | No | The objective can improve without bound; review bounds and constraints. |
+| `numericalError` / `unknown` | No usable solution under the public result contract | Inspect the status and solver diagnostics before changing the formulation or engine. |
+
+A completed solve can report a non-optimal status without throwing. Invalid models and unsupported engine/platform combinations raise validation errors; initialization and execution failures can still throw. `requireSolution()` throws when `hasSolution` is false.
 
 ### HiGHS: LP and integer models (C++)
 
@@ -278,7 +349,14 @@ One model, three backends. `SolverPreference.auto` sends integer models (MILP) t
 
 ## 🖥️ Showcase Demo
 
-`example/` contains a Flutter application and a console tour that exercise the public API only:
+`example/` contains a Flutter application and a console tour that exercise the public API only.
+Open **Engine & API demos** on the app home page to compare the available LP engines,
+try automatic integer routing, observe cache reuse/invalidation, and run result/validation
+guards. The same recipes run with `dart run example/example.dart patterns`.
+QP/SOCP and other roadmap features are labeled as unavailable in that screen.
+See [`example/README.md`](example/README.md#live-changelog-demos) for the feature map.
+
+The academic problem catalog contains:
 
 | # | Screen | Everyday story | Technique |
 |---|---|---|---|
@@ -360,7 +438,7 @@ Only the C++ HiGHS engine has no web path, and it is not compiled for web at all
 flutter_rust_bridge_codegen build-web --rust-root rust
 ```
 
-No cargo features or `--no-default-features` are involved  the target triple alone decides. On the web the registry contains Clarabel and MicroLP: `auto` sends continuous models to Clarabel, an explicit `highs` request returns an `InvalidInput` error explaining that HiGHS cannot run in WASM, and integer models are rejected in Dart with a `ModelValidationException` before FFI (use a desktop or mobile build for MILP).
+No cargo features or `--no-default-features` are involved  the target triple alone decides. On the web the registry contains Clarabel and MicroLP: `auto` sends continuous models to Clarabel, an explicit `SolverPreference.highs` request raises `ModelValidationException` before FFI (direct bridge calls receive `InvalidInput`), and integer models are rejected in Dart with a `ModelValidationException` before FFI (use a desktop or mobile build for MILP).
 
 > Build status: the command above produces `web/pkg/` (`dart_mathopt_bg.wasm`, with no HiGHS in the build graph), and `cargo test` passes on both native and `wasm32-unknown-unknown`. Running in a browser is still pending (no browser in this environment).
 

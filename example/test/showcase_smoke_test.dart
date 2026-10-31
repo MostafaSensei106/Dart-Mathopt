@@ -30,6 +30,7 @@ void main() {
     ]) {
       expect(find.text(title), findsOneWidget);
     }
+    expect(find.text('Engine & API demos'), findsOneWidget);
     // Difficulty stars render on the cards.
     expect(find.textContaining('★'), findsWidgets);
     // Tapping a card opens its detail screen.
@@ -37,5 +38,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('How it becomes math'), findsOneWidget);
     expect(find.text('Solve now'), findsOneWidget);
+  });
+
+  testWidgets('feature demos open from home', (tester) async {
+    await tester.pumpWidget(const MathOptShowcaseApp());
+    await tester.tap(find.text('Engine & API demos'));
+    await tester.pumpAndSettle();
+    expect(find.text('Compare LP engines'), findsOneWidget);
+    expect(find.text('Automatic integer routing'), findsOneWidget);
+    expect(find.text('Run example'), findsWidgets);
   });
 }

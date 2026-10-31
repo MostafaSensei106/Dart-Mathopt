@@ -49,6 +49,10 @@ class ProductionProblem extends DemoProblem {
   }
 
   @override
+  SolveOptions get preferredOptions =>
+      const SolveOptions(solver: SolverPreference.highs);
+
+  @override
   String describeResult(SolveResult result) {
     final a = result.valueOf(_a);
     final b = result.valueOf(_b);

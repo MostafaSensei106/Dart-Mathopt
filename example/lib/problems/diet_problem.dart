@@ -63,6 +63,10 @@ class DietProblem extends DemoProblem {
   }
 
   @override
+  SolveOptions get preferredOptions =>
+      const SolveOptions(solver: SolverPreference.highs);
+
+  @override
   String describeResult(SolveResult result) {
     final lines = <String>[
       'Cheapest day: \$${result.objectiveValue!.toStringAsFixed(2)}',
